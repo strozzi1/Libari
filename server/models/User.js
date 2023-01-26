@@ -1,0 +1,60 @@
+import mongoose from "mongoose"
+import uniqueValidator from 'mongoose-unique-validator'
+
+const UserSchema = new mongoose.Schema(
+    {
+        username: {
+            type: String, 
+            lowercase: true, 
+            unique: true, 
+            required: [true, "can't be blank"], 
+            match: [/^[a-zA-Z0-9]+$/, 'is invalid'], 
+            index: true
+        },
+        email: {
+            type: String, 
+            lowercase: true, 
+            unique: true, 
+            required: [true, "can't be blank"], 
+            match: [/\S+@\S+\.\S+/, 'is invalid'], 
+            index: true
+        },
+        password: {
+            type: String,
+            require: true,
+            min: 5,
+            max: 40
+        },
+        picturePath: {
+            type: String,
+            require: false,
+            default: ""
+        },
+        location: {
+            type: String,
+            require: false,
+            default: "Earth"
+        },
+        bio: {
+            type: String,
+            require: false,
+            default: "Bio not provided"
+        },
+        following: {
+            type: Array,
+            default: []
+        },
+        followers:{
+            type: Array,
+            default: [],
+        }
+
+    },
+    {timestamps: true}
+);
+
+UserSchema.plugin(uniqueValidator, {message: 'is already taken.'});
+
+
+const User = mongoose.model("User", UserSchema)
+export default User;
