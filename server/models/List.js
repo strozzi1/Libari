@@ -13,6 +13,10 @@ const ListSchema = new mongoose.Schema(
         books: {
             type: Array,
             default: []
+        },
+        private: {
+            type: Boolean,
+            default: false
         }
     },
     {timestamps: true}

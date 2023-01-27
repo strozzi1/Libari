@@ -35,11 +35,11 @@ export const register = async (req, res ) => {
             userId: savedUser._id,
             username
         });
-
+        
         const token = jwt.sign({ id: savedUser._id}, process.env.JWT_SECRET);
         const savedList = await newList.save();
-        
-        delete savedUser.password
+        //remove password property before sending object
+        savedUser.password = undefined
         res.status(201).json({user: savedUser, list: savedList, token: token});
     } catch (error) {
         res.status(500).json({error: error.message});
@@ -51,7 +51,7 @@ export const register = async (req, res ) => {
 export const login = async (req, res) => {
     try {
         const {email, password} = req.body
-        const user = await User.findOne({email: email});
+        const user = await User.findOne({email: email}).select('+password');
         if(!user) {
             return res.status(400).json({message: "User doesn't exist"});
         }
@@ -60,7 +60,8 @@ export const login = async (req, res) => {
         if (!isMatch) res.status(400).json({message: "Invalid Credentials"});
 
         const token = jwt.sign({ id: user._id}, process.env.JWT_SECRET);
-        delete user.password;
+        //remove property before sending user object
+        user.password = undefined;
 
         res.status(200).json({token, user});
     } catch (err) {

@@ -23,7 +23,8 @@ const UserSchema = new mongoose.Schema(
             type: String,
             require: true,
             min: 5,
-            max: 40
+            max: 40,
+            select: false
         },
         picturePath: {
             type: String,
