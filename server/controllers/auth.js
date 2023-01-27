@@ -14,6 +14,8 @@ export const register = async (req, res ) => {
             location,
             bio,
             following,
+            followers,
+            role,
             list
         } = req.body;
 
@@ -28,7 +30,9 @@ export const register = async (req, res ) => {
             location,
             bio,
             following,
-            list
+            followers,
+            list,
+            role
         });
         const savedUser = await newUser.save();
         const newList = new List({
@@ -36,7 +40,7 @@ export const register = async (req, res ) => {
             username
         });
         
-        const token = jwt.sign({ id: savedUser._id}, process.env.JWT_SECRET);
+        const token = jwt.sign({ id: savedUser._id, role: savedUser.role}, process.env.JWT_SECRET, {expiresIn: '24h' });
         const savedList = await newList.save();
         //remove password property before sending object
         savedUser.password = undefined
@@ -56,10 +60,10 @@ export const login = async (req, res) => {
             return res.status(400).json({message: "User doesn't exist"});
         }
 
-        const isMatch = await bcrypt.compare(password, user.password)
+        const isMatch = bcrypt.compare(password, user.password)
         if (!isMatch) res.status(400).json({message: "Invalid Credentials"});
 
-        const token = jwt.sign({ id: user._id}, process.env.JWT_SECRET);
+        const token = jwt.sign({ id: user._id, role: user.role}, process.env.JWT_SECRET, {expiresIn: '24h' });
         //remove property before sending user object
         user.password = undefined;
 

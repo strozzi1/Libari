@@ -48,6 +48,11 @@ const UserSchema = new mongoose.Schema(
         followers:{
             type: Array,
             default: [],
+        },
+        role:{
+            type: String,
+            enum: ['user', 'admin', 'moderator'],
+            default: 'user'
         }
 
     },
