@@ -19,7 +19,6 @@ router.get("/:username", getUserByUsername)
 router.get("/:username/booklist", getListByUsername)
 
 
-
 /* ROUTES REQUIRING AUTHORIZATION */
 
 //@endpoint: /user/:username

@@ -52,7 +52,6 @@ export const addBook = async (req, res) => {
 
 
 /**
- * 
  * @param {*} req.params: userId, bookId
  * @param {*} res: id of Removed Book
  */
