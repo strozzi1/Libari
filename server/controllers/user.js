@@ -30,7 +30,7 @@ export const deleteUserByUsername = async (req, res) => {
         console.log (req.role)
         if(req.role !== "admin" && userFound._id.valueOf() !== req.userId) return res.status(400).json({message: "Not Authorized to delete this user"});
 
-        List.findOneAndDelete({userId: userFound._id}, function (err, docs) {
+        List.findOneAndDelete({userId: userFound._id}, function (err, docs) { 
             if (err){
                 return res.status(500).json({message: err})
             }
@@ -60,7 +60,7 @@ export const deleteUserById = async (req,res) => {
     let result = {}
     if(!userId) return res.status(400).json({message: "Invalid userId provided"});
 
-    if(req.role === "admin" || userFound._id.valueOf() !== req.userId) return res.status(400).json({message: "Not Authorized to delete this user"});
+    if(req.role !== "admin" && userFound._id.valueOf() !== req.userId) return res.status(400).json({message: "Not Authorized to delete this user"});
 
     try {
         List.findOneAndDelete({userId: userId}, function(err, docs){
@@ -84,3 +84,4 @@ export const deleteUserById = async (req,res) => {
         res.status(500).json({message: err.message})
     }
 }
+

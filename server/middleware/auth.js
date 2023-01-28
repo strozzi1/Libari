@@ -1,7 +1,6 @@
 import Jwt from "jsonwebtoken";
 
 
-
 export const requireAuthentication = async (req, res, next) => {
     let authHeader = req.header("Authorization");
     if(!authHeader){
@@ -19,7 +18,7 @@ export const requireAuthentication = async (req, res, next) => {
         next();
     } catch (err) {
         console.log(err.message)
-        res.status(500).json({error: "Invalid Authorization Token"});
+        res.status(400).json({error: "Invalid Authorization Token"});
     }
 }
 

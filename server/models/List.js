@@ -1,5 +1,7 @@
 import mongoose from "mongoose"
 
+const Schema = mongoose.Schema
+
 const ListSchema = new mongoose.Schema(
     {
         userId: {
@@ -11,7 +13,7 @@ const ListSchema = new mongoose.Schema(
             require: true
         },
         books: {
-            type: Array,
+            type: [{ type: Schema.Types.ObjectId, ref: 'Book' }],
             default: []
         },
         private: {
