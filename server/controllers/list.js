@@ -1,7 +1,5 @@
 import List from "../models/List.js";
 import Book from "../models/Book.js"
-import { validateAgainstSchema, extractValidFields } from  "../util/validation.js"
-import { Mongoose } from "mongoose";
 
 export const getListByUsername = async (req, res) => {
     const userName = req.params.username

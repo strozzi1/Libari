@@ -1,6 +1,8 @@
 import mongoose from "mongoose"
 import uniqueValidator from 'mongoose-unique-validator'
 
+const Schema = mongoose.Schema
+
 const UserSchema = new mongoose.Schema(
     {
         username: {
@@ -42,11 +44,11 @@ const UserSchema = new mongoose.Schema(
             default: "Bio not provided"
         },
         following: {
-            type: Array,
+            type: [{ type: Schema.Types.ObjectId, ref: 'User' }],
             default: []
         },
         followers:{
-            type: Array,
+            type: [{ type: Schema.Types.ObjectId, ref: 'User' }],
             default: [],
         },
         role:{
