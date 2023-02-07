@@ -28,5 +28,7 @@ func main() {
 	app.Get("/api/books", handlers.GetAllBooks)
 	app.Delete("/api/books/:id", handlers.DeleteBookById)
 
+	app.Post("/api/users", handlers.AddUser)
+
 	log.Fatal(app.Listen(":3000"))
 }
