@@ -2,11 +2,13 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"goserver/internal/db"
 	"time"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -67,4 +69,49 @@ func AddUser(c *fiber.Ctx) error {
 
 	return c.Status(200).JSON(newUser)
 
+}
+
+func GetAllUsers(c *fiber.Ctx) error {
+	client, err := db.GetMongoClient()
+	if err != nil {
+		return err
+	}
+
+	collection := client.Database(db.Database).Collection(string(db.UsersCollection))
+
+	cursor, err := collection.Find(context.TODO(), bson.D{primitive.E{}})
+
+	if err != nil {
+		return err
+	}
+	var users []*User
+	for cursor.Next(context.TODO()) {
+		var user User
+		if err := cursor.Decode(&user); err != nil {
+			return err
+		}
+		users = append(users, &user)
+	}
+	return c.Status(200).JSON(bson.M{"result": users})
+}
+
+func DeleteUserById(c *fiber.Ctx) error {
+	userId, err := primitive.ObjectIDFromHex(c.Params("id"))
+	if err != nil {
+		return err
+	}
+	fmt.Println(c.Params("id"), userId)
+	client, err := db.GetMongoClient()
+	if err != nil {
+		return err
+	}
+
+	collection := client.Database(db.Database).Collection(string(db.UsersCollection))
+
+	var deletedDoc bson.M
+	er := collection.FindOneAndDelete(context.TODO(), bson.M{"_id": userId}).Decode(&deletedDoc)
+	if er != nil {
+		return er
+	}
+	return c.Status(200).JSON(bson.M{"deleted": deletedDoc})
 }

@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"fmt"
 	"goserver/internal/db"
 	"time"
 
@@ -125,7 +124,6 @@ func DeleteBookById(c *fiber.Ctx) error {
 
 	collection := client.Database(db.Database).Collection(string(db.BooksCollection))
 
-	fmt.Println(c.Params("id"))
 	idPrimative, err := primitive.ObjectIDFromHex(c.Params("id"))
 	if err != nil {
 		return err

@@ -24,11 +24,15 @@ func main() {
 	})
 
 	//35 mins in
+	//BOOKS endpoints
 	app.Post("/api/books", handlers.CreateBook)
 	app.Get("/api/books", handlers.GetAllBooks)
 	app.Delete("/api/books/:id", handlers.DeleteBookById)
 
+	//USERS endpoints
 	app.Post("/api/users", handlers.AddUser)
+	app.Delete("/api/users/:id", handlers.DeleteUserById)
+	app.Get("/api/users", handlers.GetAllUsers)
 
 	log.Fatal(app.Listen(":3000"))
 }
