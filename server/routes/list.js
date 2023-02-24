@@ -1,12 +1,15 @@
 import  express  from "express";
-import { addBook } from "../controllers/list.js";
+import { addBook, getListByUsername } from "../controllers/list.js";
 import { requireAuthentication } from "../middleware/auth.js";
 
 const router = express.Router()
 
-// @endpoint /booklist/:listId
+// @endpoint /booklist/
 // add book to list
-router.post("/:listId", requireAuthentication, addBook);
+router.post("/", requireAuthentication, addBook);
+
+//@endpoint /booklist/:username
+router.get("/:username", getListByUsername)
 
 
 

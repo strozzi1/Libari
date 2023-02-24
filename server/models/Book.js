@@ -18,18 +18,6 @@ const BookSchema = new mongoose.Schema(
             min: 2,
             max: 50
         },
-        rating: {
-            type: Number,
-            min: 0,
-            max: 10,
-            required: false
-        },
-        status: {
-            type: String,
-            required: false,
-            enum: ['Completed', 'Planning', 'Reading', 'Dropped'],
-            default: 'Planning'
-        },
         photo: {
             type: String,
             required: false
@@ -37,6 +25,10 @@ const BookSchema = new mongoose.Schema(
         pages: {
             type: Number,
             required: false
+        },
+        released: {
+            type: Date,
+            default: '1900-01-01'
         }
     },
     {timestamps: true}

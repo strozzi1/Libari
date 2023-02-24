@@ -19,7 +19,7 @@ type Collection string
 const (
 	BooksCollection Collection = "books"
 	UsersCollection Collection = "users"
-	ListsColleciton Collection = "lists"
+	ListsCollection Collection = "lists"
 )
 
 const (

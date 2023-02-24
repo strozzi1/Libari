@@ -2,11 +2,11 @@ import List from "../models/List.js";
 import Book from "../models/Book.js"
 
 export const getListByUsername = async (req, res) => {
-    const userName = req.params.username
+    const userNameParam = req.params.username
     try{
         //get list and populate books list with books from ids in said list
 
-        const foundList = await List.findOne({username: userName})
+        const foundList = await List.findOne({username: userNameParam})
         .populate({
             path: "books"
           });
@@ -32,7 +32,7 @@ export const addBook = async (req, res) => {
     })
     try {
         //Get list and check if exist
-        const chosenList = await List.findById(req.params.listId); //here
+        const chosenList = await List.findOne({userId: req.userId}); //here
         if(!chosenList) return res.status(400).json({message: "Invalid list chosen"});
         
         //if user doesn't own the list, fail
@@ -49,17 +49,16 @@ export const addBook = async (req, res) => {
 }
 
 
-/**
- * @param {*} req.params: userId, bookId
- * @param {*} res: id of Removed Book
- */
+
 export const removeBookIdFromListByUserId = async (req, res) => {
     if(!req.params.userId || !req.params.bookId) return res.status(400).json({message: "Invalid query"});
     try {
         const foundList = await List.findOne({userId: req.params.userId});
-        if(foundList.userId !== req.userId) return res.status(400).json({message: "Not authorized to modify this list"});
+        
         if(!foundList) return res.status(400).json({message: "No list belonging to said user"});
-
+        
+        if(foundList.userId !== req.userId) return res.status(400).json({message: "Not authorized to modify this list"});
+        
         const remainingBooks = await foundList.books.pull(req.params.bookId);
         foundList.save()
 
