@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const EntrySchema = mongoose.Schema(
     {
         bookId:{
-            type: Schema.Types.ObjectId, ref: 'User',
+            type: Schema.Types.ObjectId, ref: 'Book',
             require: [true, 'Need a book Id in order to create new entry'],
         },
         rating: {

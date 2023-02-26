@@ -7,14 +7,14 @@ const BookSchema = new mongoose.Schema(
         title: {
             type: String,
             required: true, 
-            match: [/^[a-zA-Z0-9]+$/, 'is invalid'], 
+            //match: [/^[a-zA-Z0-9]+$/, 'is invalid'], 
             min: 2,
             max: 200
         },
         author: {
             type: String,
             required: true, 
-            match: [/^[a-zA-Z0-9]+$/, 'is invalid'], 
+            //match: [/^[a-zA-Z0-9]+$/, 'is invalid'], 
             min: 2,
             max: 50
         },

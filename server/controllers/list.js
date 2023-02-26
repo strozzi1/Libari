@@ -1,5 +1,5 @@
 import List from "../models/List.js";
-import Book from "../models/Book.js"
+import Book from "../models/Book.js";
 
 export const getListByUsername = async (req, res) => {
     const userNameParam = req.params.username
@@ -50,7 +50,7 @@ export const addBook = async (req, res) => {
 
 
 
-export const removeBookIdFromListByUserId = async (req, res) => {
+/*export const removeBookIdFromListByUserId = async (req, res) => {
     if(!req.params.userId || !req.params.bookId) return res.status(400).json({message: "Invalid query"});
     try {
         const foundList = await List.findOne({userId: req.params.userId});
@@ -67,4 +67,4 @@ export const removeBookIdFromListByUserId = async (req, res) => {
     } catch (err) {
         res.status(500).json({message: err.message});
     }
-}
+}*/
