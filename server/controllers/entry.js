@@ -41,9 +41,6 @@ body: {
 REQUIRE: Logged in User
 */
 export const addNewBookEntryToList = async (req, res) => {
-    //if no book or book not valid book object -> return 400 status
-    //console.log(req.body.book)
-    
     if(!req.body.book || !req.body.entry) return res.status(400).json({message: "Invalid book entry object"});
     const {_id, googleId, title, author, photo, pages, readers} = req.body.book
     const {rating, status, startDate, endDate, review} = req.body.entry
@@ -52,10 +49,9 @@ export const addNewBookEntryToList = async (req, res) => {
     })
     try {
         //Get list and check if exist
-        const chosenList = await List.findOne({userId: req.userId}); 
-        if(!chosenList) return res.status(400).json({message: "Invalid list chosen"});
+        const userList = await List.findOne({userId: req.userId}); 
+        if(!userList) return res.status(400).json({message: "Invalid list chosen"});
         
-
         let existingBook
         if(googleId)
             existingBook = await Book.findOne({googleId: googleId});
@@ -63,15 +59,14 @@ export const addNewBookEntryToList = async (req, res) => {
             existingBook = await Book.findById(_id);
         }
 
-
         let savedBook;
         if(!existingBook){
             newBook.readers = 1
             savedBook = await newBook.save();
         } else {
-            const listHoldingBook = await List.findOne({_id: chosenList._id}).populate({path: 'entries', match: {book: existingBook._id}})
+            const listHoldingBook = await List.findOne({_id: userList._id}).populate({path: 'entries', match: {book: existingBook._id}})
             // TODO: make it so this goes to an Update entry function instead
-            console.log(listHoldingBook.entries)
+            //console.log(listHoldingBook.entries)
             if(listHoldingBook.entries[0]) return res.status(400).json({message: "Book already in your list"});
             
             existingBook.readers +=1;
@@ -88,7 +83,7 @@ export const addNewBookEntryToList = async (req, res) => {
         })
         const savedEntry = await newEntry.save()
         //push book _id to list in book list
-        const updatedList = await chosenList.update({$push: {books: savedBook._id, entries: savedEntry._id}});
+        const updatedList = await userList.updateOne({$push: {books: savedBook._id, entries: savedEntry._id}});
         res.status(201).json({updatedList})
     } catch (error) {
         res.status(500).json(error);
@@ -111,20 +106,13 @@ export const removeBookEntry = async (req, res) => {
         
         if(!foundList) return res.status(400).json({message: "No list belonging to said user"});
         
-        
-        // const listHoldingBook = await List.findOne({_id: foundList._id}).populate({path: 'entries', match: {book: entryBook._id}})
-        // if(!listHoldingBook) {
-        //     return res.status(401).json({message: "Book not in your list"});
-        // }
-        
-        const foundEntry = await Entry.findById(req.params.id)
-        
+        const foundEntry = await Entry.findById(req.params.id);
         
         if(!foundEntry) return res.status(400).json({message: "No such entry"});
-        const entryBook = await Book.findById(foundEntry.book)
+        const entryBook = await Book.findById(foundEntry.book);
         
         //remove entry and book from list and save
-        const updatedList = await foundList.updateOne({$pull: {entries: foundEntry._id, books: foundEntry.book}});
+        const updatedList = await foundList.updateOne({$pull: {entries: foundEntry._id}});
         
         entryBook.readers-=1
         entryBook.save()

@@ -2,12 +2,17 @@ import List from "../models/List.js";
 
 //DONE
 export const getListByUsername = async (req, res) => {
-    const userNameParam = req.params.username
+    //const userNameParam = req.params.username
+    
+    const filter = Object.fromEntries(  
+        new URLSearchParams(req.query)
+    )
+    
     try{
         //get list and populate books list with books from ids in said list
 
         //Just get Entries
-        const foundList = await List.findOne({username: userNameParam})
+        const foundList = await List.findOne(filter)
             .populate({
                 path: "entries",
                 populate: { 

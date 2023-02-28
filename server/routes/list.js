@@ -7,7 +7,7 @@ const router = express.Router()
 
 //@endpoint /booklist/:username
 //DONE
-router.get("/:username", getListByUsername);
+router.get("/", getListByUsername);
 
 
 export default router

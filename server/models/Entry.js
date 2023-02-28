@@ -7,7 +7,6 @@ const EntrySchema = new mongoose.Schema(
             type: Schema.Types.ObjectId, ref: 'Book',
             require: true
         },
-        //maybe add userId
         rating: {
             type: Number,
             min: 0,

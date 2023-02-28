@@ -1,6 +1,5 @@
 import express from "express"
-import { getUserByUsername, deleteUserByUsername, deleteUserById } from "../controllers/user.js"
-import { getListByUsername} from "../controllers/list.js"
+import { getUserByUsername, deleteUserByUsername, deleteUserById, getListByUsername } from "../controllers/user.js"
 
 import { requireAuthentication, checkAuthentication } from "../middleware/auth.js"
 
@@ -30,9 +29,8 @@ router.get("/:username/booklist", getListByUsername)
 router.delete("/:username", requireAuthentication, deleteUserByUsername)
 
 //@endpoint: /user
-//DELETE user by userId in req.body
+//DELETE currently logged in user
 //require AUTH
-//TODO: remove
 router.delete("/", requireAuthentication, deleteUserById)
 
 //@endpoint: /user/:username/booklist
