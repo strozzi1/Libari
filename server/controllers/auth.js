@@ -5,7 +5,7 @@ import List from "../models/List.js"
 
 /* REGISTER USER */
 export const register = async (req, res) => {
-    console.log("req.body: ",req.body)
+    
     
     if (!req.body.password || !req.body.email) return res.status(401).json("No password or email provided");
     try {

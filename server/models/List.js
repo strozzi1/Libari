@@ -14,10 +14,11 @@ const ListSchema = new mongoose.Schema(
         },
         //have this separate list so we can check if list contains a book already
         //for logic purposes
-        books: {
+        //phase this out
+        /*books: {
             type: [{ type: Schema.Types.ObjectId, ref: 'Book' }],
             default: []
-        },
+        },*/
         // this is for holding user specific data for each book in the list
         entries: {
             type: [{ type: Schema.Types.ObjectId, ref: 'Entry' }],

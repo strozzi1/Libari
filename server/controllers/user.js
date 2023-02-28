@@ -55,6 +55,7 @@ export const deleteUserByUsername = async (req, res) => {
     }
 }
 
+
 export const deleteUserById = async (req,res) => {
     const { userId } = req.body
     let result = {}

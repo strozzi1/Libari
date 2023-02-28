@@ -10,6 +10,7 @@ import { fileURLToPath } from 'url'
 import authRoutes from "./routes/auth.js"
 import userRoutes from "./routes/user.js"
 import listRoutes from "./routes/list.js"
+import entryRoutes from "./routes/entry.js"
 
 
 /* CONFIGURATIONS */
@@ -34,6 +35,7 @@ app.use(cors());
 app.use("/auth", authRoutes)
 app.use("/user",userRoutes)
 app.use("/booklist", listRoutes)
+app.use("/entry", entryRoutes)
 
 /* MONGOOSE SETUP */
 const PORT = process.env.PORT || 6001;
