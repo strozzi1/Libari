@@ -1,16 +1,18 @@
 import mongoose from "mongoose";
+const Schema = mongoose.Schema;
 
-const EntrySchema = mongoose.Schema(
+const EntrySchema = new mongoose.Schema(
     {
-        bookId:{
-            type: Schema.Types.ObjectId, ref: 'User',
-            require: [true, 'Need a book Id in order to create new entry'],
+        book:{
+            type: Schema.Types.ObjectId, ref: 'Book',
+            require: true
         },
         rating: {
             type: Number,
             min: 0,
             max: 10,
-            required: false
+            require: false,
+            default: 0
         },
         status: {
             type: String,
@@ -19,20 +21,23 @@ const EntrySchema = mongoose.Schema(
         }, 
         startDate: {
             type: Date,
-            require: false
+            require: false,
+            default: ''
         },
         endDate: {
             type: Date,
-            require: false
+            require: false,
+            default: ''
         },
         review: {
             type: String,
             maxLength: 1000,
-            require: false,
+            required: false,
             default: ''
         }
-    }, {timestamps: true}
+    }, 
+    {timestamps: true}
 )
 
-const Entry = new mongoose.Model('Entry', EntrySchema)
+const Entry = mongoose.model("Entry", EntrySchema)
 export default Entry;

@@ -12,8 +12,9 @@ const ListSchema = new mongoose.Schema(
             type: String,
             require: true
         },
-        books: {
-            type: [{ type: Schema.Types.ObjectId, ref: 'Book' }],
+        // this is for holding user specific data for each book in the list
+        entries: {
+            type: [{ type: Schema.Types.ObjectId, ref: 'Entry' }],
             default: []
         },
         private: {
