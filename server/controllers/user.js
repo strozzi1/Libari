@@ -78,7 +78,6 @@ export const deleteUserByUsername = async (req, res) => {
         //const updatedList = await List.updateOne({userId: userFound._id},{$set: {entries: []}});
         //console.log("UpdatedList: ",updatedList);
 
-        //not deletes and errors
         List.findOneAndDelete({userId: userFound._id}, function (error, docs) { 
             if (error){
                 return res.status(500).json(error)

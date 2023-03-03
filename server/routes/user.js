@@ -37,7 +37,5 @@ router.delete("/", requireAuthentication, deleteUserById)
 //Delete book from list
 //remove book listed in req.body
 
-//router.delete("/:userId/booklist/:bookId", requireAuthentication, removeBookIdFromListByUserId)
-
 
 export default router;

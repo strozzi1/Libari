@@ -1,9 +1,9 @@
 import Entry from "../models/Entry.js";
 import List from "../models/List.js";
-import { Mongoose, ObjectId } from "mongoose";
+import mongoose, { Mongoose, ObjectId } from "mongoose";
 import Book from "../models/Book.js";
 
-
+//TODO: replace with query parameter based search (?username=[name]&book=[bookId]&title=[bookname])
 //@endpoint /entry/:id
 export const getEntryById = async (req, res) => {
     try {
@@ -17,6 +17,74 @@ export const getEntryById = async (req, res) => {
     }
 }
 
+export const updateEntryById = async (req,res) => {
+    if(!req.body.entry) return res.status(404).json({
+        message: "No update entry object provided",
+        entry: {
+            rating: "please", 
+            status: "provide", 
+            startDate: "update", 
+            endDate: "entry", 
+            review: "object"
+        }
+    })
+    const { rating, status, startDate, endDate, review } = req.body.entry
+    try {
+        const existingEntry = await Entry.findById(req.params.id)
+        if(!existingEntry) return res.status(404).json(
+            {message: `No existing entry with ID: ${req.params.id}. Feel free to create a new book entry`}
+        )
+        const updates = {
+            rating, status, startDate, endDate, review
+        }
+        const savedEntry = await Entry.findByIdAndUpdate(existingEntry._id, updates, { runValidators: true });
+
+        res.status(201).json(savedEntry);
+
+    } catch (error) {
+        res.status(500).json(error)
+    }
+}
+
+/* EXPECTED req.body:
+body: {
+    book: {
+        _id?: ;lakjsdf;asdf,
+        googleId?: 
+        ...
+    }
+    entry: {
+
+    }
+}
+*/
+export const updateEntryByUserAndBook = async (req, res) => {
+    if(!req.body.book || (!req.body.book._id && !req.body.book.googleId) || !req.body.entry) return res.status(404).json({message: "Invalid book object"})
+    try {
+        const {rating, review, status, startDate, endDate} = req.body.entry
+        const userList = await List.findOne({userId: req.userId})
+            .populate({
+                path: 'entries', 
+                populate: {path: 'book'}
+            }).lean()
+            
+        const entryToEdit = userList.entries.filter(entry => entry.book._id.equals(req.body.book._id))
+        if(!entryToEdit[0]) return res.status(404).json({message: "No entry containing provided book"})
+        const updates = {
+            rating,
+            status,
+            review,
+            startDate,
+            endDate
+        }
+        const updatedEntry = await Entry.findByIdAndUpdate(entryToEdit[0]._id, updates, {runValidators: true});
+        res.status(201).json(updatedEntry);
+    } catch (error) {
+        res.status(500).json(error)
+    }
+}
+
+//@endpoint
 /*
 expected req:
 body: {
