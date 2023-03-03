@@ -64,6 +64,12 @@ export const login = async (req, res) => {
         if(!user) {
             return res.status(400).json({message: "User doesn't exist"});
         }
+        const list = await List.findOne({userId: user._id}).populate({
+            path: "entries",
+            populate: { 
+                path: "book"
+            }
+        });
 
         const isMatch = bcrypt.compare(password, user.password)
         if (!isMatch) res.status(400).json({message: "Invalid Credentials"});
@@ -72,7 +78,7 @@ export const login = async (req, res) => {
         //remove property before sending user object
         user.password = undefined;
 
-        res.status(200).json({token, user});
+        res.status(200).json({token, user, list});
     } catch (err) {
         res.status(500).json({error: err.message})
     }

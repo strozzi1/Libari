@@ -37,9 +37,7 @@ export const checkAuthentication = function (req, res, next) {
       req.role = payload.role;
       next();
     } catch (err) {
-      // if not valid user req.userId and req.role will not be defined
-      //req.userId = null;
-      //req.role = false;
+      
       next();
     }
   };
