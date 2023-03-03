@@ -20,9 +20,10 @@ Now, I know I can't magically fill my database with everybook, all the editions 
 storing all that book data and grouping them like on *other book tracking sites* or *other book api's*  
 But, I don't have to. I can start by using the Google Books API to fill in the gaps for now.  
 Later down the road I can flesh out the "Moderator" and "Admin" submitted/approved books, where books can be 
-added by anyone but they have to be approved by privileged users.  
-  
-To start, the app will have very specific and limited functionality, but as I progress, the scope and abilities of the app will grow.  
+added by anyone but they have to be approved by privileged users.
+
+To start, the app will have very specific and limited functionality, but as I progress, the scope and abilities of the app will grow.
+
 ---
 ## The Goals
 ### To Start
