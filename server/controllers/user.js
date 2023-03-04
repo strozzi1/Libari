@@ -34,6 +34,38 @@ export const getListByUsername = async (req, res) => {
     }
 }
 
+/*
+Input:
+Authorized
+req: {
+    user: {
+        _id
+        picturePath
+        location
+        bio
+
+    }
+}
+*/
+export const updateUserById = async (req, res) => {
+    const userId = req.body.user._id
+    if(!req.body.user || !req.body.user._id) return res.status(401).json({message: "Invalid request, no user provided"})
+    
+    if(req.userId !== userId && req.role !== "admin") return res.status(401).json({message: "Not authorized to edit this user's information."})
+    try {
+        const { picturePath, bio, location } = req.body.user;
+        const foundUser = await User.findById(userId)
+
+        if(!foundUser) return res.status(404).json({message: `No with user with ID ${userId} found`});
+
+        const updatedUser = await User.findByIdAndUpdate(userId, {picturePath, bio, location})
+
+        res.status(200).json(updatedUser);
+    } catch (error) {
+        res.status(500).json(error)
+    }
+}
+
 
 /**
  * Delete user
@@ -73,11 +105,6 @@ export const deleteUserByUsername = async (req, res) => {
             //console.log("RESULTS: ", resultEntries, resultBooks);
         }
         
-
-        //testing purposes DELETE
-        //const updatedList = await List.updateOne({userId: userFound._id},{$set: {entries: []}});
-        //console.log("UpdatedList: ",updatedList);
-
         List.findOneAndDelete({userId: userFound._id}, function (error, docs) { 
             if (error){
                 return res.status(500).json(error)
@@ -106,31 +133,58 @@ export const deleteUserByUsername = async (req, res) => {
 }
 
 
+//Deletes currrently loggied in
 export const deleteUserById = async (req,res) => {
     const { userId } = req.body
-    let result = {}
     if(!userId) return res.status(400).json({message: "Invalid userId provided"});
 
-    if(req.role !== "admin" && userFound._id.valueOf() !== req.userId) return res.status(400).json({message: "Not Authorized to delete this user"});
+    if(req.role !== "admin" && userId !== req.userId) return res.status(400).json({message: "Not Authorized to delete this user"});
 
     try {
-        List.findOneAndDelete({userId: userId}, function(err, docs){
-            if(err){
-                return res.status(400).json({message: err.message})
+        //Find all entries belonging to user
+        const entriesInList = await List.findOne({userId: req.userId})
+            .populate({path: "entries", select: "book"})
+            .lean()
+            
+        //delete entries and decrement books reader counts
+        if(entriesInList.entries[0]){
+            const entriesToDelete = entriesInList.entries.map(entry => entry._id);
+            const booksToEdit = entriesInList.entries.map(entry => entry.book._id);
+            //console.log("BOOKS: ", booksToEdit, "ENTRIES: ", entriesToDelete);
+            await Book.updateMany(
+                {_id:
+                    { $in: booksToEdit}
+                },
+                {
+                    $inc: { readers: -1 }
+            
+                }
+            );
+            await Entry.deleteMany({_id: { $in: entriesToDelete}});
+        }
+        
+        List.findOneAndDelete({userId: req.userId}, function (error, docs) { 
+            if (error){
+                return res.status(500).json(error)
             }
-            result.deletedList = docs;
-        })
-        //delete user
-        User.findByIdAndDelete(userId, function(err, docs) {
-            if(err){
-                res.status(400).json({message: err.message});
-            } else if (docs == null){
-                res.status(400).json({message: "No such user in database"});
-            } else {
-                result.deletedUser = docs
-                res.status(201).json({message: `Successfully deleted user`, deleted: result});
+            else{
+                console.log("Deleted List: ", docs);
             }
+        });
+        
+        User.findByIdAndDelete(req.userId, function (err, docs) {
+            if (err){
+                return res.status(500).json({message: err})
+            }
+            else{
+                console.log("Deleted User: ", docs);
+            }
+        });
+
+        return res.status(200).json({
+            message: `User with ID ${userId} has been deleted, and list`,
         })
+        
     } catch (err) {
         res.status(500).json({message: err.message})
     }
