@@ -1,5 +1,16 @@
 import express from "express"
-import { getUserByUsername, deleteUserByUsername, deleteUserById, getListByUsername } from "../controllers/user.js"
+import { 
+    getUserByUsername, 
+    deleteUserByUsername, 
+    deleteUserById, 
+    getListByUsername, 
+    updateUserById, 
+    updateUserPassword, 
+    updateUsername,
+    addFollowing,
+    removeFollowing,
+    updateEmail
+ } from "../controllers/user.js"
 
 import { requireAuthentication, checkAuthentication } from "../middleware/auth.js"
 
@@ -21,6 +32,23 @@ router.get("/:username/booklist", getListByUsername)
 
 
 /* ROUTES REQUIRING AUTHORIZATION */
+
+
+
+/* UPDATE ROUTES */
+router.patch("/updatePassword", requireAuthentication, updateUserPassword)
+
+router.patch("/updateUsername", requireAuthentication, updateUsername)
+
+router.patch("/followUser", requireAuthentication, addFollowing)
+
+router.patch("/unfollowUser", requireAuthentication, removeFollowing)
+
+router.patch("/updateEmail", requireAuthentication, updateEmail)
+
+//@endpoint: /user
+//get user._id from body
+router.patch("/", requireAuthentication, updateUserById)
 
 //@endpoint: /user/:username
 //DELETE user by username, and their list/lists
