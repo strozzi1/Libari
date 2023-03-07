@@ -70,9 +70,10 @@ export const login = async (req, res) => {
                 path: "book"
             }
         });
-
-        const isMatch = bcrypt.compare(password, user.password)
-        if (!isMatch) res.status(400).json({message: "Invalid Credentials"});
+        
+        const isMatch = await bcrypt.compare(password, user.password)
+        console.log(password, user.password, isMatch);
+        if (!isMatch) return res.status(400).json({message: "Invalid Credentials"});
 
         const token = jwt.sign({ id: user._id, role: user.role}, process.env.JWT_SECRET, {expiresIn: '24h' });
         //remove property before sending user object

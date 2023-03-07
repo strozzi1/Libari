@@ -2,7 +2,7 @@ import User from "../models/User.js";
 import List from "../models/List.js";
 import Entry from "../models/Entry.js";
 import Book from "../models/Book.js";
-import { isObjectIdOrHexString } from "mongoose";
+import bcrypt from "bcrypt"
 
 export const getUserByUsername = async (req, res) => {
     try{
@@ -66,6 +66,142 @@ export const updateUserById = async (req, res) => {
     }
 }
 
+/*
+expect:
+Authorized User wants to change their username
+body: {
+    user: {
+        password
+        _id
+    }
+}
+*/
+export const updateUserPassword = async (req, res) => {
+    if(!req.body.user || !req.body.user._id || !req.body.user.password) return res.status(401).json({message: "Invalid request provided, need userId and password"})
+    const { _id, password } = req.body.user;
+    if (_id != req.userId && req.role !== 'admin') return res.status(401).json({message: "Not authorized"});
+    try {
+        const salt = await bcrypt.genSalt();
+        const passwordHash = await bcrypt.hash(password, salt);
+        const foundUser =  await User.findById(_id);
+        if (!foundUser) res.status(400).json({message: "Somehow, this user doesn't exist"})
+
+        foundUser.password = passwordHash
+        foundUser.save( function(error, updatedUser){
+            if(error) return res.status(500).json({message: "Unable to update password", error})
+            updatedUser.password = undefined
+            res.status(200).json(updatedUser)
+        })
+
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}
+
+/*
+expect:
+Authorized User wants to change their username
+body: {
+    newUsername: coolNewName
+}
+*/
+export const updateUsername = async (req, res) => {
+    if (!req.body.newUsername) return res.status(404).json({message: "No new Username provided"});
+    try {
+        const { newUsername } = req.body;
+        const updatedUser = await User.findByIdAndUpdate(
+            req.userId, 
+            {username: newUsername}, 
+            {runValidators: true}, 
+        )
+
+        const updatedList = await List.findOneAndUpdate(
+            {userId: updatedUser._id}, 
+            {username: newUsername},
+        )
+
+        return res.status(200).json({updatedUser, updatedList});
+    } catch(error) {
+        res.status(500).json(error)
+    }
+}
+
+/*
+body: {
+    email
+}
+*/
+export const updateEmail = async (req, res) => {
+    if (!req.body.email) return res.status(404).json({message: "No new email provided"});
+    try {
+        const { email } = req.body;
+        const updatedUser = await User.findByIdAndUpdate(
+            req.userId, 
+            {email: email}, 
+            {runValidators: true}, 
+        )
+
+        return res.status(200).json(updatedUser);
+    } catch(error) {
+        res.status(500).json(error)
+    }
+}
+
+
+/*
+body: {
+    userId: ;ljasldfkjasd
+}
+*/
+export const addFollowing = async (req, res) => {
+    if(!req.body.userId) return res.status(400).json({message: "Invalid request, must supply UserId"});
+    if(req.body.userId === req.userId) return res.status(400).json({message: "You cannot follow yourself"});
+    try {
+        const user = await User.findById(req.userId);
+        if(!user) return res.status(400).json({message: "Invalid request, somehow you got here, but you can't stay"});
+        const userToFollow = await User.findById(req.body.userId)
+        if(!userToFollow) return res.status(404).json({message: "No such user, cannot perform Follow operation"});
+        
+        const alreadyFollowing = user.following.filter((currId) => currId.equals(userToFollow.id)).at(0);
+        if(alreadyFollowing) return res.status(400).json({message: "Already following provided user"});   
+        
+        userToFollow.followers.push(req.userId)
+        const updatedFollowingUser = await userToFollow.save()
+        user.following.push(userToFollow.id)
+        const updatedFollowerUser = await user.save();
+        res.status(200).json({
+            message: "success adding follower",
+            updatedDocs: {
+                updatedFollowerUser,
+                updatedFollowingUser
+            }
+        })
+    } catch(error) {
+        res.status(500).json(error)
+    }
+}
+
+/*
+body: {
+    userId
+}
+*/
+export const removeFollowing = async (req, res) => {
+    if(!req.body.userId) return res.status(400).json({message: "Invalid request, must supply UserId"});
+    if(req.body.userId === req.userId) return res.status(400).json({message: "You cannot unfollow yourself"});
+    try {
+        
+        const removedFromFollower = await User.findByIdAndUpdate(req.body.userId, {$pull: {followers: req.userId}})
+        const removedFromFollowing = await User.findByIdAndUpdate(req.userId, {$pull: {following: req.body.userId}})
+        
+        res.status(200).json({
+            message: "success removing follower", 
+            updatedFollowingList: removedFromFollowing.following
+        })
+    } catch(error) {
+        res.status(500).json(error)
+    }
+}
 
 /**
  * Delete user
@@ -127,8 +263,8 @@ export const deleteUserByUsername = async (req, res) => {
             message: `User ${userFound.username} has been deleted, and list`,
         })
         
-    } catch (err) {
-        res.status(500).json({message: err.message})
+    } catch (error) {
+        res.status(500).json(error)
     }
 }
 
