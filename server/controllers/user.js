@@ -17,6 +17,38 @@ export const getUserByUsername = async (req, res) => {
     }
 }
 
+export const getUsers = async (req,res) => {
+    try{
+        var page = Number(req.query.page) || 1;
+        const pageSize = Number(req.query.pageSize) || 10;
+        console.log(page)
+        if(req.query.username) filter.username = { $regex: '.*' + req.query.username + '.*', $options: 'i' }
+        if(req.query.id) filter._id = req.query.id
+        const count = await User.countDocuments(filter);
+        const lastPage = Math.ceil(count / pageSize);
+        page = page > lastPage ? lastPage : page;
+        page = page < 1 ? 1 : page;
+        const offset = (page - 1) * pageSize;
+        
+        const results = await User.find(filter)
+            .sort({_id: 1})
+            .skip(offset)
+            .limit(pageSize)
+            
+        if (!results) return res.status(400).json({message: "No results"});
+        res.status(200).json({
+            results,
+            pageNumber: page,
+            totalPages: lastPage,
+            pageSize: pageSize,
+            totalCount: results.length
+        })
+    } catch (error) {
+        res.status(500).json(error)
+    }
+
+}
+
 export const getListByUsername = async (req, res) => {
     if(!req.params.username) return res.status(400).json({message: "No username provided"})
     try{

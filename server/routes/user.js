@@ -9,7 +9,8 @@ import {
     updateUsername,
     addFollowing,
     removeFollowing,
-    updateEmail
+    updateEmail,
+    getUsers
  } from "../controllers/user.js"
 
 import { requireAuthentication, checkAuthentication } from "../middleware/auth.js"
@@ -29,6 +30,8 @@ router.get("/:username", getUserByUsername)
 //router.get("/:username/booklist")
 //Done
 router.get("/:username/booklist", getListByUsername)
+
+router.get("/", getUsers)
 
 
 /* ROUTES REQUIRING AUTHORIZATION */
