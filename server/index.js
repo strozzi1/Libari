@@ -11,6 +11,7 @@ import authRoutes from "./routes/auth.js"
 import userRoutes from "./routes/user.js"
 import listRoutes from "./routes/list.js"
 import entryRoutes from "./routes/entry.js"
+import bookRoutes from "./routes/book.js";
 import relayRoutes from "./routes/google-relay.js"
 
 
@@ -37,6 +38,7 @@ app.use("/auth", authRoutes)
 app.use("/user",userRoutes)
 app.use("/booklist", listRoutes)
 app.use("/entry", entryRoutes)
+app.use("/books", bookRoutes)
 app.use("/google-relay", relayRoutes)
 
 /* MONGOOSE SETUP */
