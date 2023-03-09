@@ -19,9 +19,9 @@ export const getUserByUsername = async (req, res) => {
 
 export const getUsers = async (req,res) => {
     try{
-        var page = Number(req.query.page) || 1;
-        const pageSize = Number(req.query.pageSize) || 10;
-        console.log(page)
+        var page = req.query.page ?  Number(req.query.page) : 1;
+        let filter = {}
+        const pageSize =  req.query.pageSize ? Number(req.query.pageSize) : 10;
         if(req.query.username) filter.username = { $regex: '.*' + req.query.username + '.*', $options: 'i' }
         if(req.query.id) filter._id = req.query.id
         const count = await User.countDocuments(filter);
@@ -29,12 +29,10 @@ export const getUsers = async (req,res) => {
         page = page > lastPage ? lastPage : page;
         page = page < 1 ? 1 : page;
         const offset = (page - 1) * pageSize;
-        
         const results = await User.find(filter)
             .sort({_id: 1})
             .skip(offset)
             .limit(pageSize)
-            
         if (!results) return res.status(400).json({message: "No results"});
         res.status(200).json({
             results,
