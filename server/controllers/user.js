@@ -7,7 +7,7 @@ import bcrypt from "bcrypt"
 export const getUserByUsername = async (req, res) => {
     try{
         const userFound = await User.findOne({username: req.params.username})
-        
+            .select('-email')
         if(!userFound) return res.status(400).json({message: "No user with provided username"});
         
         return res.status(200).json({user: userFound})
@@ -70,7 +70,7 @@ Authorized
 req: {
     user: {
         _id
-        picturePath
+        image
         location
         bio
 
@@ -83,12 +83,12 @@ export const updateUserById = async (req, res) => {
     
     if(req.userId !== userId && req.role !== "admin") return res.status(401).json({message: "Not authorized to edit this user's information."})
     try {
-        const { picturePath, bio, location } = req.body.user;
+        const { image, bio, location } = req.body.user;
         const foundUser = await User.findById(userId)
 
         if(!foundUser) return res.status(404).json({message: `No with user with ID ${userId} found`});
 
-        const updatedUser = await User.findByIdAndUpdate(userId, {picturePath, bio, location})
+        const updatedUser = await User.findByIdAndUpdate(userId, {image, bio, location})
 
         res.status(200).json(updatedUser);
     } catch (error) {

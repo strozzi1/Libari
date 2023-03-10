@@ -8,6 +8,7 @@ import ProfilePage from './scenes/profilePage';
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { themeSettings } from "./theme";
+import ListPage from './scenes/listPage';
 
 function App() {
   const mode = useSelector((state) => state.mode)
@@ -26,9 +27,13 @@ function App() {
               element={isAuth ? <HomePage/> : <Navigate to="/" />}
             />
             <Route 
-              path='/profile/:userId' 
+              path='/user/:username' 
               element={isAuth ? <ProfilePage/>: <Navigate to="/" />}
             />
+            <Route
+              path='/user/:username/list'
+              element={<ListPage/>}
+              />
           </Routes>
         </ThemeProvider>
       </BrowserRouter>

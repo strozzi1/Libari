@@ -103,6 +103,7 @@ body: {
         startDate: Date,
         endDate: Date,
         review: string,
+        
     }
 }
 
@@ -134,7 +135,6 @@ export const addNewBookEntryToList = async (req, res) => {
         } else {
             const listHoldingBook = await List.findOne({_id: userList._id}).populate({path: 'entries', match: {book: existingBook._id}})
             // TODO: make it so this goes to an Update entry function instead
-            //console.log(listHoldingBook.entries)
             if(listHoldingBook.entries[0]) return res.status(400).json({message: "Book already in your list"});
             
             existingBook.readers +=1;
@@ -148,6 +148,7 @@ export const addNewBookEntryToList = async (req, res) => {
             startDate,
             endDate,
             review,
+            //userId: req.userId
         })
         const savedEntry = await newEntry.save()
         //push book _id to list in book list

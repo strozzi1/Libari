@@ -7,16 +7,22 @@ const EntrySchema = new mongoose.Schema(
             type: Schema.Types.ObjectId, ref: 'Book',
             require: true
         },
-        /*userId: {
+        userId: {
             type: String,
             require: true
-        }, */
+        }, 
         rating: {
             type: Number,
             min: 0,
             max: 10,
             require: false,
             default: 0
+        },
+        page: {
+            type: Number,
+            min: 0,
+            max: 10000,
+            default: 0,
         },
         status: {
             type: String,

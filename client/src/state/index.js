@@ -2,10 +2,15 @@ import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
     mode: "light",
-    user: {username: "Fake User", name: {First: "Josh", Last: "Strozzi"}},
+    user: {username: "default"},
     token: null,
     posts: [],
+    //current list being looked at
     list: [],
+    //loggedIn user's list, for quick loading of the most viewed list
+    entries: [],
+    //logged in user's books, for comparisons
+    books: []
 }
 
 export const authSlice = createSlice({
@@ -18,11 +23,17 @@ export const authSlice = createSlice({
         setLogin: (state, action) => {
             state.user = action.payload.user;
             state.token = action.payload.token;
+            state.entries = action.payload.list;
+            state.books = action.payload.list.map((entry) => entry.book)
         },
         setLogout: (state) => {
             state.user = null;
             state.token = null;
+            state.list = null;
+            state.books = null;
+            state.posts = null;
         },
+        //likely moved to it's own slice later
         setList: (state, action) => {
             state.list = action.payload.list
         },

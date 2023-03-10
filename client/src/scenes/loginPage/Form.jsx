@@ -72,7 +72,8 @@ const Form = () => {
         const savedUser = await savedUserResponse.json();
         
         onSubmitProps.resetForm();
-
+        
+        //TODO: login user immediately upon success
         if (savedUser) {
             setPageType("login");
         }
@@ -88,7 +89,7 @@ const Form = () => {
             }
         );
         
-        console.log("log in response: ", loggedInUserResponse)
+        
         const loggedIn = await loggedInUserResponse.json();
         onSubmitProps.resetForm();
 
@@ -96,7 +97,8 @@ const Form = () => {
             dispatch(
                 setLogin({
                     user: loggedIn.user,
-                    token: loggedIn.token
+                    token: loggedIn.token,
+                    list: loggedIn.list.entries
                 })
             );
             navigate("/home");
