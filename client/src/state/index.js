@@ -29,9 +29,10 @@ export const authSlice = createSlice({
         setLogout: (state) => {
             state.user = null;
             state.token = null;
-            state.list = null;
-            state.books = null;
-            state.posts = null;
+            state.list = [];
+            state.books = [];
+            state.posts = [];
+            state.entries = [];
         },
         //likely moved to it's own slice later
         setList: (state, action) => {
@@ -53,10 +54,17 @@ export const authSlice = createSlice({
                 return post;
             });
             state.posts=updatedPosts
+        },
+        addRemoveFollowing:(state, action) => {
+            if(state.user.following.includes(action.payload.id)){
+                state.user.following = state.user.following.filter((id)=> id!==action.payload.id)
+            } else {
+                state.user.following.push(action.payload.id)
+            }
         }
     },
     
 })
 
-export const { setEntry, setMode, setList, setLogin, setLogout, setPost, setPosts} = authSlice.actions;
+export const { setEntry, setMode, setList, setLogin, setLogout, setPost, setPosts, addRemoveFollowing} = authSlice.actions;
 export default authSlice.reducer;

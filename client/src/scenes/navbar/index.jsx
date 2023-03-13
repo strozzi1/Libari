@@ -12,11 +12,8 @@ import {
 } from "@mui/material";
 import {
     Search,
-    Message,
     DarkMode,
     LightMode,
-    Notifications,
-    Help,
     Menu,
     Close
 } from "@mui/icons-material";
@@ -40,6 +37,11 @@ const Navbar = () => {
     const alt = theme.palette.background.alt;
 
     const userName = `${user.username}`
+
+    const handleLogout= () => {
+        dispatch(setLogout())
+        navigate("/home")
+    }
 
     return (
         <FlexBetween padding="1rem 6%" backgroundColor={alt}>
@@ -82,10 +84,6 @@ const Navbar = () => {
                             <LightMode sx={{color: dark, fontSize: "25px"}} />
                         )}
                     </IconButton>
-                    
-                    {/*<Message sx={{fontSize: "25px"}} />
-                    <Notifications sx={{fontSize: "25px"}} />
-                        <Help sx={{fontSize: "25px"}} />*/}
                     <FormControl variant="standard" value={userName}>
                         <Select 
                             value={userName} 
@@ -107,7 +105,7 @@ const Navbar = () => {
                             <MenuItem value={userName}>
                                 <Typography>{userName}</Typography>
                             </MenuItem>
-                            <MenuItem onClick={() => dispatch(setLogout())}>Logout</MenuItem>
+                            <MenuItem onClick={() => handleLogout()}>Logout</MenuItem>
                         </Select>
                     </FormControl>
                 </FlexBetween>
@@ -128,9 +126,8 @@ const Navbar = () => {
                     height="100%"
                     zIndex="10"
                     maxWidth="500px"
-                    minWidth="300px"
-                    backgroundColor={background}
-                >
+                    minWidth="200px"
+                    backgroundColor={background}>
                     {/* CLOSE ICON */}
                     <Box display="flex" justifyContent="flex-end" p="1rem">
                         <IconButton
@@ -143,23 +140,19 @@ const Navbar = () => {
                     <FlexBetween 
                         display="flex" 
                         flex-direction="column" 
-                        justifyContent="center" 
+                        justifyContent="center"
                         alignItems="center" 
-                        gap="3rem"
+                        gap="1rem"
                     >
-                    <IconButton 
-                        onClick={() => dispatch(setMode())}
-                        sx={{fontSize: "25px"}}
-                    >
-                        {theme.palette.mode === "dark" ? (
-                            <DarkMode sx={{fontSize: "25px"}} />
-                        ) : (
-                            <LightMode sx={{color: dark, fontSize: "25px"}} />
-                        )}
-                    </IconButton>
-                    <Message sx={{fontSize: "25px"}} />
-                    <Notifications sx={{fontSize: "25px"}} />
-                    <Help sx={{fontSize: "25px"}} />
+                        <IconButton 
+                            onClick={() => dispatch(setMode())}
+                            sx={{fontSize: "25px"}}>
+                            {theme.palette.mode === "dark" ? (
+                                <DarkMode sx={{fontSize: "25px"}} />
+                            ) : (
+                                <LightMode sx={{color: dark, fontSize: "25px"}} />
+                            )}
+                        </IconButton>
                     <FormControl variant="standard" value={userName}>
                         <Select 
                             value={userName} 
@@ -176,12 +169,11 @@ const Navbar = () => {
                                     backgroundColor: neutralLight
                                 }
                             }}
-                            input={<InputBase/>}
-                        >
+                            input={<InputBase/>}>
                             <MenuItem value={userName}>
                                 <Typography>{userName}</Typography>
                             </MenuItem>
-                            <MenuItem onClick={() => dispatch(setLogout())}>Logout</MenuItem>
+                            <MenuItem onClick={() => handleLogout()}>Logout</MenuItem>
                         </Select>
                     </FormControl>
                 </FlexBetween>
