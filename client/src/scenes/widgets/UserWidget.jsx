@@ -2,26 +2,41 @@ import {
     ManageAccountsOutlined,
     EditOutlined,
     LocationOnOutlined,
-    WorkOutlineOutlined,
+    PersonAddOutlined,
+    PersonRemoveOutlined,
 } from '@mui/icons-material'
-import { Box, Typography, Divider, useTheme } from '@mui/material'
+import { Box, Typography, Divider, useTheme, IconButton } from '@mui/material'
 import UserImage from '../../components/UserImage'
 import FlexBetween from '../../components/FlexBetween'
 import WidgetWrapper from '../../components/WidgetWrapper'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { addRemoveFollowing} from "../../state";
+
+//const followingSig = signal([])
 
 const UserWidget = ({username}) => {
     const [user, setUser] = useState(null);
+    const [follows, setFollows] = useState([])
+    const [followingBool, setFollowingBool] = useState(false)
+    
     const { palette } = useTheme();
     const navigate = useNavigate();
-    //const token = useSelector((state) => state.token);
+    const dispatch = useDispatch();
+    const token = useSelector((state) => state.token);
+    const loggedInUser = useSelector((state) => state.user)
     const dark = palette.neutral.dark
     const medium = palette.neutral.medium
     const main = palette.neutral.main
-
+    const neutralLight = palette.neutral.light;
+    
+    //LoggedIn user's following list
+    
+    
+    //const followingSig = signal(loggedInUser.following)
     const getUser = async () => {
+        
         const response = await fetch(`http://localhost:5001/user/${username}`,
         {
             method: "GET",
@@ -29,10 +44,60 @@ const UserWidget = ({username}) => {
         });
         const data = await response.json();
         setUser(data.user);
+        setFollowingBool(loggedInUser.following.includes(data.user._id))
+    }
+
+
+    const handleAddRemove = async () => {
+        //check if is in list
+        if(follows.includes(user._id)){
+            const followUser = await fetch(`http://localhost:5001/user/unfollowUser`,
+            {
+                method: "PATCH",
+                headers: {
+                    Authorization: `Bearer ${token}`, 
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*"
+                },
+                body: JSON.stringify({
+                    userId: user._id
+                }),
+
+            })
+            .then(dispatch(addRemoveFollowing({id: user._id})))
+            .then(setFollows(follows.filter((id)=> id!== user._id)))
+            .then(user.followers = user.followers.filter((id)=> id!== loggedInUser._id))
+            .then(setFollowingBool(false))
+            
+            //send remove query
+        } else {
+            
+            const followUser = await fetch(`http://localhost:5001/user/followUser`,
+            {
+                method: "PATCH",
+                headers: {
+                    Authorization: `Bearer ${token}`, 
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*"
+                },
+                body: JSON.stringify({
+                    userId: user._id
+                }),
+
+            })
+            .then(dispatch(addRemoveFollowing({id: user._id})))
+            .then(setFollows(follows=>[...follows, user._id]))
+            .then(user.followers.push(loggedInUser._id))
+            .then(setFollowingBool(true))
+            
+        }
+        
     }
 
     useEffect(() => {
         getUser();
+        setFollows(loggedInUser.following)
+        
     }, []) //eslint-disable-line react-hooks/exhaustive-deps
 
     //TODO: Handle loading state
@@ -54,9 +119,8 @@ const UserWidget = ({username}) => {
         <FlexBetween
             gap="0.5rem"
             pb="1.1rem"
-            onClick={() => navigate(`/profile/${username}`)}
         >
-        <FlexBetween gap="1rem">
+        <FlexBetween gap="1rem" onClick={() => navigate(`/user/${username}`)}>
             <UserImage imageUrl={image} />
             <Box>
             <Typography
@@ -76,7 +140,19 @@ const UserWidget = ({username}) => {
             <Typography color={medium}>{following.length} following</Typography>
         </Box>
         </FlexBetween>
-        <ManageAccountsOutlined />
+            {user._id ===loggedInUser._id  ? 
+                <IconButton onClick={()=> console.log("edit account")}>
+                    <ManageAccountsOutlined/>
+                </IconButton> 
+                : 
+                <IconButton onClick={()=> handleAddRemove()}>
+                    {/*follows.filter((id)=> id === user._id)[0]*/followingBool ? 
+                    <PersonRemoveOutlined/> 
+                    : 
+                    <PersonAddOutlined/>
+                    }
+                </IconButton>
+            }
     </FlexBetween>
 
     <Divider />
@@ -94,5 +170,6 @@ const UserWidget = ({username}) => {
 
 
 }
+
 
 export default UserWidget;

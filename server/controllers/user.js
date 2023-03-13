@@ -56,7 +56,6 @@ export const getListByUsername = async (req, res) => {
                 path: "book"
             }
         });
-        console.log("USER LIST: ", userList)
         if(!userList) return res.status(400).json({message: `No list found belonging to user ${req.params.username}`})
         return res.status(200).json(userList);
     } catch (error) {
@@ -184,6 +183,7 @@ body: {
 }
 */
 export const addFollowing = async (req, res) => {
+    console.log(req.body)
     if(!req.body.userId) return res.status(400).json({message: "Invalid request, must supply UserId"});
     if(req.body.userId === req.userId) return res.status(400).json({message: "You cannot follow yourself"});
     try {

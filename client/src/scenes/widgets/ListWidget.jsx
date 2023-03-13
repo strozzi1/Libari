@@ -32,7 +32,7 @@ const ListWidget = ({username}) => {
         <WidgetWrapper>
             <List>
                 <ListItem>
-                    <Grid container spacing={1.0}>
+                    <Grid container spacing={1.0} fontWeight="bold">
                         <Grid item xs={1}>
                             <Box></Box>
                         </Grid>
