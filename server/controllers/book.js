@@ -16,6 +16,7 @@ export const getBooks = async (req, res) => {
         if(qParams.author) filter.author = { $regex: '.*' + qParams.author + '.*', $options: 'i'}
         if(qParams.googleId) filter.googleId = qParams.googleId
         if(qParams.id) filter._id = qParams.id
+        
         const count = await Book.countDocuments(filter);
         const lastPage = Math.ceil(count / pageSize);
         page = page > lastPage ? lastPage : page;

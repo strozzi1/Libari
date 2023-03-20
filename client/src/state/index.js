@@ -2,12 +2,12 @@ import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
     mode: "light",
-    user: {username: "default"},
+    user: null,
     token: null,
     posts: [],
     //current list being looked at
     list: [],
-    //loggedIn user's list, for quick loading of the most viewed list
+    //loggedIn user's list, for quick loading of the most viewed list & comparisons 
     entries: [],
     //logged in user's books, for comparisons
     books: []
@@ -42,11 +42,23 @@ export const authSlice = createSlice({
             state.posts = action.payload.posts
         },
         setEntry: (state, action) => {
-            const updatedList = state.list.map((entry) => {
-                if (entry._id === action.payload.entry_id) return action.payload.entry
+            const updatedList = state.entries.map((entry) => {
+                if (entry._id === action.payload._id){ 
+                    entry.review = action.payload.review
+                    entry.status = action.payload.status
+                    entry.rating = action.payload.rating
+                    entry.startDate = action.payload.startDate
+                    entry.endDate = action.payload.endDate
+                    entry.page = action.payload.page
+                    return entry
+                }
                 return entry;
             })
             state.list = updatedList
+        },
+        removeEntry: (state, action) => {
+            const updatedList = state.entries.filter((entry)=> entry._id !== action.payload._id)
+            state.entries = updatedList
         },
         setPost: (state, action) =>{
             const updatedPosts = state.posts.map((post) => {
@@ -66,5 +78,5 @@ export const authSlice = createSlice({
     
 })
 
-export const { setEntry, setMode, setList, setLogin, setLogout, setPost, setPosts, addRemoveFollowing} = authSlice.actions;
+export const { setEntry, setMode, setList, setLogin, setLogout, setPost, setPosts, addRemoveFollowing, removeEntry} = authSlice.actions;
 export default authSlice.reducer;

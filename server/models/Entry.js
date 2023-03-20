@@ -8,7 +8,7 @@ const EntrySchema = new mongoose.Schema(
             require: true
         },
         userId: {
-            type: String,
+            type: Schema.Types.ObjectId, ref: 'User',
             require: true
         }, 
         rating: {

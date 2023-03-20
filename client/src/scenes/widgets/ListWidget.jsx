@@ -1,29 +1,43 @@
-import { LibraryBooksOutlined } from "@mui/icons-material";
-import { Grid, useTheme, Box, ListItem, List, Rating, Avatar } from "@mui/material";
+import { LibraryBooksOutlined, MoreHoriz } from "@mui/icons-material";
+import { Grid, useTheme, Box, ListItem, List, Rating, Avatar, Tooltip, Modal, useMediaQuery, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import FlexBetween from "../../components/FlexBetween";
 import WidgetWrapper from "../../components/WidgetWrapper";
+import EditEntryForm from "../listPage/EditEntryForm";
+
 
 
 const ListWidget = ({username}) => {
-    const {palette} = useTheme()
-    const [list, setList] = useState(null)
+    const {palette} = useTheme();
+    const [list, setList] = useState(null);
+    const authedUser = useSelector((state) => state.user)
+    const authedList = useSelector((state) => state.entries)
+
+    const updateEntry = (updatedEntry) => {
+        const updatedList = list.map((entry) => entry._id === updatedEntry._id ? updatedEntry : entry)
+        setList(updatedList)
+    }
+
     const getList = async () => {
+        if(username === authedUser.username){
+            setList(authedList)
+        } else {
+            const response = await fetch(`http://localhost:5001/user/${username}/booklist`,
+            {
+                method: "GET"
+            });
+            const data = await response.json();
+            setList(data.entries);
+        }
         
-        const response = await fetch(`http://localhost:5001/user/${username}/booklist`,
-        {
-            method: "GET",
-            //headers: { Authorization: `Bearer ${token}`}
-        });
-        const data = await response.json();
-        setList(data.entries);
     }
 
     useEffect(() => {
         getList();
-        
-    }, []) //eslint-disable-line react-hooks/exhaustive-deps
+    }, []); //eslint-disable-line react-hooks/exhaustive-deps
 
-    //TODO: Handle loading state
+    //TODO: Handle loading state (MUI SKELETON)
     if(!list){
         return null;
     }
@@ -52,8 +66,14 @@ const ListWidget = ({username}) => {
                     </Grid>
                 </ListItem>
                 {list.map((entry) =>
-                    <ListItem key={entry._id}>
-                        <ListItemContent entry={entry}/>
+                    <ListItem 
+                    key={entry._id} 
+                    sx={{
+                        "&:hover": {
+                            bgcolor: palette.primary.light,
+                        },
+                    }}>
+                        <ListItemContent entry={entry} username={username} update={updateEntry}/>
                     </ListItem>
                 )}
                 
@@ -64,15 +84,57 @@ const ListWidget = ({username}) => {
 } 
 
 
-const ListItemContent = ({entry}) => {
-    const [value, setValue] = useState(0)
+const ListItemContent = ({entry, username, update}) => {
+    const [rating, setRating] = useState(entry.rating)
     const {palette} = useTheme();
+    const [hovering, setHovering] = useState(false)
+    const [isEditModal, setIsEditModal] = useState(false);
+    const isNonMobileScreens = useMediaQuery("(min-width:1000px)")
+    const authedUsername = useSelector((state)=>state.user?.username)
+    const handleOpenEditModal = () => {
+        setIsEditModal(true);
+    }
+    const handleCloseEditModal = () => {
+        setIsEditModal(false)
+        setHovering(false)
+    };
     
+    const handleEditedEntry = (updatedEntry) => {
+        setIsEditModal(false)
+        setHovering(false)
+        setRating(updatedEntry.rating)
+        update(updatedEntry)
+    }
+    
+    const modalStyle = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        bgcolor: 'background.paper',
+        boxShadow: 24,
+        p: 4,
+        outline: 0,
+        border: "none",
+        "&:focus": {
+            outline: 0,
+            border: "none"
+        }
+    };
+
     return (
-        <Grid container spacing={1.0} alignItems="center">
+        <Grid container spacing={1.0} alignItems="center" onMouseOver={()=>setHovering(true)} onMouseOut={()=>setHovering(false)}>
             <Grid item xs={1}>
-                <Avatar sx={{ bgcolor: palette.primary.main }} variant="rounded" src={entry.book.photo}>
-                    <LibraryBooksOutlined />
+                
+                <Avatar sx={{ bgcolor: palette.primary.main, "&:hover": {cursor: "pointer"} }} variant="rounded" src={!hovering ? entry.book.photo : undefined}>
+                    {/*TODO: Only show edit button if current entry belongs to logged in user */}
+                    {(hovering && username===authedUsername) ? 
+                        <Tooltip title="Edit Book Entry" placement="right">
+                            <MoreHoriz fontSize="large" onClick={()=>handleOpenEditModal()}/> 
+                        </Tooltip>
+                        : 
+                        <LibraryBooksOutlined /> 
+                    }
                 </Avatar>
             </Grid>
             <Grid item xs={5}>
@@ -84,19 +146,32 @@ const ListItemContent = ({entry}) => {
             </Grid>
             <Grid item xs={2}>
                 <Rating
+                    readOnly={authedUsername !== username}
                     size="small"
                     name="simple-controlled"
                     precision={0.5}
-                    value={entry.rating/2}
+                    value={rating/2}
                     onChange={(event, newValue) => {
-                        console.log(newValue)
-                        setValue(newValue);
+                        setRating(newValue*2);
+                        //TODO update state
+                        //TODO update DB
                     }}
                 />
             </Grid>
             <Grid item xs={2}>
                 <Box>{entry.page && entry.page} / {entry.book.pages && entry.book.pages}</Box>
             </Grid>
+            {/* Modal Content */}
+            <Modal 
+                open={isEditModal}
+                onClose={handleCloseEditModal}>
+                <Box sx={modalStyle} width={isNonMobileScreens ? "50%" : "93%"}>
+                <WidgetWrapper >
+                    <EditEntryForm entry={entry} close={handleEditedEntry}/>
+                </WidgetWrapper>
+                </Box>
+            </Modal>
+            {/* End of Modal Content */}
         </Grid>
     )
 }
