@@ -12,12 +12,13 @@ import WidgetWrapper from '../../components/WidgetWrapper'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { addRemoveFollowing} from "../../state";
+import { addRemoveFollowing } from "../../state";
 
 //const followingSig = signal([])
 
 const UserWidget = ({username}) => {
     const [user, setUser] = useState(null);
+    //rename follows -> authedUserFollowing, setAuthedUserFollowing
     const [follows, setFollows] = useState([])
     const [followingBool, setFollowingBool] = useState(false)
     
@@ -44,13 +45,13 @@ const UserWidget = ({username}) => {
         });
         const data = await response.json();
         setUser(data.user);
-        setFollowingBool(loggedInUser.following.includes(data.user._id))
+        setFollowingBool(loggedInUser?.following?.includes(data.user?._id))
     }
 
 
     const handleAddRemove = async () => {
         //check if is in list
-        if(follows.includes(user._id)){
+        if(follows?.includes(user._id)){
             const followUser = await fetch(`http://localhost:5001/user/unfollowUser`,
             {
                 method: "PATCH",
@@ -68,8 +69,8 @@ const UserWidget = ({username}) => {
             .then(setFollows(follows.filter((id)=> id!== user._id)))
             .then(user.followers = user.followers.filter((id)=> id!== loggedInUser._id))
             .then(setFollowingBool(false))
+            .catch((error)=> console.log(error))
             
-            //send remove query
         } else {
             
             const followUser = await fetch(`http://localhost:5001/user/followUser`,
@@ -89,6 +90,7 @@ const UserWidget = ({username}) => {
             .then(setFollows(follows=>[...follows, user._id]))
             .then(user.followers.push(loggedInUser._id))
             .then(setFollowingBool(true))
+            .catch((error) => console.log(error))
             
         }
         
@@ -96,7 +98,7 @@ const UserWidget = ({username}) => {
 
     useEffect(() => {
         getUser();
-        setFollows(loggedInUser.following)
+        setFollows(loggedInUser?.following)
         
     }, []) //eslint-disable-line react-hooks/exhaustive-deps
 
@@ -136,25 +138,28 @@ const UserWidget = ({username}) => {
             >
                 {username}
             </Typography>
-            <Typography color={medium}>{followers.length} followers</Typography>
+            <Typography minWidth="70px" color={medium}>{followers.length} followers</Typography>
             <Typography color={medium}>{following.length} following</Typography>
         </Box>
+        
         </FlexBetween>
-            {user._id ===loggedInUser._id  ? 
+        
+            {loggedInUser && (user?._id ===loggedInUser?._id  ? 
                 <IconButton onClick={()=> console.log("edit account")}>
                     <ManageAccountsOutlined/>
                 </IconButton> 
                 : 
                 <IconButton onClick={()=> handleAddRemove()}>
-                    {/*follows.filter((id)=> id === user._id)[0]*/followingBool ? 
+                    {followingBool ? 
                     <PersonRemoveOutlined/> 
                     : 
                     <PersonAddOutlined/>
                     }
                 </IconButton>
-            }
+            )}
+        
     </FlexBetween>
-
+    
     <Divider />
 
       {/* SECOND ROW */}

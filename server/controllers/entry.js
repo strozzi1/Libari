@@ -1,6 +1,7 @@
 import Entry from "../models/Entry.js";
+import User from "../models/User.js"
 import List from "../models/List.js";
-import mongoose, { Mongoose, ObjectId } from "mongoose";
+import mongoose from "mongoose";
 import Book from "../models/Book.js";
 
 //TODO: replace with query parameter based search (?username=[name]&book=[bookId]&title=[bookname])
@@ -17,6 +18,47 @@ export const getEntryById = async (req, res) => {
     }
 }
 
+//Get current auth'd user's following list, grab their entries by recent
+export const getRecentFollowedUsersUpdates = async (req, res) => {
+    try {
+        //get current user's following list
+        var page = Number(req.query.page) || 1;
+        const pageSize = Number(req.query.pageSize) || 10;
+
+        const followingList = await User.findById(req.userId)
+        .select('following')
+        .populate({
+            path: 'following',
+            select: '_id'
+        })
+        
+        
+        const count = await Entry.countDocuments({userId: {$in: followingList}});
+        const lastPage = Math.ceil(count / pageSize);
+        page = page > lastPage ? lastPage : page;
+        page = page < 1 ? 1 : page;
+        const offset = (page - 1) * pageSize;
+
+        const entryList = await Entry.find({userId: {$in: followingList}})
+        .populate({path: 'userId', select: 'username _id image'})
+        .sort({updatedAt: -1})
+        .skip(offset)
+        .limit(pageSize)
+        
+        res.status(200).json({
+            followingList, 
+            entries: entryList,
+            pageNumber: page,
+            totalPages: lastPage,
+            pageSize: pageSize,
+            totalCount: entryList.length
+        })
+        
+    } catch (error) {
+        res.status(500).json(error)
+    }
+}
+
 export const updateEntryById = async (req,res) => {
     if(!req.body.entry) return res.status(404).json({
         message: "No update entry object provided",
@@ -28,14 +70,14 @@ export const updateEntryById = async (req,res) => {
             review: "object"
         }
     })
-    const { rating, status, startDate, endDate, review } = req.body.entry
+    const { rating, status, startDate, endDate, review, page } = req.body.entry
     try {
         const existingEntry = await Entry.findById(req.params.id)
         if(!existingEntry) return res.status(404).json(
             {message: `No existing entry with ID: ${req.params.id}. Feel free to create a new book entry`}
         )
         const updates = {
-            rating, status, startDate, endDate, review
+            rating, status, startDate, endDate, review, page
         }
         const savedEntry = await Entry.findByIdAndUpdate(existingEntry._id, updates, { runValidators: true });
 
@@ -61,7 +103,7 @@ body: {
 export const updateEntryByUserAndBook = async (req, res) => {
     if(!req.body.book || (!req.body.book._id && !req.body.book.googleId) || !req.body.entry) return res.status(404).json({message: "Invalid book object"})
     try {
-        const {rating, review, status, startDate, endDate} = req.body.entry
+        const {rating, review, status, startDate, endDate, page} = req.body.entry
         const userList = await List.findOne({userId: req.userId})
             .populate({
                 path: 'entries', 
@@ -75,7 +117,8 @@ export const updateEntryByUserAndBook = async (req, res) => {
             status,
             review,
             startDate,
-            endDate
+            endDate,
+            page
         }
         const updatedEntry = await Entry.findByIdAndUpdate(entryToEdit[0]._id, updates, {runValidators: true});
         res.status(201).json(updatedEntry);
@@ -112,9 +155,9 @@ REQUIRE: Logged in User
 export const addNewBookEntryToList = async (req, res) => {
     if(!req.body.book || !req.body.entry) return res.status(400).json({message: "Invalid book entry object"});
     const {_id, googleId, title, author, photo, pages, readers} = req.body.book
-    const {rating, status, startDate, endDate, review} = req.body.entry
+    const {rating, status, startDate, endDate, review, page} = req.body.entry
     const newBook = new Book ({
-        _id, googleId, title, author, rating, status, photo, pages, readers
+        _id, googleId, title, author, photo, pages, readers
     })
     try {
         //Get list and check if exist
@@ -143,12 +186,13 @@ export const addNewBookEntryToList = async (req, res) => {
         
         const newEntry = new Entry({
             book: savedBook._id,
+            userId: mongoose.Types.ObjectId(req.userId),
             rating,
             status,
+            page,
             startDate,
             endDate,
-            review,
-            //userId: req.userId
+            review
         })
         const savedEntry = await newEntry.save()
         //push book _id to list in book list

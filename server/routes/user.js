@@ -64,9 +64,6 @@ router.delete("/:username", requireAuthentication, deleteUserByUsername)
 //require AUTH
 router.delete("/", requireAuthentication, deleteUserById)
 
-//@endpoint: /user/:username/booklist
-//Delete book from list
-//remove book listed in req.body
 
 
 export default router;

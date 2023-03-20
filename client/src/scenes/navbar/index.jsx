@@ -8,7 +8,8 @@ import {
     MenuItem, 
     FormControl, 
     useTheme, 
-    useMediaQuery 
+    useMediaQuery, 
+    Button
 } from "@mui/material";
 import {
     Search,
@@ -36,7 +37,7 @@ const Navbar = () => {
     const primaryLight = theme.palette.primary.light;
     const alt = theme.palette.background.alt;
 
-    const userName = `${user.username}`
+    const userName = `${user?.username}`
 
     const handleLogout= () => {
         dispatch(setLogout())
@@ -84,6 +85,7 @@ const Navbar = () => {
                             <LightMode sx={{color: dark, fontSize: "25px"}} />
                         )}
                     </IconButton>
+                    { user ?
                     <FormControl variant="standard" value={userName}>
                         <Select 
                             value={userName} 
@@ -108,6 +110,9 @@ const Navbar = () => {
                             <MenuItem onClick={() => handleLogout()}>Logout</MenuItem>
                         </Select>
                     </FormControl>
+                    :
+                    <Button onClick={()=> navigate("/home")}>Log In</Button>
+                    }
                 </FlexBetween>
             ) : (
                 <IconButton 
@@ -155,7 +160,7 @@ const Navbar = () => {
                         </IconButton>
                     <FormControl variant="standard" value={userName}>
                         <Select 
-                            value={userName} 
+                            value={user ? userName : "Log in"} 
                             sx={{
                                 backgroundColor: neutralLight,
                                 width: "150px",
@@ -170,10 +175,15 @@ const Navbar = () => {
                                 }
                             }}
                             input={<InputBase/>}>
-                            <MenuItem value={userName}>
-                                <Typography>{userName}</Typography>
-                            </MenuItem>
-                            <MenuItem onClick={() => handleLogout()}>Logout</MenuItem>
+                            {user ? 
+                            [
+                                <MenuItem value={userName} key="userName">
+                                    <Typography>{userName}</Typography>
+                                </MenuItem>,
+                                <MenuItem onClick={() => handleLogout()} key="Logout">Logout</MenuItem>
+                            ]
+                            : <MenuItem value="Log in" onClick={()=> navigate("/home")}><Typography>Log in</Typography></MenuItem>
+                            }   
                         </Select>
                     </FormControl>
                 </FlexBetween>

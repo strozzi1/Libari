@@ -16,10 +16,9 @@ import ListWidget from "../widgets/ListWidget";
 const ListPage = () => {
     const params = useParams()
     const { palette } = useTheme();
+    //TODO: set lists by state
     const entries = useSelector((state)=>state.entries)
-    const dark = palette.neutral.dark
-    const medium = palette.neutral.medium
-    const main = palette.neutral.main
+    
     const isNonMobileScreens = useMediaQuery("(min-width:1000px)")
     
     return (
@@ -37,7 +36,7 @@ const ListPage = () => {
                     <ListWidget username={params.username}/>
 
                 </Box>
-                {/*Middle column */}
+                {/*Right Column */}
                 <Box 
                     flexBasis={isNonMobileScreens ? "26%" : undefined}
                     mt={isNonMobileScreens ? undefined : "2rem"}
