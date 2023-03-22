@@ -1,10 +1,11 @@
 import { LibraryBooksOutlined, MoreHoriz } from "@mui/icons-material";
 import { Grid, useTheme, Box, ListItem, List, Rating, Avatar, Tooltip, Modal, useMediaQuery, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import FlexBetween from "../../components/FlexBetween";
 import WidgetWrapper from "../../components/WidgetWrapper";
 import EditEntryForm from "../listPage/EditEntryForm";
+import { updateEntry } from "../../state";
 
 
 
@@ -20,7 +21,7 @@ const ListWidget = ({username}) => {
     }
 
     const getList = async () => {
-        if(username === authedUser.username){
+        if(authedUser && username === authedUser.username){
             setList(authedList)
         } else {
             const response = await fetch(`http://localhost:5001/user/${username}/booklist`,
@@ -90,6 +91,8 @@ const ListItemContent = ({entry, username, update}) => {
     const [hovering, setHovering] = useState(false)
     const [isEditModal, setIsEditModal] = useState(false);
     const isNonMobileScreens = useMediaQuery("(min-width:1000px)")
+    const dispatch = useDispatch()
+    const token = useSelector((state) => state.token)
     const authedUsername = useSelector((state)=>state.user?.username)
     const handleOpenEditModal = () => {
         setIsEditModal(true);
@@ -100,6 +103,7 @@ const ListItemContent = ({entry, username, update}) => {
     };
     
     const handleEditedEntry = (updatedEntry) => {
+        
         setIsEditModal(false)
         setHovering(false)
         setRating(updatedEntry.rating)
@@ -127,7 +131,7 @@ const ListItemContent = ({entry, username, update}) => {
             <Grid item xs={1}>
                 
                 <Avatar sx={{ bgcolor: palette.primary.main, "&:hover": {cursor: "pointer"} }} variant="rounded" src={!hovering ? entry.book.photo : undefined}>
-                    {/*TODO: Only show edit button if current entry belongs to logged in user */}
+                    
                     {(hovering && username===authedUsername) ? 
                         <Tooltip title="Edit Book Entry" placement="right">
                             <MoreHoriz fontSize="large" onClick={()=>handleOpenEditModal()}/> 
@@ -153,7 +157,8 @@ const ListItemContent = ({entry, username, update}) => {
                     value={rating/2}
                     onChange={(event, newValue) => {
                         setRating(newValue*2);
-                        //TODO update state
+                        dispatch(updateEntry({entry: {...entry, rating: newValue*2}, token}))
+                        //handleEditedEntry({...entry, rating:newValue*2})
                         //TODO update DB
                     }}
                 />

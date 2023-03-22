@@ -79,7 +79,7 @@ export const updateEntryById = async (req,res) => {
         const updates = {
             rating, status, startDate, endDate, review, page
         }
-        const savedEntry = await Entry.findByIdAndUpdate(existingEntry._id, updates, { runValidators: true });
+        const savedEntry = await Entry.findByIdAndUpdate(existingEntry._id, updates, { runValidators: true, new: true });
 
         res.status(201).json(savedEntry);
 
