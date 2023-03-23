@@ -1,23 +1,17 @@
-import { useDispatch, useSelector } from "react-redux";
+import {Box, useMediaQuery } from "@mui/material";
 
-import {useTheme, Box, useMediaQuery } from "@mui/material";
 
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import Avatar from '@mui/material/Avatar';
-import { LibraryBooks } from "@mui/icons-material";
 import Navbar from "../navbar";
 import { useParams } from "react-router-dom";
-import WidgetWrapper from "../../components/WidgetWrapper";
-import FlexBetween from "../../components/FlexBetween";
 import UserWidget from "../widgets/UserWidget";
 import ListWidget from "../widgets/ListWidget";
 
 
 const ListPage = () => {
     const params = useParams()
-    const { palette } = useTheme();
+    //const { palette } = useTheme();
     //TODO: set lists by state
-    const entries = useSelector((state)=>state.entries)
+    //const entries = useSelector((state)=>state.entries)
     
     const isNonMobileScreens = useMediaQuery("(min-width:1000px)")
     
