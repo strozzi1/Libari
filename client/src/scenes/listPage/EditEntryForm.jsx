@@ -3,7 +3,7 @@ import {Formik} from "formik";
 import * as yup from "yup";
 import moment from "moment"
 import {useSelector, useDispatch} from "react-redux"
-import { removeEntry, setEntry } from "../../state";
+import { removeEntry, updateEntry } from "../../state";
 
 
 const editEntrySchema = yup.object().shape({
@@ -34,23 +34,10 @@ const EditEntryForm = ({entry, close}) => {
         page: entry.page
     }
 
-    const handleSubmitEdits = async (values, onSubmitProps) => {
+    const handleSubmitEdits = (values, onSubmitProps) => {
         //const {review, status, rating, startDate, endDate, page} = values
         const updatedEntry = {...entry, ...values}
-        const editEntry = await fetch(`http://localhost:5001/entry/${entry._id}`,
-            {
-                method: "PATCH",
-                headers: {
-                    Authorization: `Bearer ${token}`, 
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": "*"
-                },
-                body: JSON.stringify({
-                    entry: values
-                }),
-            })
-            .then(() => dispatch(setEntry(updatedEntry)))
-            //close modal?
+            dispatch(updateEntry({entry: updatedEntry, token}))
             close(updatedEntry)
     }
 
