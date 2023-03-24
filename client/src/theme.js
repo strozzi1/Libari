@@ -51,6 +51,9 @@ export const themeSettings = (mode) => {
                 background: {
                     default: colorTokens.grey[900],
                     alt: colorTokens.grey[800]
+                },
+                modal: {
+                    text: colorTokens.grey[200]
                 }
             } : {
                 primary: {
@@ -68,6 +71,9 @@ export const themeSettings = (mode) => {
                 background: {
                     default: colorTokens.grey[10],
                     alt: colorTokens.grey[0]
+                },
+                modal: {
+                    text: colorTokens.grey[200]
                 }
             }
         },

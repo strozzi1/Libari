@@ -85,7 +85,7 @@ const Navbar = () => {
         <FlexBetween padding="1rem 6%" backgroundColor={alt}>
             {/* MODAL CONTENT */}
             <Modal 
-                sx={{overflow: "scroll"}} 
+                sx={{overflow: "scroll", bgcolor: "rgba(0, 0, 0, 0.6)"}} 
                 open={isSearchModal} 
                 onClose={handleCloseSearchModal} 
                 disableEnforceFocus>

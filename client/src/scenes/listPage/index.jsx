@@ -9,9 +9,6 @@ import ListWidget from "../widgets/ListWidget";
 
 const ListPage = () => {
     const params = useParams()
-    //const { palette } = useTheme();
-    //TODO: set lists by state
-    //const entries = useSelector((state)=>state.entries)
     
     const isNonMobileScreens = useMediaQuery("(min-width:1000px)")
     
