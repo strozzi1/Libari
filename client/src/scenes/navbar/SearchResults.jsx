@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import { AddCircle, LibraryBooksOutlined } from "@mui/icons-material";
 import { Avatar, Grid, List, ListItem, ListItemAvatar, ListItemText, Box, Typography, useMediaQuery, Skeleton } from "@mui/material";
 import WidgetWrapper from "../../components/WidgetWrapper";
-import { useTheme } from "@emotion/react";
+import { useTheme } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+/**TODO: Handle click to close modal if in blank space part of grid */
+
+//Move to Utils?
 const truncate = (str, maxLength) => {
     return str.length > maxLength ? str.substring(0, maxLength) + '...' : str;
 }
@@ -13,6 +17,7 @@ const SearchResults = ({searchText}) => {
     const [isLoading, setIsLoading] = useState(false);
     const isNonMobileScreen = useMediaQuery("(min-width: 450px)");
     const theme = useTheme();
+    const navigate = useNavigate();
     const neutralLight = theme.palette.neutral.light;
     const dark = theme.palette.neutral.dark;
     const background = theme.palette.background.default;
@@ -69,14 +74,14 @@ const SearchResults = ({searchText}) => {
                 { !isLoading ?
                 <List disablePadding>
                     { resultsList.map((book) =>
-                        <SearchResultBookItem book={book}/>
+                        <SearchResultBookItem key={book.id} book={book}/>
                     )}
                 </List>
                 :
                 /** BELOW IS SKELETON CONTENT WHILE WE WAIT FOR BOOKS TO LOAD */
-                [1,2,3,4,5].map(() =>
-                <List>
-                    <ListItem>
+                [1,2,3,4,5].map((num) =>
+                <List key={num} disablePadding>
+                    <ListItem disableGutters>
                         <ListItemAvatar>
                             <Skeleton variant="rounded"><Avatar/></Skeleton>
                         </ListItemAvatar>
@@ -102,7 +107,17 @@ const SearchResults = ({searchText}) => {
                 <WidgetWrapper>
                 <List disablePadding>
                     { usersList.map((user) =>
-                    <ListItem disableGutters key={user._id}>
+                    <ListItem 
+                    disableGutters 
+                    key={user._id}
+                    onClick={()=>navigate(`/user/${user.username}`)}
+                    sx={{
+                        maxHeight: "66px",
+                        cursor: "pointer",
+                        "&:hover": {
+                            backgroundColor: neutralLight
+                        }
+                    }}>
                         <ListItemAvatar>
                             <Avatar alt={user.username} src={user.image} variant="rounded"/>
                         </ListItemAvatar>
@@ -127,7 +142,9 @@ const SearchResults = ({searchText}) => {
                     </ListItem>
                     )}
                 </List>
-                </WidgetWrapper></>}
+                </WidgetWrapper>
+                </>
+                }
             </Grid>
         </Grid>
         
@@ -138,15 +155,39 @@ const SearchResultBookItem = ({book}) => {
     const {palette} = useTheme()
     const neutralLight = palette.neutral.light;
     const dark = palette.neutral.dark;
+    const [isHovering, setIsHovering] = useState(false)
     const isNonMobileScreen = useMediaQuery("(min-width: 450px)");
+
+    const handleOpenEntryModal = (book) => {
+        console.log("ADD BOOK: ", book)
+    }
+
     return (
-        <ListItem disableGutters alignItems="flex-start" key={book.id} style={{maxHeight: "66px"}}>
+        <ListItem 
+            disableGutters 
+            alignItems="flex-start" 
+            sx={{
+                maxHeight: "66px",
+                "&:hover": {
+                    backgroundColor: neutralLight
+                }
+            }}
+            onMouseOver = {() => setIsHovering(true)}
+            onMouseOut = {()=> setIsHovering(false)}
+            >
             <ListItemAvatar>
                 <Avatar alt={book.volumeInfo.title} src={book.volumeInfo.imageLinks?.smallThumbnail} variant="rounded"/>
             </ListItemAvatar>
             {isNonMobileScreen ?
             <ListItemText
-            primary={truncate(book.volumeInfo.title, 50)}
+            primary={book.volumeInfo.title}
+            primaryTypographyProps={{ 
+                style: {
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                }
+            }}
             secondary={
                 <>
                 <Typography
@@ -166,16 +207,18 @@ const SearchResultBookItem = ({book}) => {
             : 
             <ListItemText primary={truncate(book.volumeInfo.title, 40)}/>
             }
-            <AddCircle 
-                color={dark}
+            { isHovering &&
+            <AddCircle
+                onClick={() =>handleOpenEntryModal(book)}
                 sx={{
+                transition: "visibility 0.3s",
                 margin: "10px",
                 "&:hover": {
-                    color: neutralLight,
+                    color: dark,
                     cursor: "pointer"
                 }
                 }} 
-                fontSize="large"/>
+                fontSize="large"/> }
         </ListItem>
 
     )
