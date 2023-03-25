@@ -1,8 +1,7 @@
 import { LibraryBooksOutlined, MoreHoriz } from "@mui/icons-material";
-import { Grid, useTheme, Box, ListItem, List, Rating, Avatar, Tooltip, Modal, useMediaQuery, Typography } from "@mui/material";
+import { Grid, useTheme, Box, ListItem, List, Rating, Avatar, Tooltip, Modal, useMediaQuery } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import FlexBetween from "../../components/FlexBetween";
 import WidgetWrapper from "../../components/WidgetWrapper";
 import EditEntryForm from "../listPage/EditEntryForm";
 import { updateEntry } from "../../state";
@@ -77,7 +76,6 @@ const ListWidget = ({username}) => {
                         <ListItemContent entry={entry} username={username} update={updateEntry}/>
                     </ListItem>
                 )}
-                
             </List>
         </WidgetWrapper>
     )
@@ -119,6 +117,7 @@ const ListItemContent = ({entry, username, update}) => {
         boxShadow: 24,
         p: 4,
         outline: 0,
+        borderRadius: "9px",
         border: "none",
         "&:focus": {
             outline: 0,

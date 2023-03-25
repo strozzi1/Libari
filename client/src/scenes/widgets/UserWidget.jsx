@@ -1,6 +1,5 @@
 import {
     ManageAccountsOutlined,
-    EditOutlined,
     LocationOnOutlined,
     PersonAddOutlined,
     PersonRemoveOutlined,
@@ -30,7 +29,7 @@ const UserWidget = ({username}) => {
     const dark = palette.neutral.dark
     const medium = palette.neutral.medium
     const main = palette.neutral.main
-    const neutralLight = palette.neutral.light;
+    //const neutralLight = palette.neutral.light;
     
     //LoggedIn user's following list
     
@@ -52,7 +51,7 @@ const UserWidget = ({username}) => {
     const handleAddRemove = async () => {
         //check if is in list
         if(follows?.includes(user._id)){
-            const followUser = await fetch(`http://localhost:5001/user/unfollowUser`,
+            await fetch(`http://localhost:5001/user/unfollowUser`,
             {
                 method: "PATCH",
                 headers: {
@@ -73,7 +72,7 @@ const UserWidget = ({username}) => {
             
         } else {
             
-            const followUser = await fetch(`http://localhost:5001/user/followUser`,
+            await fetch(`http://localhost:5001/user/followUser`,
             {
                 method: "PATCH",
                 headers: {
@@ -110,10 +109,10 @@ const UserWidget = ({username}) => {
     const {
         location,
         image,
-        bio,
+        //bio,
         followers,
         following,
-        role
+        //role
     } = user;
 
     return (

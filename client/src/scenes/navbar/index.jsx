@@ -9,22 +9,30 @@ import {
     FormControl, 
     useTheme, 
     useMediaQuery, 
-    Button
+    Button,
+    Input,
+    Modal
 } from "@mui/material";
 import {
     Search,
     DarkMode,
     LightMode,
     Menu,
-    Close
+    Close,
+    Clear
 } from "@mui/icons-material";
 import {useDispatch, useSelector} from "react-redux";
 import {setMode, setLogout} from "../../state";
 import {useNavigate} from "react-router-dom";
 import FlexBetween from "../../components/FlexBetween";
+import useDebounce from "../../utils/useDebounce";
+import SearchResults from "./SearchResults";
+import { width } from "@mui/system";
 
 const Navbar = () => {
     const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
+    const [isSearchModal, setIsSearchModal] = useState(false);
+    const [searchText, setSearchText] = useState('');
     const dispatch = useDispatch()
     const navigate = useNavigate();
     const user = useSelector((state) => state.user);
@@ -36,17 +44,79 @@ const Navbar = () => {
     const background = theme.palette.background.default;
     const primaryLight = theme.palette.primary.light;
     const alt = theme.palette.background.alt;
+    const modalStyle = {
+        position: 'absolute',
+        top: '10%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        bgcolor: 'background.paper',
+        borderRadius: "9px",
+        boxShadow: 24,
+        p: 4,
+        outline: 0,
+        border: "none",
+        "&:focus": {
+            outline: 0,
+            border: "none"
+        }
+    };
 
-    const userName = `${user?.username}`
 
-    const handleLogout= () => {
+    const userName = `${user?.username}`;
+    const debouncedSearchTerm = useDebounce(searchText, 500);
+
+    const handleLogout = () => {
         dispatch(setLogout())
         navigate("/home")
+    }
+    const handleOpenSearchModal = () => {
+        setIsSearchModal(true)
+    }
+    const handleCloseSearchModal = () => {
+        setIsSearchModal(false)
+        setSearchText(null)
+    }
+
+    const handleSearchText = (e) => {
+        setSearchText(e.target.value)
     }
 
     return (
         <FlexBetween padding="1rem 6%" backgroundColor={alt}>
-            <FlexBetween gap="1.75rem">
+            {/* MODAL CONTENT */}
+            <Modal 
+                sx={{overflow: "scroll", bgcolor: "rgba(0, 0, 0, 0.6)"}} 
+                open={isSearchModal} 
+                onClose={handleCloseSearchModal} 
+                disableEnforceFocus>
+                <>
+                <Input
+                    type="text"
+                    name="title"
+                    id="search"
+                    placeholder="Search Books..."
+                    autoComplete="off"
+                    onChange={handleSearchText} 
+                    style={modalStyle}
+                    sx={{
+                        backgroundColor: neutralLight,
+                        p: "1.0rem",
+                        width: "70%",
+                        paddingLeft: "13px"
+                    }}
+                    disableUnderline
+                    startAdornment={<Search/>}
+                    endAdornment={<Clear sx={{cursor: "pointer",}} onClick={()=> handleCloseSearchModal()}/>}
+                >
+                </Input>  
+                    {debouncedSearchTerm &&
+                    <SearchResults searchText={debouncedSearchTerm}/>
+                    }
+                </>
+            </Modal>
+            {/* END OF MODAL CONTENT */}
+
+            <FlexBetween gap="1.0rem">
                 <Typography 
                 fontWeight="bold" 
                 fontSize="clamp(1rem, 2rem, 2.25rem)" 
@@ -60,17 +130,24 @@ const Navbar = () => {
                 }}>
                     Libari
                 </Typography>
-                {isNonMobileScreens && (
+                {true/*isNonMobileScreens*/ && (
                 <FlexBetween
                     backgroundColor={neutralLight}
                     borderRadius="9px"
-                    gap="3rem"
-                    padding="0.1rem 1.5rem">
-                    
-                    <InputBase placeholder="Search..." />
-                    <IconButton>
-                        <Search />
+                    style={{
+                        transition: "border-radius 0.5s"
+                    }}
+                    sx={{
+                        "&:hover": {
+                            borderRadius: "50%",
+                        }
+                    }}
+                    >
+                    {/*<InputBase placeholder="Search..." />*/}
+                    <IconButton aria-label="Search" onClick={()=> handleOpenSearchModal()}>
+                        <Search fontWeight="bold" fontSize="medium"/>
                     </IconButton>
+                    
                 </FlexBetween>
                 )}
             </FlexBetween>
