@@ -197,7 +197,8 @@ export const addNewBookEntryToList = async (req, res) => {
         const savedEntry = await newEntry.save()
         //push book _id to list in book list
         const updatedList = await userList.updateOne({$push: {books: savedBook._id, entries: savedEntry._id}});
-        res.status(201).json({updatedList})
+        
+        res.status(201).json({updatedList, entry: newEntry, book: savedBook})
     } catch (error) {
         res.status(500).json(error);
     }

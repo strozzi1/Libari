@@ -3,42 +3,65 @@ import {Formik} from "formik";
 import * as yup from "yup";
 import moment from "moment"
 import {useSelector, useDispatch} from "react-redux"
-import { removeEntry, updateEntry } from "../../state";
+import { useEffect, useState } from "react";
+import { addNewEntry, removeEntry, updateEntry } from "../../state";
 
 
-const editEntrySchema = yup.object().shape({
-    review: yup.string().max(1000),
-    startDate: yup.date().nullable(true),
-    endDate: yup.date().min(
-        yup.ref('startDate'),
-        "End date can't be before start date"
-        ).nullable(true),
-    rating: yup.number().min(0).max(10).nullable(true),
-    status: yup.string().oneOf(["Planning", "Completed", "Reading", "Dropped"]).nullable(true),
-    page: yup.number().min(0).max(10000).typeError("Must be number").nullable(true)
-
-})
-
-const EditEntryForm = ({entry, close}) => {
+const AddEntryForm = ({googleBook}) => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const {palette} = useTheme();
     const token = useSelector((state) => state.token)
     const dispatch = useDispatch();
+    const entriesInState = useSelector((state)=>state.entries)
+    const [bookInList,setBookInList] = useState(entriesInState.filter((entry)=> googleBook.id === entry?.book?.googleId)[0])
+    const bookData = {
+        googleId: googleBook.id,
+        title: googleBook.volumeInfo.title,
+        author: googleBook.volumeInfo.authors.toString(),
+        photo: googleBook.volumeInfo.imageLinks?.thumbnail,
+        pages: googleBook.volumeInfo.pageCount,
+        released:googleBook.volumeInfo.publishedDate
+    }
     
     const initialEntryValues = {
-        review: entry.review,
-        startDate: entry.startDate,
-        endDate: entry.endDate,
-        rating: entry.rating,
-        status: entry.status,
-        page: entry.page
+        review: bookInList ? bookInList.review : "",
+        startDate: bookInList ? bookInList.startDate : "",
+        endDate: bookInList ? bookInList.endDate : "",
+        rating: bookInList ? bookInList.rating : null,
+        status: bookInList ? bookInList.status : "",
+        page: bookInList ? bookInList.page : null
     }
 
-    const handleSubmitEdits = (values, onSubmitProps) => {
-        //const {review, status, rating, startDate, endDate, page} = values
-        const updatedEntry = {...entry, ...values}
-            dispatch(updateEntry({entry: updatedEntry, token}))
-            close(updatedEntry)
+    useEffect(() => {
+        setBookInList(entriesInState.filter((entry)=> googleBook.id === entry?.book?.googleId)[0])
+    },[entriesInState])
+
+    const addEntrySchema = yup.object().shape({
+        review: yup.string().max(1000).nullable(true),
+        startDate: yup.date().min(bookData.released, 
+            "Start data can't be before publish date").nullable(true),
+        endDate: yup.date().min(
+            yup.ref('startDate'),
+            "End date can't be before start date"
+            ).nullable(true),
+        rating: yup.number().min(0).max(10).nullable(true),
+        status: yup.string().oneOf(["Planning", "Completed", "Reading", "Dropped"]).nullable(true),
+        page: yup.number().min(0).max(bookData.pages).typeError("Must be number").nullable(true)
+    
+    })
+
+    /** if book is already in list, dispatch update instead */
+    const handleSubmitEntry = (values, onSubmitProps) => {
+        //console.log("Values: ",values, "Book Data: ", bookData, "Books in list: ", books, "Is book in list: ", Boolean(books.filter((book)=> book?.googleId === bookData.googleId)[0]))
+        
+        if (bookInList){
+            console.log("book is in list already")
+            dispatch(updateEntry({entry:{...values, _id: bookInList._id}, token}))
+        } else {
+            dispatch(addNewEntry({entry: values, book: bookData, token}))
+            //use effect updates bookInList
+        }
+        
     }
 
     const handleDeleteEntry = () => {
@@ -48,9 +71,9 @@ const EditEntryForm = ({entry, close}) => {
 
     return (
         <Formik
-            onSubmit={handleSubmitEdits}
+            onSubmit={handleSubmitEntry}
             initialValues={initialEntryValues}
-            validationSchema={editEntrySchema}
+            validationSchema={addEntrySchema}
             >
             {({
                 values,
@@ -73,8 +96,13 @@ const EditEntryForm = ({entry, close}) => {
                         fontWeight="500" 
                         variant="h5" 
                         color={palette.primary.main}
-                        sx={{mb: "1.5rem", gridColumn: "span 2"}}>
-                            {entry.book.title}
+                        style={{
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis'
+                        }}
+                        sx={{mb: "1.5rem", gridColumn: "span 4"}}>
+                            {googleBook.volumeInfo.title}
                         </Typography>
                         <TextField select 
                         onBlur={handleBlur}
@@ -86,6 +114,7 @@ const EditEntryForm = ({entry, close}) => {
                         helperText={touched.rating && errors.rating}
                         sx={{gridColumn: "span 2"}}
                         >
+                            <MenuItem value={null}></MenuItem>
                             <MenuItem value={0}>0</MenuItem>
                             <MenuItem value={1}>1</MenuItem>
                             <MenuItem value={2}>2</MenuItem>
@@ -177,6 +206,8 @@ const EditEntryForm = ({entry, close}) => {
                         >
                             Submit
                         </Button>
+                        {//Display Delete button only if the book isn't already in book list */
+                        bookInList &&
                         <Button
                             fullWidth
                             type="button"
@@ -196,6 +227,7 @@ const EditEntryForm = ({entry, close}) => {
                         >
                             Delete
                         </Button>
+                        }
                     </Box>
                 </form>
             )}
@@ -204,4 +236,4 @@ const EditEntryForm = ({entry, close}) => {
     )
 }
 
-export default EditEntryForm
+export default AddEntryForm

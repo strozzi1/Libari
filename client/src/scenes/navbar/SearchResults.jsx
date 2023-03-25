@@ -1,9 +1,22 @@
 import { useEffect, useState } from "react";
-import { AddCircle, LibraryBooksOutlined } from "@mui/icons-material";
-import { Avatar, Grid, List, ListItem, ListItemAvatar, ListItemText, Box, Typography, useMediaQuery, Skeleton } from "@mui/material";
+import { AddCircle } from "@mui/icons-material";
+import { 
+    Avatar, 
+    Grid, 
+    List, 
+    ListItem, 
+    ListItemAvatar, 
+    ListItemText, 
+    Modal,
+    Box, 
+    Typography, 
+    useMediaQuery, 
+    Skeleton } from "@mui/material";
 import WidgetWrapper from "../../components/WidgetWrapper";
 import { useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import AddEntryForm from "../widgets/AddEntryForm";
+import { useSelector } from "react-redux";
 /**TODO: Handle click to close modal if in blank space part of grid */
 
 //Move to Utils?
@@ -15,6 +28,7 @@ const SearchResults = ({searchText}) => {
     const [resultsList, setResultsList] = useState([]);
     const [usersList, setUsersList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    
     const isNonMobileScreen = useMediaQuery("(min-width: 450px)");
     const theme = useTheme();
     const navigate = useNavigate();
@@ -151,18 +165,52 @@ const SearchResults = ({searchText}) => {
     )
 }
 
+//Each item listed in the search results
 const SearchResultBookItem = ({book}) => {
     const {palette} = useTheme()
     const neutralLight = palette.neutral.light;
     const dark = palette.neutral.dark;
+    const authedUser = useSelector((state)=> state.user)
     const [isHovering, setIsHovering] = useState(false)
+    const [isBookModal, setIsBookModal] = useState(false);
     const isNonMobileScreen = useMediaQuery("(min-width: 450px)");
+    const modalStyle = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        bgcolor: 'background.paper',
+        boxShadow: 24,
+        p: 4,
+        outline: 0,
+        borderRadius: "9px",
+        border: "none",
+        "&:focus": {
+            outline: 0,
+            border: "none"
+        }
+    };
 
     const handleOpenEntryModal = (book) => {
+        setIsBookModal(true)
         console.log("ADD BOOK: ", book)
     }
 
+    const handleCloseBookModal = () => {
+        setIsBookModal(false)
+    }
+
     return (
+        <>
+        <Modal 
+            open={isBookModal}
+            onClose={handleCloseBookModal}>
+            <Box sx={modalStyle} width={isNonMobileScreen ? "50%" : "93%"}>
+            <WidgetWrapper >
+                <AddEntryForm googleBook={book}/>
+            </WidgetWrapper>
+            </Box>
+        </Modal>
         <ListItem 
             disableGutters 
             alignItems="flex-start" 
@@ -207,7 +255,7 @@ const SearchResultBookItem = ({book}) => {
             : 
             <ListItemText primary={truncate(book.volumeInfo.title, 40)}/>
             }
-            { isHovering &&
+            { isHovering && authedUser &&
             <AddCircle
                 onClick={() =>handleOpenEntryModal(book)}
                 sx={{
@@ -220,7 +268,7 @@ const SearchResultBookItem = ({book}) => {
                 }} 
                 fontSize="large"/> }
         </ListItem>
-
+        </>
     )
 }
 export default SearchResults;
