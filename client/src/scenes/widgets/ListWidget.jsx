@@ -35,7 +35,8 @@ const ListWidget = ({username}) => {
 
     useEffect(() => {
         getList();
-    }, []); //eslint-disable-line react-hooks/exhaustive-deps
+        console.log("grabbed authed list again")
+    }, [authedList]); //eslint-disable-line react-hooks/exhaustive-deps
 
     //TODO: Handle loading state (MUI SKELETON)
     if(!list){

@@ -3,7 +3,7 @@ import {Formik} from "formik";
 import * as yup from "yup";
 import moment from "moment"
 import {useSelector, useDispatch} from "react-redux"
-import { removeEntry, updateEntry } from "../../state";
+import { deleteEntry, removeEntry, updateEntry } from "../../state";
 
 
 
@@ -43,10 +43,15 @@ const EditEntryForm = ({entry, close}) => {
             close(updatedEntry)
     }
 
-    const handleDeleteEntry = () => {
-        console.log("TODO: Delete entry")
-        //dispatch(removeEntry(entry))
+    const handleDeleteEntry = (entry) => {
+        console.log("Delete entry")
+        dispatch(deleteEntry({entryId: entry._id, token}))
     }
+
+    /*
+    useEffect(() => {
+        setBookInList(entriesInState.filter((entry)=> googleBook.id === entry?.book?.googleId)[0])
+    },[entriesInState])*/
 
     return (
         <Formik
@@ -184,7 +189,7 @@ const EditEntryForm = ({entry, close}) => {
                         <Button
                             fullWidth
                             type="button"
-                            onClick={handleDeleteEntry}
+                            onClick={() => handleDeleteEntry(entry)}
                             sx={{
                                 m: "0.4rem 0", 
                                 p: ".4rem", 
