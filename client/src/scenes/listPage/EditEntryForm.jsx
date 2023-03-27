@@ -6,18 +6,7 @@ import {useSelector, useDispatch} from "react-redux"
 import { removeEntry, updateEntry } from "../../state";
 
 
-const editEntrySchema = yup.object().shape({
-    review: yup.string().max(1000),
-    startDate: yup.date().nullable(true),
-    endDate: yup.date().min(
-        yup.ref('startDate'),
-        "End date can't be before start date"
-        ).nullable(true),
-    rating: yup.number().min(0).max(10).nullable(true),
-    status: yup.string().oneOf(["Planning", "Completed", "Reading", "Dropped"]).nullable(true),
-    page: yup.number().min(0).max(10000).typeError("Must be number").nullable(true)
 
-})
 
 const EditEntryForm = ({entry, close}) => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
@@ -26,13 +15,26 @@ const EditEntryForm = ({entry, close}) => {
     const dispatch = useDispatch();
     
     const initialEntryValues = {
-        review: entry.review,
-        startDate: entry.startDate,
-        endDate: entry.endDate,
-        rating: entry.rating,
-        status: entry.status,
-        page: entry.page
+        review: entry.review || '',
+        startDate: entry.startDate || '',
+        endDate: entry.endDate || '',
+        rating: entry.rating || '',
+        status: entry.status || '',
+        page: entry.page || ''
     }
+
+    const editEntrySchema = yup.object().shape({
+        review: yup.string().max(1000),
+        startDate: yup.date().min(entry.book.released || "01-01-1900").nullable(true),
+        endDate: yup.date().min(
+            yup.ref('startDate'),
+            "End date can't be before start date"
+            ).nullable(true),
+        rating: yup.number().min(0).max(10).nullable(true),
+        status: yup.string().oneOf(["Planning", "Completed", "Reading", "Dropped"]).nullable(true),
+        page: yup.number().min(0).max(entry.book.pages || 10000).typeError("Must be number").nullable(true)
+    
+    })
 
     const handleSubmitEdits = (values, onSubmitProps) => {
         //const {review, status, rating, startDate, endDate, page} = values
@@ -80,7 +82,7 @@ const EditEntryForm = ({entry, close}) => {
                         onBlur={handleBlur}
                         onChange={handleChange}
                         label="Rating"
-                        value={values.rating}
+                        value={values.rating || ''}
                         name="rating"
                         error={Boolean(touched.rating) && Boolean(errors.rating)}
                         helperText={touched.rating && errors.rating}
@@ -102,7 +104,7 @@ const EditEntryForm = ({entry, close}) => {
                             label="status"
                             onBlur={handleBlur}
                             onChange={handleChange}
-                            value={values.status}
+                            value={values.status || ''}
                             name="status"
                             error={Boolean(touched.status) && Boolean(errors.status)}
                             helperText={touched.status && errors.status}
@@ -116,7 +118,7 @@ const EditEntryForm = ({entry, close}) => {
                         
                         <TextField
                             type="number"
-                            value={values.page}
+                            value={values.page || ''}
                             onBlur={handleBlur}
                             onChange={handleChange}
                             name="page"
@@ -128,7 +130,7 @@ const EditEntryForm = ({entry, close}) => {
                         </TextField>
                         <TextField
                         multiline
-                        value={values.review}
+                        value={values.review || ''}
                         onBlur={handleBlur}
                         onChange={handleChange}
                         name="review"
@@ -139,9 +141,10 @@ const EditEntryForm = ({entry, close}) => {
                         maxRows={4}
                         >
                         </TextField>
+                        {/*Change from text fields to DatePicker */}
                         <TextField
                             type="date"
-                            value={moment(values.startDate).format("YYYY-MM-DD")}
+                            value={moment(values.startDate || '').format("YYYY-MM-DD")}
                             onBlur={handleBlur}
                             onChange={handleChange}
                             name="startDate"
@@ -153,7 +156,7 @@ const EditEntryForm = ({entry, close}) => {
                         </TextField>
                         <TextField
                             type="date"
-                            value={moment(values.endDate).format("YYYY-MM-DD")}
+                            value={moment(values.endDate || '').format("YYYY-MM-DD")}
                             onBlur={handleBlur}
                             onChange={handleChange}
                             name="endDate"
@@ -161,6 +164,7 @@ const EditEntryForm = ({entry, close}) => {
                             error={Boolean(touched.endDate) && Boolean(errors.endDate)}
                             helperText={touched.endDate && errors.endDate}
                             sx={{gridColumn: "span 2"}}
+                            
                         >
                         </TextField>
                         <Button

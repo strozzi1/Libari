@@ -17,19 +17,19 @@ const AddEntryForm = ({googleBook}) => {
     const bookData = {
         googleId: googleBook.id,
         title: googleBook.volumeInfo.title,
-        author: googleBook.volumeInfo.authors.toString(),
+        author: googleBook.volumeInfo.authors?.toString(),
         photo: googleBook.volumeInfo.imageLinks?.thumbnail,
         pages: googleBook.volumeInfo.pageCount,
-        released:googleBook.volumeInfo.publishedDate
+        released: googleBook.volumeInfo.publishedDate
     }
     
     const initialEntryValues = {
         review: bookInList ? bookInList.review : "",
-        startDate: bookInList ? bookInList.startDate : "",
-        endDate: bookInList ? bookInList.endDate : "",
-        rating: bookInList ? bookInList.rating : null,
-        status: bookInList ? bookInList.status : "",
-        page: bookInList ? bookInList.page : null
+        startDate: bookInList ? bookInList.startDate : '',
+        endDate: bookInList ? bookInList.endDate : '',
+        rating: bookInList ? bookInList.rating : '',
+        status: bookInList ? bookInList.status : '',
+        page: bookInList ? bookInList.page : ''
     }
 
     useEffect(() => {
@@ -108,7 +108,7 @@ const AddEntryForm = ({googleBook}) => {
                         onBlur={handleBlur}
                         onChange={handleChange}
                         label="Rating"
-                        value={values.rating}
+                        value={values.rating || ''}
                         name="rating"
                         error={Boolean(touched.rating) && Boolean(errors.rating)}
                         helperText={touched.rating && errors.rating}
@@ -131,7 +131,7 @@ const AddEntryForm = ({googleBook}) => {
                             label="status"
                             onBlur={handleBlur}
                             onChange={handleChange}
-                            value={values.status}
+                            value={values.status || ''}
                             name="status"
                             error={Boolean(touched.status) && Boolean(errors.status)}
                             helperText={touched.status && errors.status}
@@ -145,7 +145,7 @@ const AddEntryForm = ({googleBook}) => {
                         
                         <TextField
                             type="number"
-                            value={values.page}
+                            value={values.page || ''}
                             onBlur={handleBlur}
                             onChange={handleChange}
                             name="page"
@@ -157,7 +157,7 @@ const AddEntryForm = ({googleBook}) => {
                         </TextField>
                         <TextField
                         multiline
-                        value={values.review}
+                        value={values.review || ''}
                         onBlur={handleBlur}
                         onChange={handleChange}
                         name="review"
@@ -168,9 +168,10 @@ const AddEntryForm = ({googleBook}) => {
                         maxRows={4}
                         >
                         </TextField>
+                        {/* TODO: Change from text fields to DatePicker */}
                         <TextField
                             type="date"
-                            value={moment(values.startDate).format("YYYY-MM-DD")}
+                            value={moment(values.startDate || '').format("YYYY-MM-DD")}
                             onBlur={handleBlur}
                             onChange={handleChange}
                             name="startDate"
@@ -182,7 +183,7 @@ const AddEntryForm = ({googleBook}) => {
                         </TextField>
                         <TextField
                             type="date"
-                            value={moment(values.endDate).format("YYYY-MM-DD")}
+                            value={moment(values.endDate || undefined).format("YYYY-MM-DD")}
                             onBlur={handleBlur}
                             onChange={handleChange}
                             name="endDate"

@@ -127,6 +127,9 @@ export const addNewEntry = createAsyncThunk(
             book
         }),
         });
+        if(!response.ok){
+            throw new Error('Invalid Request request')
+        }
         const data = await response.json();
         return data;
     } catch (err) {
@@ -149,6 +152,9 @@ export const deleteEntry = createAsyncThunk(
             },
             
             });
+            if(!response.ok){
+                throw new Error("Unable to complete Delete action at this time")
+            }
             const data = await response.json();
             return data;
         } catch (err) {
