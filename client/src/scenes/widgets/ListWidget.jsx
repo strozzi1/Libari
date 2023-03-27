@@ -53,7 +53,6 @@ const ListWidget = ({username}) => {
                         <Grid item xs={5}>
                             <Box>Title</Box>
                         </Grid>
-                        
                         <Grid item xs={2}>
                             <Box>Status</Box>
                         </Grid>
@@ -101,7 +100,6 @@ const ListItemContent = ({entry, username, update}) => {
     };
     
     const handleEditedEntry = (updatedEntry) => {
-        
         setIsEditModal(false)
         setHovering(false)
         setRating(updatedEntry.rating)
@@ -129,7 +127,7 @@ const ListItemContent = ({entry, username, update}) => {
         <Grid container spacing={1.0} alignItems="center" onMouseOver={()=>setHovering(true)} onMouseOut={()=>setHovering(false)}>
             <Grid item xs={1}>
                 
-                <Avatar sx={{ bgcolor: palette.primary.main, "&:hover": {cursor: "pointer"} }} variant="rounded" src={!hovering ? entry.book.photo : undefined}>
+                <Avatar sx={{ bgcolor: palette.primary.main, "&:hover": {cursor: "pointer"} }} variant="rounded" src={!hovering ? entry.book?.photo : undefined}>
                     
                     {(hovering && username===authedUsername) ? 
                         <Tooltip title="Edit Book Entry" placement="right">
@@ -141,7 +139,11 @@ const ListItemContent = ({entry, username, update}) => {
                 </Avatar>
             </Grid>
             <Grid item xs={5}>
-                <Box>{entry.book.title}</Box>
+                <Box style={{
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                }}>{entry.book?.title}</Box>
             </Grid>
             
             <Grid item xs={2}>
@@ -162,8 +164,10 @@ const ListItemContent = ({entry, username, update}) => {
                     }}
                 />
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={2}> 
+            {entry.page > 0 &&
                 <Box>{entry.page && entry.page} / {entry.book.pages && entry.book.pages}</Box>
+            }
             </Grid>
             {/* Modal Content */}
             <Modal 

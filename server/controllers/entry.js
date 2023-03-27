@@ -154,10 +154,10 @@ REQUIRE: Logged in User
 */
 export const addNewBookEntryToList = async (req, res) => {
     if(!req.body.book || !req.body.entry) return res.status(400).json({message: "Invalid book entry object"});
-    const {_id, googleId, title, author, photo, pages, readers} = req.body.book
+    const {_id, googleId, title, author, photo, pages, readers, released} = req.body.book
     const {rating, status, startDate, endDate, review, page} = req.body.entry
     const newBook = new Book ({
-        _id, googleId, title, author, photo, pages, readers
+        _id, googleId, title, author, photo, pages, readers, released
     })
     try {
         //Get list and check if exist
@@ -197,7 +197,8 @@ export const addNewBookEntryToList = async (req, res) => {
         const savedEntry = await newEntry.save()
         //push book _id to list in book list
         const updatedList = await userList.updateOne({$push: {books: savedBook._id, entries: savedEntry._id}});
-        res.status(201).json({updatedList})
+        
+        res.status(201).json({updatedList, entry: newEntry, book: savedBook})
     } catch (error) {
         res.status(500).json(error);
     }

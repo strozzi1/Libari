@@ -37,6 +37,12 @@ export const authSlice = createSlice({
         setPosts: (state,action) => {
             state.posts = action.payload.posts
         },
+        addEntry: (state, action) => {
+            /*TODO don't push null books to list */
+            let newEntry = {...action.payload.entry, book:action.payload.book}
+            state.entries.push(newEntry)
+            state.books.push(action.payload.book)
+        },
         setEntry: (state, action) => {
             state.entries = state.entries.map((entry) => {
             if (entry._id === action.payload._id) {
@@ -75,12 +81,16 @@ export const authSlice = createSlice({
           // If the action.payload contains the updated entry, you can just call the setEntry reducer
         authSlice.caseReducers.setEntry(state, action);
         });
+        builder.addCase(addNewEntry.fulfilled, (state,action) => {
+        authSlice.caseReducers.addEntry(state,action);
+        });
     },
 })
 
 export const updateEntry = createAsyncThunk(
     "auth/updateEntry",
     async ({ entry, token }, thunkAPI) => {
+    console.log("In updateEntry action: ", entry)
     try {
         const response = await fetch(`http://localhost:5001/entry/${entry._id}`, {
         method: "PATCH",
@@ -93,6 +103,33 @@ export const updateEntry = createAsyncThunk(
             entry: entry,
         }),
         });
+        const data = await response.json();
+        return data;
+    } catch (err) {
+        console.log(err);
+        return thunkAPI.rejectWithValue(err);
+    }
+});
+
+export const addNewEntry = createAsyncThunk(
+    "auth/addEntry",
+    async ({ entry, book, token }, thunkAPI) => {
+    try {
+        const response = await fetch(`http://localhost:5001/entry/`, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+            entry,
+            book
+        }),
+        });
+        if(!response.ok){
+            throw new Error('Invalid Request request')
+        }
         const data = await response.json();
         return data;
     } catch (err) {
@@ -115,6 +152,9 @@ export const deleteEntry = createAsyncThunk(
             },
             
             });
+            if(!response.ok){
+                throw new Error("Unable to complete Delete action at this time")
+            }
             const data = await response.json();
             return data;
         } catch (err) {
