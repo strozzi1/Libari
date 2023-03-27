@@ -16,7 +16,7 @@ const BookSchema = new mongoose.Schema(
         },
         author: {
             type: String,
-            required: true, 
+            //required: true,  //Some google books don't have authors
             //match: [/^[a-zA-Z0-9]+$/, 'is invalid'], 
             min: 2,
             max: 50

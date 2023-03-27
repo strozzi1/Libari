@@ -57,7 +57,7 @@ export const authSlice = createSlice({
             });
         },
         removeEntry: (state, action) => {
-            const updatedList = state.entries.filter((entry)=> entry._id !== action.payload._id)
+            const updatedList = state.entries.filter((entry)=> entry._id !== action.payload.deletedEntry)
             state.entries = updatedList
         },
         setPost: (state, action) =>{
@@ -82,7 +82,10 @@ export const authSlice = createSlice({
         authSlice.caseReducers.setEntry(state, action);
         });
         builder.addCase(addNewEntry.fulfilled, (state,action) => {
-        authSlice.caseReducers.addEntry(state,action);
+            authSlice.caseReducers.addEntry(state,action);
+        });
+        builder.addCase(deleteEntry.fulfilled, (state,action) => {
+            authSlice.caseReducers.removeEntry(state,action);
         });
     },
 })
@@ -128,7 +131,7 @@ export const addNewEntry = createAsyncThunk(
         }),
         });
         if(!response.ok){
-            throw new Error('Invalid Request request')
+            throw new Error('Unable to complete action at this time')
         }
         const data = await response.json();
         return data;

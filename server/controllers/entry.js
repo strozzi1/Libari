@@ -153,6 +153,7 @@ body: {
 REQUIRE: Logged in User
 */
 export const addNewBookEntryToList = async (req, res) => {
+    //console.log(req.body)
     if(!req.body.book || !req.body.entry) return res.status(400).json({message: "Invalid book entry object"});
     const {_id, googleId, title, author, photo, pages, readers, released} = req.body.book
     const {rating, status, startDate, endDate, review, page} = req.body.entry
@@ -221,7 +222,8 @@ export const removeBookEntry = async (req, res) => {
         if(!foundList) return res.status(400).json({message: "No list belonging to said user"});
         
         const foundEntry = await Entry.findById(req.params.id);
-        
+        const deletedEntry = foundEntry._id
+
         if(!foundEntry) return res.status(400).json({message: "No such entry"});
         const entryBook = await Book.findById(foundEntry.book);
         
@@ -231,7 +233,7 @@ export const removeBookEntry = async (req, res) => {
         entryBook.readers-=1
         entryBook.save()
         foundEntry.delete()
-        return res.status(200).json(updatedList)
+        return res.status(200).json({deletedEntry: deletedEntry,updatedList: updatedList})
     } catch (err) {
         return res.status(500).json({message: err.message})
     }

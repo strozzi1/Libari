@@ -4,7 +4,7 @@ import * as yup from "yup";
 import moment from "moment"
 import {useSelector, useDispatch} from "react-redux"
 import { useEffect, useState } from "react";
-import { addNewEntry, removeEntry, updateEntry } from "../../state";
+import { addNewEntry, deleteEntry, removeEntry, updateEntry } from "../../state";
 
 
 const AddEntryForm = ({googleBook}) => {
@@ -38,7 +38,7 @@ const AddEntryForm = ({googleBook}) => {
 
     const addEntrySchema = yup.object().shape({
         review: yup.string().max(1000).nullable(true),
-        startDate: yup.date().min(bookData.released, 
+        startDate: yup.date().min(bookData.released || "1000-01-01", 
             "Start data can't be before publish date").nullable(true),
         endDate: yup.date().min(
             yup.ref('startDate'),
@@ -46,7 +46,7 @@ const AddEntryForm = ({googleBook}) => {
             ).nullable(true),
         rating: yup.number().min(0).max(10).nullable(true),
         status: yup.string().oneOf(["Planning", "Completed", "Reading", "Dropped"]).nullable(true),
-        page: yup.number().min(0).max(bookData.pages).typeError("Must be number").nullable(true)
+        page: yup.number().min(0).max(bookData.pages || 10000).typeError("Must be number").nullable(true)
     
     })
 
@@ -64,9 +64,9 @@ const AddEntryForm = ({googleBook}) => {
         
     }
 
-    const handleDeleteEntry = () => {
-        console.log("TODO: Delete entry")
-        //dispatch(removeEntry(entry))
+    const handleDeleteEntry = (entry) => {
+        console.log("Delete entry")
+        dispatch(deleteEntry({entryId: entry._id, token}))
     }
 
     return (
@@ -212,7 +212,7 @@ const AddEntryForm = ({googleBook}) => {
                         <Button
                             fullWidth
                             type="button"
-                            onClick={handleDeleteEntry}
+                            onClick={() => handleDeleteEntry(bookInList)}
                             sx={{
                                 m: "0.4rem 0", 
                                 p: ".4rem", 
