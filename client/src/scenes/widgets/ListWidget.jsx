@@ -55,7 +55,7 @@ const ListWidget = ({username}) => {
                             <Box>Title</Box>
                         </Grid>
                         <Grid item xs={2}>
-                            <Box>Status</Box>
+                            <Box sx={{cursor: "pointer"}} onClick={() =>console.log("TODO: Sort by Status")}>Status</Box>
                         </Grid>
                         <Grid item xs={2}>
                             <Box>Rating</Box>

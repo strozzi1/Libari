@@ -94,7 +94,7 @@ const Navbar = () => {
                     type="text"
                     name="title"
                     id="search"
-                    placeholder="Search Books..."
+                    placeholder="Search Books and Users..."
                     autoComplete="off"
                     onChange={handleSearchText} 
                     style={modalStyle}
