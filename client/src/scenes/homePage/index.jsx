@@ -1,11 +1,16 @@
-import { Box, useMediaQuery } from "@mui/material";
+import { Box, Typography, useMediaQuery } from "@mui/material";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Navbar from "../navbar";
+import BookGridWidget from "../widgets/BookGridWidget";
 import UserWidget from "../widgets/UserWidget";
 
 const HomePage = () => {
     const isNonMobileScreens = useMediaQuery("(min-width:1000px)")
+    const bookEntries = useSelector((state) => state.entries)
     const {username} = useSelector((state) => state.user)
+
+
     return (
         <Box>
             <Navbar/>
@@ -29,9 +34,12 @@ const HomePage = () => {
                     
                 </Box>
                 {/*Right column */}
-                {isNonMobileScreens && (
+                {isNonMobileScreens &&  (
                     <Box flexBasis='26%'>
-                        
+                        <Typography style={{paddingBottom:"8px", fontSize:"13px", fontWeight: 500, opacity: "80%"}}>Currently Reading</Typography>
+                        <BookGridWidget books={
+                            bookEntries.filter((entry)=> entry.status === 'Reading').map(entry => entry.book)
+                        }/>
                     </Box>
                 )}
             </Box>
