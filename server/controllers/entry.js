@@ -18,8 +18,9 @@ export const getEntryById = async (req, res) => {
     }
 }
 
-//Get current auth'd user's following list, grab their entries by recent
+/*TODO: ADD AUTHED USER TOO*/
 export const getRecentFollowedUsersUpdates = async (req, res) => {
+    
     try {
         //get current user's following list
         var page = Number(req.query.page) || 1;
@@ -32,15 +33,17 @@ export const getRecentFollowedUsersUpdates = async (req, res) => {
             select: '_id'
         })
         
-        
-        const count = await Entry.countDocuments({userId: {$in: followingList}});
+        console.log("FollowingList: ", followingList.following)
+        const count = await Entry.countDocuments({userId: {$in: followingList.following}});
+        console.log("count: ", count)
         const lastPage = Math.ceil(count / pageSize);
         page = page > lastPage ? lastPage : page;
         page = page < 1 ? 1 : page;
         const offset = (page - 1) * pageSize;
 
-        const entryList = await Entry.find({userId: {$in: followingList}})
+        const entryList = await Entry.find({userId: {$in: followingList.following}})
         .populate({path: 'userId', select: 'username _id image'})
+        .populate({path: 'book'})
         .sort({updatedAt: -1})
         .skip(offset)
         .limit(pageSize)
