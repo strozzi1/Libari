@@ -2,6 +2,7 @@ import Jwt from "jsonwebtoken";
 
 
 export const requireAuthentication = async (req, res, next) => {
+   // console.log(req)
     let authHeader = req.header("Authorization");
     if(!authHeader){
         return res.status(401).send({message: "Access Denied"});

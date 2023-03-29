@@ -2,9 +2,9 @@ import { Grid, Paper, useTheme } from "@mui/material"
 import WidgetWrapper from "../../components/WidgetWrapper"
 
 const BookGridWidget = ({books}) => {
-    const {palette} = useTheme()
-    const primaryLight = palette.primary.light;
-    console.log(books)
+    //const {palette} = useTheme()
+    //const primaryLight = palette.primary.light;
+    
 
     if(!books[0]){
         return null

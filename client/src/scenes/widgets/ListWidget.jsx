@@ -160,8 +160,7 @@ const ListItemContent = ({entry, username, update}) => {
                     onChange={(event, newValue) => {
                         setRating(newValue*2);
                         dispatch(updateEntry({entry: {...entry, rating: newValue*2}, token}))
-                        //handleEditedEntry({...entry, rating:newValue*2})
-                        //TODO update DB
+                        
                     }}
                 />
             </Grid>
