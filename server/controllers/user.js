@@ -55,7 +55,7 @@ export const getListByUsername = async (req, res) => {
             populate: { 
                 path: "book"
             }
-        });
+        })
         if(!userList) return res.status(400).json({message: `No list found belonging to user ${req.params.username}`})
         return res.status(200).json(userList);
     } catch (error) {

@@ -184,6 +184,7 @@ const Navbar = () => {
                             <MenuItem value={userName}>
                                 <Typography>{userName}</Typography>
                             </MenuItem>
+                            <MenuItem onClick={() => navigate(`/user/${userName}/list`)}>Booklist</MenuItem>
                             <MenuItem onClick={() => handleLogout()}>Logout</MenuItem>
                         </Select>
                     </FormControl>
