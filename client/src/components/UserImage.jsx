@@ -1,6 +1,16 @@
-import { Box } from "@mui/material"
+import { Avatar, Box } from "@mui/material"
+import { height } from "@mui/system";
 
 const UserImage = ({ imageUrl, size = "60px"}) => {
+
+    if(!imageUrl){
+        return (
+            <Box width={size} height={size}>
+                <Avatar sx={{height: size, width: size}}></Avatar>
+            </Box>
+        )
+    }
+
     return (
         <Box width={size} height={size}>
             <img

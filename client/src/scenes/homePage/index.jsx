@@ -1,10 +1,8 @@
 import { Box, Typography, useMediaQuery } from "@mui/material";
-import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Navbar from "../navbar";
 import BookGridWidget from "../widgets/BookGridWidget";
 import FollowingUpdates from "../widgets/FollowingUpdates";
-import RecentUpdate from "../widgets/RecentUpdate";
 import UserWidget from "../widgets/UserWidget";
 
 const HomePage = () => {
@@ -26,7 +24,6 @@ const HomePage = () => {
                 {/*Left column */}
                 <Box flexBasis={isNonMobileScreens ? "26%" : undefined}>
                     <UserWidget username={username} />
-
                 </Box>
                 {/*Middle column */}
                 <Box 
