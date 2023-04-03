@@ -4,7 +4,7 @@ import {
     PersonAddOutlined,
     PersonRemoveOutlined,
 } from '@mui/icons-material'
-import { Box, Typography, Divider, useTheme, IconButton } from '@mui/material'
+import { Box, Typography, Divider, useTheme, IconButton, Modal } from '@mui/material'
 import UserImage from '../../components/UserImage'
 import FlexBetween from '../../components/FlexBetween'
 import WidgetWrapper from '../../components/WidgetWrapper'
@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { addRemoveFollowing } from "../../state";
+import EditUserForm from './EditUserForm'
 
 //const followingSig = signal([])
 
@@ -20,6 +21,7 @@ const UserWidget = ({username}) => {
     //rename follows -> authedUserFollowing, setAuthedUserFollowing
     const [follows, setFollows] = useState([])
     const [followingBool, setFollowingBool] = useState(false)
+    const [isEditModal, setIsEditModal] = useState(false)
     
     const { palette } = useTheme();
     const navigate = useNavigate();
@@ -30,11 +32,23 @@ const UserWidget = ({username}) => {
     const medium = palette.neutral.medium
     const main = palette.neutral.main
     //const neutralLight = palette.neutral.light;
-    
-    //LoggedIn user's following list
-    
-    
-    //const followingSig = signal(loggedInUser.following)
+    const modalStyle = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        bgcolor: 'background.paper',
+        borderRadius: "9px",
+        boxShadow: 24,
+        p: 4,
+        outline: 0,
+        border: "none",
+        "&:focus": {
+            outline: 0,
+            border: "none"
+        }
+    };
+
     const getUser = async () => {
         
         const response = await fetch(`http://localhost:5001/user/${username}`,
@@ -46,7 +60,6 @@ const UserWidget = ({username}) => {
         setUser(data.user);
         setFollowingBool(loggedInUser?.following?.includes(data.user?._id))
     }
-
 
     const handleAddRemove = async () => {
         //check if is in list
@@ -98,7 +111,7 @@ const UserWidget = ({username}) => {
     useEffect(() => {
         getUser();
         setFollows(loggedInUser?.following)
-        
+        //can set dependency array to hold loggedInUser
     }, []) //eslint-disable-line react-hooks/exhaustive-deps
 
     //TODO: Handle loading state
@@ -117,6 +130,9 @@ const UserWidget = ({username}) => {
 
     return (
         <WidgetWrapper>
+            <Modal open={isEditModal} onClose={() => setIsEditModal(false)}>
+                <Box sx={modalStyle}><EditUserForm user={user}/></Box>
+            </Modal>
         <FlexBetween
             gap="0.5rem"
             pb="1.1rem"
@@ -144,7 +160,7 @@ const UserWidget = ({username}) => {
         </FlexBetween>
         
             {loggedInUser && (user?._id ===loggedInUser?._id  ? 
-                <IconButton onClick={()=> console.log("edit account")}>
+                <IconButton onClick={()=> setIsEditModal(true)}>
                     <ManageAccountsOutlined/>
                 </IconButton> 
                 : 

@@ -4,6 +4,9 @@ import Entry from "../models/Entry.js";
 import Book from "../models/Book.js";
 import bcrypt from "bcrypt"
 
+import {uploadFile} from "../lib/aws.js"
+
+
 export const getUserByUsername = async (req, res) => {
     try{
         const userFound = await User.findOne({username: req.params.username})
@@ -65,10 +68,9 @@ export const getListByUsername = async (req, res) => {
 
 /*
 Input:
-Authorized
+Authorized req.userID
 req: {
     user: {
-        _id
         image
         location
         bio
@@ -77,18 +79,42 @@ req: {
 }
 */
 export const updateUserById = async (req, res) => {
-    const userId = req.body.user._id
-    if(!req.body.user || !req.body.user._id) return res.status(401).json({message: "Invalid request, no user provided"})
     
-    if(req.userId !== userId && req.role !== "admin") return res.status(401).json({message: "Not authorized to edit this user's information."})
+    console.log("UPDATE BODY: ", JSON.parse(JSON.stringify(req.body)))
+    if(req.body === {}) return res.status(401).json({message: "Invalid request, data provided"})
+    
+    //if(req.userId !== userId && req.role !== "admin") return res.status(401).json({message: "Not authorized to edit this user's information."})
     try {
-        const { image, bio, location } = req.body.user;
-        const foundUser = await User.findById(userId)
+        const file = req.file
+        const { bio, location } = req.body;
+        
+        const foundUser = await User.findById(req.userId)
+        if(!foundUser) return res.status(404).json({message: `No with user with ID ${req.userId} found`});
+        
+        if(req.file){
+            console.log("File: ", req.file)
+            const image = {
+                contentType: req.file.mimetype,
+                filename: req.file.filename,
+                path: req.file.path,
+                userId: req.userId
+            }
 
-        if(!foundUser) return res.status(404).json({message: `No with user with ID ${userId} found`});
+        await uploadFile(req.file.buffer, req.file.originalname, file.mimetype)
 
-        const updatedUser = await User.findByIdAndUpdate(userId, {image, bio, location})
+        //attach url to image
+        //send image id to golang resizer
+        }
+        // TESTING RABBIT MQ
+        // const channel = getChannel()
+        // await channel.assertQueue('pictures');
+        // const message = "The quick brown fox jumped over the lazy dog";
+        // message.split(' ').forEach(word =>{
+        //     channel.sendToQueue('pictures', Buffer.from(word));
+        // });
 
+        const updatedUser = await User.findByIdAndUpdate(req.userId, {bio, location})
+        //const updatedUser = await User.findByIdAndUpdate(req.userId, {image, bio, location})
         res.status(200).json(updatedUser);
     } catch (error) {
         res.status(500).json(error)
