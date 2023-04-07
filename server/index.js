@@ -13,6 +13,7 @@ import listRoutes from "./routes/list.js"
 import entryRoutes from "./routes/entry.js"
 import bookRoutes from "./routes/book.js";
 import relayRoutes from "./routes/google-relay.js"
+import { connectToRabbitMQ } from './lib/rabbitmq.js'
 
 
 /* CONFIGURATIONS */
@@ -41,13 +42,21 @@ app.use("/entry", entryRoutes)
 app.use("/books", bookRoutes)
 app.use("/google-relay", relayRoutes)
 
+/* All other routes return 404 */
+app.use('*', function (req, res, next) {
+    res.status(404).json({
+        error: "Requested resource " + req.originalUrl + " does not exist"
+    });
+});
+
 /* MONGOOSE SETUP */
 const PORT = process.env.PORT || 6001;
 mongoose.connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
-.then(() => {
+.then(async() => {
+    //await connectToRabbitMQ('photos');
     app.listen(PORT, () => console.log(`Server Listening on Port: ${PORT}`));
 })
 .catch((error)=> console.log(`${error} did not connect`));

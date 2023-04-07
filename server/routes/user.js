@@ -1,4 +1,7 @@
 import express from "express"
+import multer from "multer";
+import crypto from "crypto";
+
 import { 
     getUserByUsername, 
     deleteUserByUsername, 
@@ -16,7 +19,28 @@ import {
 import { requireAuthentication, checkAuthentication } from "../middleware/auth.js"
 
 
+
 const router = express.Router()
+
+const imageTypes = {
+    "image/jpeg": "jpg",
+    "image/png": "png"
+};
+
+const storage = multer.memoryStorage({
+    filename: (req, file, callback) => {
+        const filename = crypto.pseudoRandomBytes(16).toString('hex');
+        const extension = imageTypes[file.mimetype];
+        callback(null, `${filename}.${extension}`);
+    }
+})
+const upload = multer({ 
+    storage: storage,
+    fileFilter: (req, file, callback) => {
+        callback(null, !!imageTypes[file.mimetype]);
+    }, 
+})
+
 
 /* ROUTES NOT REQUIRING AUTHORIZATION */
 
@@ -48,6 +72,8 @@ router.patch("/followUser", requireAuthentication, addFollowing)
 router.patch("/unfollowUser", requireAuthentication, removeFollowing)
 
 router.patch("/updateEmail", requireAuthentication, updateEmail)
+
+router.patch("/updateProfile", upload.single('picture'), requireAuthentication, updateUserById);
 
 //@endpoint: /user
 //get user._id from body

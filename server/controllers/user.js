@@ -4,16 +4,22 @@ import Entry from "../models/Entry.js";
 import Book from "../models/Book.js";
 import bcrypt from "bcrypt"
 
+import {uploadFile, getObjectSignedUrl, sendSQSMessage} from "../lib/aws.js"
+
+const cloudFrontBaseURL = process.env.AWS_CLOUDFRONT_BASE_URL
+
 export const getUserByUsername = async (req, res) => {
     try{
         const userFound = await User.findOne({username: req.params.username})
             .select('-email')
         if(!userFound) return res.status(400).json({message: "No user with provided username"});
-        
+        //const imageURL = await getObjectSignedUrl(userFound._id.toString()) || ''
+        //console.log("imageURL",imageURL)
+        //userFound.image = imageURL
         return res.status(200).json({user: userFound})
         
     } catch (err) {
-        res.status(500).json({message: err.message})
+        return res.status(500).json({message: err.message})
     }
 }
 
@@ -65,10 +71,9 @@ export const getListByUsername = async (req, res) => {
 
 /*
 Input:
-Authorized
+Authorized req.userID
 req: {
     user: {
-        _id
         image
         location
         bio
@@ -77,18 +82,57 @@ req: {
 }
 */
 export const updateUserById = async (req, res) => {
-    const userId = req.body.user._id
-    if(!req.body.user || !req.body.user._id) return res.status(401).json({message: "Invalid request, no user provided"})
     
-    if(req.userId !== userId && req.role !== "admin") return res.status(401).json({message: "Not authorized to edit this user's information."})
+    console.log("UPDATE BODY: ", JSON.parse(JSON.stringify(req.body)))
+    if(req.body === {}) return res.status(401).json({message: "Invalid request, data provided"})
+    
+    //if(req.userId !== userId && req.role !== "admin") return res.status(401).json({message: "Not authorized to edit this user's information."})
     try {
-        const { image, bio, location } = req.body.user;
-        const foundUser = await User.findById(userId)
+        const file = req.file
+        const { bio, location } = req.body;
+        
+        const foundUser = await User.findById(req.userId)
+        if(!foundUser) return res.status(404).json({message: `No with user with ID ${req.userId} found`});
+        
+        let image = foundUser.image
+        if(req.file){
+            //Set image name to be the userID, there can only be one image per user
+            let fileName = req.userId
+            await uploadFile(req.file.buffer, fileName, file.mimetype)
+            image = `${cloudFrontBaseURL}/${fileName}`
+        
+            
+            var params = {
+                MessageAttributes: {
+                    UserId: {
+                        DataType: "String",
+                        StringValue: fileName
+                    },
+                    Username: {
+                        DataType: "String",
+                        StringValue: foundUser.username
+                    },
+                    ImageURL: {
+                        DataType: "String",
+                        StringValue: image
+                    }
+                },
+                MessageBody: "Information to be sent to image resize worker",
+                QueueUrl: process.env.AWS_SQS_URL
+            };
+            sendSQSMessage(params)
+            //send image id to golang resizer
+        }
+        // TESTING RABBIT MQ
+        // const channel = getChannel()
+        // await channel.assertQueue('pictures');
+        // const message = "The quick brown fox jumped over the lazy dog";
+        // message.split(' ').forEach(word =>{
+        //     channel.sendToQueue('pictures', Buffer.from(word));
+        // });
 
-        if(!foundUser) return res.status(404).json({message: `No with user with ID ${userId} found`});
-
-        const updatedUser = await User.findByIdAndUpdate(userId, {image, bio, location})
-
+        const updatedUser = await User.findByIdAndUpdate(req.userId, {bio, location, image})
+        //const updatedUser = await User.findByIdAndUpdate(req.userId, {image, bio, location})
         res.status(200).json(updatedUser);
     } catch (error) {
         res.status(500).json(error)

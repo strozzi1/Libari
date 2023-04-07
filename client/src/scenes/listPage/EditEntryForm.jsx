@@ -6,8 +6,6 @@ import {useSelector, useDispatch} from "react-redux"
 import { deleteEntry, removeEntry, updateEntry } from "../../state";
 
 
-
-
 const EditEntryForm = ({entry, close}) => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const {palette} = useTheme();
@@ -37,7 +35,6 @@ const EditEntryForm = ({entry, close}) => {
     })
 
     const handleSubmitEdits = (values, onSubmitProps) => {
-        //const {review, status, rating, startDate, endDate, page} = values
         const updatedEntry = {...entry, ...values}
             dispatch(updateEntry({entry: updatedEntry, token}))
             close(updatedEntry)
@@ -48,10 +45,7 @@ const EditEntryForm = ({entry, close}) => {
         dispatch(deleteEntry({entryId: entry._id, token}))
     }
 
-    /*
-    useEffect(() => {
-        setBookInList(entriesInState.filter((entry)=> googleBook.id === entry?.book?.googleId)[0])
-    },[entriesInState])*/
+  
 
     return (
         <Formik
