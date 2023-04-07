@@ -27,10 +27,16 @@ export const checkAuthentication = function (req, res, next) {
     /*
      * Authorization: Bearer <token>
      */
-    const authHeader = req.get('Authorization') || '';
+    let authHeader = req.header("Authorization") || '';
+    
+    if(authHeader === ''){
+        console.log("no auth")
+        next();
+        return
+    }
     const authHeaderParts = authHeader.split(' ');
     const token = authHeaderParts[0] === 'Bearer' ?
-      authHeaderParts[1] : null;
+        authHeaderParts[1] : null;
   
     try {
       const payload = Jwt.verify(token, secretKey);
@@ -38,7 +44,7 @@ export const checkAuthentication = function (req, res, next) {
       req.role = payload.role;
       next();
     } catch (err) {
-      
+      console.log("not logged in");
       next();
     }
   };

@@ -4,19 +4,22 @@ import Entry from "../models/Entry.js";
 import Book from "../models/Book.js";
 import bcrypt from "bcrypt"
 
-import {uploadFile} from "../lib/aws.js"
+import {uploadFile, getObjectSignedUrl, sendSQSMessage} from "../lib/aws.js"
 
+const cloudFrontBaseURL = process.env.AWS_CLOUDFRONT_BASE_URL
 
 export const getUserByUsername = async (req, res) => {
     try{
         const userFound = await User.findOne({username: req.params.username})
             .select('-email')
         if(!userFound) return res.status(400).json({message: "No user with provided username"});
-        
+        //const imageURL = await getObjectSignedUrl(userFound._id.toString()) || ''
+        //console.log("imageURL",imageURL)
+        //userFound.image = imageURL
         return res.status(200).json({user: userFound})
         
     } catch (err) {
-        res.status(500).json({message: err.message})
+        return res.status(500).json({message: err.message})
     }
 }
 
@@ -91,19 +94,34 @@ export const updateUserById = async (req, res) => {
         const foundUser = await User.findById(req.userId)
         if(!foundUser) return res.status(404).json({message: `No with user with ID ${req.userId} found`});
         
+        let image = foundUser.image
         if(req.file){
-            console.log("File: ", req.file)
-            const image = {
-                contentType: req.file.mimetype,
-                filename: req.file.filename,
-                path: req.file.path,
-                userId: req.userId
-            }
-
-        await uploadFile(req.file.buffer, req.file.originalname, file.mimetype)
-
-        //attach url to image
-        //send image id to golang resizer
+            //Set image name to be the userID, there can only be one image per user
+            let fileName = req.userId
+            await uploadFile(req.file.buffer, fileName, file.mimetype)
+            image = `${cloudFrontBaseURL}/${fileName}`
+        
+            
+            var params = {
+                MessageAttributes: {
+                    UserId: {
+                        DataType: "String",
+                        StringValue: fileName
+                    },
+                    Username: {
+                        DataType: "String",
+                        StringValue: foundUser.username
+                    },
+                    ImageURL: {
+                        DataType: "String",
+                        StringValue: image
+                    }
+                },
+                MessageBody: "Information to be sent to image resize worker",
+                QueueUrl: process.env.AWS_SQS_URL
+            };
+            sendSQSMessage(params)
+            //send image id to golang resizer
         }
         // TESTING RABBIT MQ
         // const channel = getChannel()
@@ -113,7 +131,7 @@ export const updateUserById = async (req, res) => {
         //     channel.sendToQueue('pictures', Buffer.from(word));
         // });
 
-        const updatedUser = await User.findByIdAndUpdate(req.userId, {bio, location})
+        const updatedUser = await User.findByIdAndUpdate(req.userId, {bio, location, image})
         //const updatedUser = await User.findByIdAndUpdate(req.userId, {image, bio, location})
         res.status(200).json(updatedUser);
     } catch (error) {

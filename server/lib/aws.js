@@ -1,5 +1,7 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
+import  { SQSClient, SendMessageCommand } from "@aws-sdk/client-sqs";
+// Set the AWS Region.
 
 import dotenv from 'dotenv'
 
@@ -19,6 +21,8 @@ const clientConfig = {
 }
 
 const s3Client = new S3Client(clientConfig)
+const sqsClient = new SQSClient(clientConfig);
+
 
 
 export function uploadFile(fileBuffer, fileName, mimetype) {
@@ -42,7 +46,8 @@ export function deleteFile(fileName) {
     return s3Client.send(new DeleteObjectCommand(deleteParams));
 }
 
-export async function getObjectSignedUrl(key) {
+export const getObjectSignedUrl = async (key) => {
+    
     const params = {
         Bucket: bucketName,
         Key: key
@@ -50,8 +55,21 @@ export async function getObjectSignedUrl(key) {
 
 // https://aws.amazon.com/blogs/developer/generate-presigned-url-modular-aws-sdk-javascript/
     const command = new GetObjectCommand(params);
-    const seconds = 60
+    const seconds = 60 * 10 //10 minutes
     const url = await getSignedUrl(s3Client, command, { expiresIn: seconds });
-
+    console.log("URL: ", url)
     return url
+}
+
+
+export const sendSQSMessage = async(params) => {
+    //const messageCommand = new SendMessageCommand().
+    console.log("sending to sqs")
+    try {
+        const data = await sqsClient.send(new SendMessageCommand(params));
+        console.log("Success, message sent. MessageID:", data.MessageId);
+        return data; // For unit tests.
+    } catch (err) {
+        console.log("Error", err);
+    }
 }
