@@ -37,7 +37,7 @@ const ProfilePage = () => {
     useEffect(() => {
         getUserData()
         getEntries()
-    },[])
+    },[params])
 
 
     return (

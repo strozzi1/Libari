@@ -24,6 +24,7 @@ export const authSlice = createSlice({
             state.token = action.payload.token;
             state.entries = action.payload.list;
             state.books = action.payload.list.map((entry) => entry.book)
+            localStorage.setItem("token", action.payload.token)
             
         },
         setLogout: (state) => {
@@ -32,6 +33,7 @@ export const authSlice = createSlice({
             state.books = [];
             state.posts = [];
             state.entries = [];
+            localStorage.clear()
         },
         //likely moved to it's own slice later
         setPosts: (state,action) => {

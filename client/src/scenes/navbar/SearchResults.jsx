@@ -61,7 +61,6 @@ const SearchResults = ({searchText}) => {
             setUsersList([])
             console.log(error)
         }
-        //TODO can move this into .then()
         setIsLoading(false)
     }
 
@@ -111,52 +110,53 @@ const SearchResults = ({searchText}) => {
             <Grid item sm={8} md={5} xs={12}>
             
                 {usersList.length > 0 && 
-                <><Typography sx={{
-                    color: theme.palette.modal.text,
-                    fontSize: "16px",
-                    fontWeight: 500,
-                    marginBottom: "3px",
-                    paddingLeft:"5px"
-                }}>Users</Typography>
-                <WidgetWrapper>
-                <List disablePadding>
-                    { usersList.map((user) =>
-                    <ListItem 
-                    disableGutters 
-                    key={user._id}
-                    onClick={()=>navigate(`/user/${user.username}`)}
-                    sx={{
-                        maxHeight: "66px",
-                        cursor: "pointer",
-                        "&:hover": {
-                            backgroundColor: neutralLight
-                        }
-                    }}>
-                        <ListItemAvatar>
-                            <Avatar alt={user.username} src={user.image} variant="rounded"/>
-                        </ListItemAvatar>
-                        <ListItemText
-                        primary={user.username}
-                        secondary={
-                            <>
-                            <Typography
-                                sx={{ display: 'inline' }}
-                                component="span"
-                                variant="body2"
-                                color="text.primary"
-                                textOverflow="ellipsis"
-                            >
-                                {
-                                truncate(user.bio, 40)
-                                }
-                            </Typography>
-                            </>
-                        }
-                        /> 
-                    </ListItem>
-                    )}
-                </List>
-                </WidgetWrapper>
+                <>
+                    <Typography sx={{
+                        color: theme.palette.modal.text,
+                        fontSize: "16px",
+                        fontWeight: 500,
+                        marginBottom: "3px",
+                        paddingLeft:"5px"
+                    }}>Users</Typography>
+                    <WidgetWrapper>
+                    <List disablePadding>
+                        { usersList.map((user) =>
+                        <ListItem 
+                        disableGutters 
+                        key={user._id}
+                        onClick={()=>navigate(`/user/${user.username}`)}
+                        sx={{
+                            maxHeight: "66px",
+                            cursor: "pointer",
+                            "&:hover": {
+                                backgroundColor: neutralLight
+                            }
+                        }}>
+                            <ListItemAvatar>
+                                <Avatar alt={user.username} src={user.image} variant="rounded"/>
+                            </ListItemAvatar>
+                            <ListItemText
+                            primary={user.username}
+                            secondary={
+                                <>
+                                <Typography
+                                    sx={{ display: 'inline' }}
+                                    component="span"
+                                    variant="body2"
+                                    color="text.primary"
+                                    textOverflow="ellipsis"
+                                >
+                                    {
+                                    truncate(user.bio, 40)
+                                    }
+                                </Typography>
+                                </>
+                            }
+                            /> 
+                        </ListItem>
+                        )}
+                    </List>
+                    </WidgetWrapper>
                 </>
                 }
             </Grid>
