@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { 
     Box, 
     IconButton, 
@@ -23,11 +23,12 @@ import {
 } from "@mui/icons-material";
 import {useDispatch, useSelector} from "react-redux";
 import {setMode, setLogout} from "../../state";
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import FlexBetween from "../../components/FlexBetween";
 import useDebounce from "../../utils/useDebounce";
 import SearchResults from "./SearchResults";
 import { width } from "@mui/system";
+import jwtDecode from "jwt-decode";
 
 const Navbar = () => {
     const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
@@ -36,6 +37,8 @@ const Navbar = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate();
     const user = useSelector((state) => state.user);
+    const token = useSelector((state)=> state.token)
+    const location = useLocation();
     const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
 
     const theme = useTheme();
@@ -80,6 +83,16 @@ const Navbar = () => {
     const handleSearchText = (e) => {
         setSearchText(e.target.value)
     }
+
+    useEffect(() => {
+        handleCloseSearchModal()
+        if(token) {
+            const decoded = jwtDecode(token);
+            if(decoded.exp * 1000 < new Date().getTime()) {
+                handleLogout()
+            }
+        }
+    }, [location]);
 
     return (
         <FlexBetween padding="1rem 6%" backgroundColor={alt}>

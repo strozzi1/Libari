@@ -13,7 +13,7 @@ import ListPage from './scenes/listPage';
 function App() {
   const mode = useSelector((state) => state.mode)
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
-  const isAuth = Boolean(useSelector((state)=> state.token))
+  const isAuthed = Boolean(useSelector((state)=> state.token))
   
   return (
     <div className="app">
@@ -21,10 +21,10 @@ function App() {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <Routes>
-            <Route path='/' element={<LoginPage/>}/>
+            <Route path='/' element={!isAuthed ? <LoginPage/> : <HomePage/>}/>
             <Route 
               path='/home' 
-              element={isAuth ? <HomePage/> : <Navigate to="/" />}
+              element={isAuthed ? <HomePage/> : <Navigate to="/" />}
             />
             <Route 
               path='/user/:username' 
