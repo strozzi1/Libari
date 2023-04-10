@@ -2,41 +2,67 @@ import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import User from "../models/User.js"
 import List from "../models/List.js"
+import {uploadFile, sendSQSMessage} from "../lib/aws.js"
+
+const cloudFrontBaseURL = process.env.AWS_CLOUDFRONT_BASE_URL
+
 
 /* REGISTER USER */
 export const register = async (req, res) => {
     
-    
+    if(req.body === {}) return res.status(401).json({message: "Invalid request, data provided"})
     if (!req.body.password || !req.body.email) return res.status(401).json("No password or email provided");
+    
     try {
         const {
             username,
             email,
             password,
-            image,
             location,
             bio,
-            following,
-            followers,
-            role,
-            list
+            role
         } = req.body;
 
         const salt = await bcrypt.genSalt();
         const passwordHash = await bcrypt.hash(password, salt);
-        
+        let image = ''
         const newUser = new User({
             username,
             email,
             password: passwordHash,
-            image,
             location,
             bio,
-            following,
-            followers,
-            list,
             role
         });
+        if(req.file){
+            //Set image name to be the userID, there can only be one image per user
+            let fileName = newUser._id.toString()
+            await uploadFile(req.file.buffer, fileName, req.file.mimetype)
+            image = `${cloudFrontBaseURL}/${fileName}`
+        
+            var params = {
+                MessageAttributes: {
+                    UserId: {
+                        DataType: "String",
+                        StringValue: fileName
+                    },
+                    Username: {
+                        DataType: "String",
+                        StringValue: newUser.username
+                    },
+                    ImageURL: {
+                        DataType: "String",
+                        StringValue: image
+                    }
+                },
+                MessageBody: "Information to be sent to image resize worker",
+                QueueUrl: process.env.AWS_SQS_URL
+            };
+            sendSQSMessage(params)
+            //send image id to golang resizer
+        }
+        //console.log(newUser._id.toString())
+        newUser.image = image
         const savedUser = await newUser.save();
         const newList = new List({
             userId: savedUser._id,

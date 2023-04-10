@@ -53,21 +53,23 @@ const Form = () => {
 
     const register = async (values, onSubmitProps) => {
         //this allows us to send form info with image
-        /*const formData = new FormData();
+        const formData = new FormData();
         for(let value in values){
             formData.append(value, values[value])
         }
-        formData.append('imagePath', values.image.name);
+        formData.append('imagePath', values.picture.name);
         for (const pair of formData.entries()) {
             console.log(`${pair[0]}, ${pair[1]}`);
-        }*/
+        }
 
         const savedUserResponse = await fetch(
             "http://localhost:5001/auth/register",
             {
                 method:"POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(values)
+                headers: {
+                    "Access-Control-Allow-Origin": "*",
+                },
+                body: formData
                 //body: formData
             }
         );
