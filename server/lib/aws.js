@@ -32,7 +32,7 @@ export function uploadFile(fileBuffer, fileName, mimetype) {
         Key: fileName,
         ContentType: mimetype
     }
-    console.log("uploadParams: ", uploadParams)
+    //console.log("uploadParams: ", uploadParams)
 
     return s3Client.send(new PutObjectCommand(uploadParams));
 }
@@ -46,6 +46,7 @@ export function deleteFile(fileName) {
     return s3Client.send(new DeleteObjectCommand(deleteParams));
 }
 
+//NO LONGER USEFUL
 export const getObjectSignedUrl = async (key) => {
     
     const params = {

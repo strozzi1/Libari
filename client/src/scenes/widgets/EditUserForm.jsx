@@ -51,8 +51,7 @@ const EditUserForm = ({user}) => {
 
     const handleSubmitProfile = async (values, onSubmitProps) => {
         const formData = new FormData();
-        //const plainFormData = Object.fromEntries(formData.entries());
-	    
+        //Allows us to send image
         for(let value in values){
             formData.append(value, values[value])
         }

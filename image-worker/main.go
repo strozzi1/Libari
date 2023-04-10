@@ -124,6 +124,7 @@ func main() {
 		return
 	}
 
+	fmt.Println("Polling for messages from ", queueURL)
 	for {
 		messages, err := sqsClient.ReceiveMessages(context.Background(), queueURL)
 		if err != nil {
