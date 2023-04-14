@@ -37,4 +37,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker images
-      run: docker-compose -f docker-compose.prod.yml --tag libari-services:$(date +%s) build
+      run: docker-compose -f docker-compose.prod.yml build --tag libari-services:$(date +%s) 
