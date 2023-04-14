@@ -44,5 +44,5 @@ jobs:
     - name: Docker Push
       run: |
         docker images
-        docker push libari_image-resize-service:latest
-        docker push libari_api-server:latest
+        docker push libari-image-resize-service:latest
+        docker push libari-api-server:latest
