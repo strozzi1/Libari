@@ -26,7 +26,7 @@ jobs:
         envkey_AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
         envkey_AWS_CLOUDFRONT_BASE_URL: ${{ env.AWS_CLOUDFRONT_BASE_URL }}
         envkey_AWS_SQS_URL: ${{ secrets.AWS_SQS_URL }}
-        directory: ./server
+        directory: server/
         file_name: .env.prod
 
 
