@@ -1,14 +1,14 @@
 version: '3'
 services:
   api-server:
-    image: 'libari-api-server'
+    image: strozzi1/libari-api-server:latest
     build: ./server
     ports:
       - "5001:5001"
     env_file:
       - ./server/.env.prod
   image-resize-service:
-    image: libari-image-resize-service
+    image: strozzi1/libari-image-resize-service:latest
     build: ./image-worker
 
 
