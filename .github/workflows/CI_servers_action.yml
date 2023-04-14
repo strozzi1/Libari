@@ -28,7 +28,7 @@ jobs:
         envkey_AWS_SQS_URL: ${{ secrets.AWS_SQS_URL }}
         file_name: .env.prod
     - run: |
-        ls -a
+        echo "$PWD"
 
 
   build:
