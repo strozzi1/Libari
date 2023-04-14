@@ -18,16 +18,16 @@ jobs:
     - name: Create .env.prod file
       run: |
         echo "$PWD"
-        echo MONGO_URL=${{ secrets.MONGO_URL }} >> .env.prod
-        echo PORT=${{ env.PORT }} >> .env.prod
-        echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env.prod
-        echo GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }} >> .env.prod
-        echo AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} >> .env.prod
-        echo AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} >> .env.prod
-        echo AWS_S3_BUCKET_REGION=${{ env.AWS_S3_BUCKET_REGION }} >> .env.prod
-        echo AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }} >> .env.prod
-        echo AWS_CLOUDFRONT_BASE_URL=${{ env.AWS_CLOUDFRONT_BASE_URL }} >> .env.prod
-        echo AWS_SQS_URL=${{ secrets.AWS_SQS_URL }} >> .env.prod
+        echo MONGO_URL=${{ secrets.MONGO_URL }} >> ./server/.env.prod
+        echo PORT=${{ env.PORT }} >> ./server/.env.prod
+        echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> ./server/.env.prod
+        echo GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }} >> ./server/.env.prod
+        echo AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} >> ./server/.env.prod
+        echo AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} >> ./server/.env.prod
+        echo AWS_S3_BUCKET_REGION=${{ env.AWS_S3_BUCKET_REGION }} >> ./server/.env.prod
+        echo AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }} >> ./server/.env.prod
+        echo AWS_CLOUDFRONT_BASE_URL=${{ env.AWS_CLOUDFRONT_BASE_URL }} >> ./server/.env.prod
+        echo AWS_SQS_URL=${{ secrets.AWS_SQS_URL }} >> ./server/.env.prod
 
 
     - name: Build the Docker images
