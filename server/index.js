@@ -5,7 +5,7 @@ import cors from 'cors'
 import dotenv from 'dotenv-safe'
 import helmet from 'helmet'
 import morgan from 'morgan'
-import path from 'path'
+//import path from 'path'
 import { fileURLToPath } from 'url'
 import authRoutes from "./routes/auth.js"
 import userRoutes from "./routes/user.js"
@@ -13,7 +13,7 @@ import listRoutes from "./routes/list.js"
 import entryRoutes from "./routes/entry.js"
 import bookRoutes from "./routes/book.js";
 import relayRoutes from "./routes/google-relay.js"
-import { connectToRabbitMQ } from './lib/rabbitmq.js'
+//import { connectToRabbitMQ } from './lib/rabbitmq.js'
 
 
 /* CONFIGURATIONS */
@@ -50,7 +50,9 @@ app.use('*', function (req, res, next) {
 });
 
 /* MONGOOSE SETUP */
-const PORT = process.env.PORT || 6001;
+const PORT = process.env.PORT || 5001;
+
+console.log("Connecting to mongo at: ", process.env.MONGO_URL)
 mongoose.connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,

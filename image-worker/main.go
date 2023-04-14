@@ -101,6 +101,7 @@ func processMessage(message *types.Message) {
 		uploadToS3(userId, newImageBuff)
 
 	}
+
 }
 
 func main() {
@@ -124,7 +125,7 @@ func main() {
 		return
 	}
 
-	fmt.Println("Polling for messages from ", queueURL)
+	fmt.Println("Polling for messages from SQS: ", queueURL)
 	for {
 		messages, err := sqsClient.ReceiveMessages(context.Background(), queueURL)
 		if err != nil {
@@ -133,8 +134,10 @@ func main() {
 		}
 
 		for _, message := range messages {
-			processMessage(&message)
-			sqsClient.DeleteMessage(queueURL, &message)
+			go func() {
+				processMessage(&message)
+				sqsClient.DeleteMessage(queueURL, &message)
+			}()
 		}
 	}
 }

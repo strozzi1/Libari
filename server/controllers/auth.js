@@ -12,7 +12,6 @@ export const register = async (req, res) => {
     
     if(req.body === {}) return res.status(401).json({message: "Invalid request, data provided"})
     if (!req.body.password || !req.body.email) return res.status(401).json("No password or email provided");
-    
     try {
         const {
             username,

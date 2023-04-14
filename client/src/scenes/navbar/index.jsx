@@ -268,9 +268,11 @@ const Navbar = () => {
                             input={<InputBase/>}>
                             {user ? 
                             [
-                                <MenuItem value={userName} key="userName">
+                                <MenuItem value={userName} onClick={()=>navigate('/home')} key="userName">
                                     <Typography>{userName}</Typography>
-                                </MenuItem>,
+                                </MenuItem>
+                                ,
+                                <MenuItem onClick={() => navigate(`/user/${userName}/list`)} key="Booklist">Booklist</MenuItem>,
                                 <MenuItem onClick={() => handleLogout()} key="Logout">Logout</MenuItem>
                             ]
                             : <MenuItem value="Log in" onClick={()=> navigate("/home")}><Typography>Log in</Typography></MenuItem>

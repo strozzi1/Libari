@@ -52,12 +52,15 @@ const Form = () => {
     const isRegister = pageType ==="register";
 
     const register = async (values, onSubmitProps) => {
+        
         //this allows us to send form info with image
         const formData = new FormData();
         for(let value in values){
             formData.append(value, values[value])
         }
-        formData.append('imagePath', values.picture.name);
+        if(values.picture){
+            formData.append('imagePath', values.picture.name);
+        }
         for (const pair of formData.entries()) {
             console.log(`${pair[0]}, ${pair[1]}`);
         }
@@ -170,6 +173,7 @@ const Form = () => {
                                     p="1rem"
                                 >
                                     <DropZone
+                                        label="image"
                                         acceptedFiles=".jpg,.jpeg,.png"
                                         multiple={false}
                                         onDrop={(acceptedFiles) => 
