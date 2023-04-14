@@ -17,7 +17,7 @@ jobs:
     - uses: actions/checkout@v3
     - name: Create .env.prod file
       run: |
-        echo "$PWD"
+        echo "Test: ${{ env.PORT }}"
         echo MONGO_URL=${{ secrets.MONGO_URL }} >> ./server/.env.prod
         echo PORT=${{ env.PORT }} >> ./server/.env.prod
         echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> ./server/.env.prod
@@ -29,6 +29,12 @@ jobs:
         echo AWS_CLOUDFRONT_BASE_URL=${{ env.AWS_CLOUDFRONT_BASE_URL }} >> ./server/.env.prod
         echo AWS_SQS_URL=${{ secrets.AWS_SQS_URL }} >> ./server/.env.prod
 
+    - name: Docker Login
+      env:
+        DOCKER_USER: ${{ secrets.DOCKER_USER }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      run: |
+        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
 
     - name: Build the Docker images
       run: | 
