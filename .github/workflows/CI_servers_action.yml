@@ -40,3 +40,7 @@ jobs:
       run: | 
         ls -a
         docker-compose -f docker-compose.prod.yml build
+        
+    - name: Docker Push
+      run: |
+        docker ps
