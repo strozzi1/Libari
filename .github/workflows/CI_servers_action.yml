@@ -9,31 +9,28 @@ on:
 jobs:
 
   create-docker-images:
- 
+
     runs-on: ubuntu-latest
- 
+
     steps:
-    
+
     - uses: actions/checkout@v3
-    - name: Make envfile
-      uses: SpicyPizza/create-envfile@v1.3
-      with:
-        envkey_MONGO_URL: ${{ secrets.MONGO_URL }}
-        envkey_PORT: ${{ env.PORT }}
-        envkey_JWT_SECRET: ${{ secrets.JWT_SECRET }}
-        envkey_GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-        envkey_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        envkey_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        envkey_AWS_S3_BUCKET_REGION: ${{ env.AWS_S3_BUCKET_REGION }}
-        envkey_AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-        envkey_AWS_CLOUDFRONT_BASE_URL: ${{ env.AWS_CLOUDFRONT_BASE_URL }}
-        envkey_AWS_SQS_URL: ${{ secrets.AWS_SQS_URL }}
-        directory: ${{ GITHUB_WORKSPACE }}
-        file_name: .env.prod
-    - run: |
+    - name: Create .env.prod file
+      run: |
         echo "$PWD"
+        echo MONGO_URL=${{ secrets.MONGO_URL }} >> .env.prod
+        echo PORT=${{ env.PORT }} >> .env.prod
+        echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env.prod
+        echo GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }} >> .env.prod
+        echo AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} >> .env.prod
+        echo AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} >> .env.prod
+        echo AWS_S3_BUCKET_REGION=${{ env.AWS_S3_BUCKET_REGION }} >> .env.prod
+        echo AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }} >> .env.prod
+        echo AWS_CLOUDFRONT_BASE_URL=${{ env.AWS_CLOUDFRONT_BASE_URL }} >> .env.prod
+        echo AWS_SQS_URL=${{ secrets.AWS_SQS_URL }} >> .env.prod
+
 
     - name: Build the Docker images
       run: | 
         ls -a
-        docker-compose -f docker-compose.prod.yml --env-file .env.prod build 
+        docker-compose -f docker-compose.prod.yml --env-file .env.prod build
