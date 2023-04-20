@@ -17,7 +17,21 @@ jobs:
     - uses: actions/checkout@v3
     - name: Create .env.prod and .env files
       run: |
-        echo "This step has been removed, should run when deploying to ECS"
+        echo 'MONGO_URL will be set at deploy stage' 
+        echo PORT=${{ vars.PORT }} >> ./server/.env.prod
+        echo 'JWT_SECRET will be set at deploy stage'
+        echo 'GOOGLE_API_KEY will be set at deploy stage'
+        echo 'AWS_ACCESS_KEY_ID will be set at deploy stage
+        echo 'AWS_SECRET_ACCESS_KEY will be set at deploy stage'
+        echo AWS_S3_BUCKET_REGION=${{ vars.AWS_S3_BUCKET_REGION }} >> ./server/.env.prod
+        echo AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }} >> ./server/.env.prod
+        echo AWS_CLOUDFRONT_BASE_URL=${{ vars.AWS_CLOUDFRONT_BASE_URL }} >> ./server/.env.prod
+        echo 'AWS_SQS_URL will be set at deploy stage'
+        
+        echo AWS_REGION=${{ vars.AWS_S3_BUCKET_REGION }} >> ./image-worker/.env
+        echo AWS_S3_BUCKET=${{ vars.AWS_S3_BUCKET }} >> ./image-worker/.env
+        echo 'AWS_ACCESS_KEY_ID will be set at deploy stage'
+        echo 'AWS_SECRET_ACCESS_KEY will be set at deploy stage'
 
     - name: Docker Login
       env:
