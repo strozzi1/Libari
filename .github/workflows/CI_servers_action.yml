@@ -21,7 +21,7 @@ jobs:
         echo PORT=${{ vars.PORT }} >> ./server/.env.prod
         echo 'JWT_SECRET will be set at deploy stage'
         echo 'GOOGLE_API_KEY will be set at deploy stage'
-        echo 'AWS_ACCESS_KEY_ID will be set at deploy stage
+        echo 'AWS_ACCESS_KEY_ID will be set at deploy stage'
         echo 'AWS_SECRET_ACCESS_KEY will be set at deploy stage'
         echo AWS_S3_BUCKET_REGION=${{ vars.AWS_S3_BUCKET_REGION }} >> ./server/.env.prod
         echo AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }} >> ./server/.env.prod
