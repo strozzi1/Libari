@@ -49,3 +49,20 @@ jobs:
       run: |
         docker images
         docker-compose -f docker-compose.prod.yml push
+        
+  SSH_into_EC2:  
+  
+    runs-on: ubuntu-latest
+
+    steps:
+  
+    - name: executing remote ssh commands using ssh key
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ secrets.EC2_HOSTNAME }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.SSH_PORT }}
+        script: |
+          whoami 
+          ls -a
