@@ -71,5 +71,5 @@ jobs:
           whoami 
           ls -a
           echo "test"
-          echo $SSH_PORT
-          echo $AWS_CLOUDFRONT_BASE_URL
+          echo "port: $SSH_PORT"
+          echo "cloudfront URL: $AWS_CLOUDFRONT_BASE_URL"
