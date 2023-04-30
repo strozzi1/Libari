@@ -58,6 +58,9 @@ jobs:
   
     - name: executing remote ssh commands using ssh key
       uses: appleboy/ssh-action@v0.1.10
+      env:  
+        SSH_PORT: ${{ secrets.SSH_PORT}}
+        AWS_CLOUDFRONT_BASE_URL: ${{ vars.AWS_CLOUDFRONT_BASE_URL }}
       with:
         host: ${{ secrets.EC2_HOSTNAME }}
         username: ${{ secrets.EC2_USERNAME }}
@@ -67,3 +70,6 @@ jobs:
         script: |
           whoami 
           ls -a
+          echo "test"
+          echo $SSH_PORT
+          echo $AWS_CLOUDFRONT_BASE_URL
