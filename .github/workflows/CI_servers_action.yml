@@ -49,8 +49,23 @@ jobs:
       run: |
         docker images
         docker-compose -f docker-compose.prod.yml push
-        
-  SSH_into_EC2:  
+    - name: create env file
+      run: |
+        touch .env.prod
+        echo 'MONGO_URL will be set at deploy stage' 
+        echo PORT=${{ vars.PORT }} >> ./.env.prod
+        echo 'JWT_SECRET will be set at deploy stage'
+        echo 'GOOGLE_API_KEY will be set at deploy stage'
+        echo 'AWS_ACCESS_KEY_ID will be set at deploy stage'
+        echo 'AWS_SECRET_ACCESS_KEY will be set at deploy stage'
+        echo AWS_S3_BUCKET_REGION=${{ vars.AWS_S3_BUCKET_REGION }} >> ./.env.prod
+        echo AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }} >> ./.env.prod
+        echo AWS_CLOUDFRONT_BASE_URL=${{ vars.AWS_CLOUDFRONT_BASE_URL }} >> ./.env.prod
+        echo 'AWS_SQS_URL will be set at deploy stage'
+        cat ./.env.prod
+        scp -i ${{ secrets.SSH_PRIVATE_KEY }} .env.prod ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOSTNAME }}:./
+  
+  ssh_into_EC2:  
   
     runs-on: ubuntu-latest
 
