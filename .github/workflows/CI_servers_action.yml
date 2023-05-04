@@ -102,7 +102,7 @@ jobs:
           docker stop libari-api
           docker stop libari-image-worker
           docker rm libari-api
-          dock rm libari-image-worker
+          docker rm libari-image-worker
           docker pull strozzij/libari-api-server
           docker pull strozzij/libari-image-resize-service
           docker run --name libari-api --env-file .env.prod strozzij/libari-api-server:latest
