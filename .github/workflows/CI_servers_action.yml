@@ -61,10 +61,11 @@ jobs:
       run: |
         touch .env.prod
         echo "Now creating env file"
-        echo MONGO_URL=${{ secrets.MONGO_URL }} >> ./.env.prod
+        echo 'MONGO_URL=${{ secrets.MONGO_URL }}' >> ./.env.prod
         echo PORT=${{ vars.PORT }} >> ./.env.prod
         echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> ./.env.prod
         echo GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }} >> ./.env.prod
+        echo MONGO_URL=${{ secrets.MONGO_URL }} >> ./.env.prod
         echo AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} >> ./.env.prod
         echo AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} >> ./.env.prod
         echo AWS_S3_BUCKET_REGION=${{ vars.AWS_S3_BUCKET_REGION }} >> ./.env.prod
@@ -107,4 +108,4 @@ jobs:
           docker pull strozzij/libari-api-server
           docker pull strozzij/libari-image-resize-service
           docker run --name libari-api --env-file .env.prod strozzij/libari-api-server:latest
-          docker run --name libari-image-worker --env-file .env.prod strozzij/libari-image-resize-service:latest
+          docker run --name libari-image-worker --env-file .env.prod -d strozzij/libari-image-resize-service:latest
