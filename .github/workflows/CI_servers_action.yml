@@ -60,7 +60,7 @@ jobs:
       id: env-file
       run: |
         touch .env.prod
-        echo "Now creating env file
+        echo "Now creating env file"
         echo MONGO_URL=${{ secrets.MONGO_URL }} >> ./.env.prod
         echo PORT=${{ vars.PORT }} >> ./.env.prod
         echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> ./.env.prod
