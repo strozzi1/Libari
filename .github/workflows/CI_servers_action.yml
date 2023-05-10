@@ -49,15 +49,49 @@ jobs:
       run: |
         docker images
         docker-compose -f docker-compose.prod.yml push
-        
-  SSH_into_EC2:  
   
+  send-env-vars:
     runs-on: ubuntu-latest
-
+    needs: create-docker-images
     steps:
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: Create .env file
+      id: env-file
+      run: |
+        touch .env.prod
+        echo "Now creating env file"
+        echo 'MONGO_URL=${{ secrets.MONGO_URL }}' >> ./.env.prod
+        echo PORT=${{ vars.PORT }} >> ./.env.prod
+        echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> ./.env.prod
+        echo GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }} >> ./.env.prod
+        echo MONGO_URL=${{ secrets.MONGO_URL }} >> ./.env.prod
+        echo AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} >> ./.env.prod
+        echo AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} >> ./.env.prod
+        echo AWS_S3_BUCKET_REGION=${{ vars.AWS_S3_BUCKET_REGION }} >> ./.env.prod
+        echo AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }} >> ./.env.prod
+        echo AWS_CLOUDFRONT_BASE_URL=${{ vars.AWS_CLOUDFRONT_BASE_URL }} >> ./.env.prod
+        echo AWS_SQS_URL=${{ secrets.AWS_SQS_URL }} >> ./.env.prod
+    - name: copy file to server
+      uses: appleboy/scp-action@v0.1.4
+      with:
+        host: ${{ secrets.EC2_HOSTNAME }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.SSH_PORT }}
+        source: ".env.prod"
+        target: ./
+    
   
+  ssh_into_EC2:  
+    runs-on: ubuntu-latest
+    needs: send-env-vars
+    steps:
     - name: executing remote ssh commands using ssh key
       uses: appleboy/ssh-action@v0.1.10
+      env:  
+        SSH_PORT: ${{ secrets.SSH_PORT}}
+        AWS_CLOUDFRONT_BASE_URL: ${{ vars.AWS_CLOUDFRONT_BASE_URL }}
       with:
         host: ${{ secrets.EC2_HOSTNAME }}
         username: ${{ secrets.EC2_USERNAME }}
@@ -67,3 +101,11 @@ jobs:
         script: |
           whoami 
           ls -a
+          docker stop libari-api
+          docker stop libari-image-worker
+          docker rm libari-api
+          docker rm libari-image-worker
+          docker pull strozzij/libari-api-server
+          docker pull strozzij/libari-image-resize-service
+          docker run --name libari-api --env-file .env.prod -d strozzij/libari-api-server:latest
+          docker run --name libari-image-worker --env-file .env.prod -d strozzij/libari-image-resize-service:latest
