@@ -112,7 +112,7 @@ const UserWidget = ({username}) => {
         getUser();
         setFollows(loggedInUser?.following)
         //can set dependency array to hold loggedInUser
-    }, []) //eslint-disable-line react-hooks/exhaustive-deps
+    }, [username]) //eslint-disable-line react-hooks/exhaustive-deps
 
     //TODO: Handle loading state
     if(!user){
