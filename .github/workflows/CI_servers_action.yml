@@ -108,4 +108,4 @@ jobs:
           docker pull strozzij/libari-api-server
           docker pull strozzij/libari-image-resize-service
           docker run --name libari-api --env-file .env.prod -d strozzij/libari-api-server:latest
-          docker run --name libari-image-worker --env-file .env.prod -d strozzij/libari-image-resize-service:latest
+          docker run --name libari-image-worker --env-file .env.prod -p 5001:5001 -d strozzij/libari-image-resize-service:latest
