@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { BASE_URL } from '../env';
 
 const initialState = {
     mode: "light",
@@ -97,7 +98,7 @@ export const updateEntry = createAsyncThunk(
     async ({ entry, token }, thunkAPI) => {
     console.log("In updateEntry action: ", entry)
     try {
-        const response = await fetch(`http://localhost:5001/entry/${entry._id}`, {
+        const response = await fetch(`${BASE_URL}/entry/${entry._id}`, {
         method: "PATCH",
         headers: {
             Authorization: `Bearer ${token}`,
@@ -120,7 +121,7 @@ export const addNewEntry = createAsyncThunk(
     "auth/addEntry",
     async ({ entry, book, token }, thunkAPI) => {
     try {
-        const response = await fetch(`http://localhost:5001/entry/`, {
+        const response = await fetch(`${BASE_URL}/entry/`, {
         method: "POST",
         headers: {
             Authorization: `Bearer ${token}`,
@@ -148,7 +149,7 @@ export const deleteEntry = createAsyncThunk(
     "auth/deleteEntry",
     async({entryId, token}, thunkAPI) => {
         try {
-            const response = await fetch(`http://localhost:5001/entry/${entryId}`, {
+            const response = await fetch(`${BASE_URL}/entry/${entryId}`, {
             method: "DELETE",
             headers: {
                 Authorization: `Bearer ${token}`,

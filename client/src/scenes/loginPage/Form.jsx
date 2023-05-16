@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
     Box,
     Button,
@@ -15,6 +15,7 @@ import {useDispatch} from "react-redux";
 import {setLogin} from "../../state";
 import DropZone from "react-dropzone";
 import FlexBetween from "../../components/FlexBetween";
+import { BASE_URL } from "../../env";
 
 const registerSchema = yup.object().shape({
     username: yup.string().required("required"),
@@ -66,7 +67,7 @@ const Form = () => {
         }
 
         const savedUserResponse = await fetch(
-            "http://localhost:5001/auth/register",
+            `${BASE_URL}/auth/register`,
             {
                 method:"POST",
                 headers: {
@@ -89,7 +90,7 @@ const Form = () => {
 
     const login = async (values, onSubmitProps) => {
         const loggedInUserResponse = await fetch(
-            "http://localhost:5001/auth/login",
+            `${BASE_URL}/auth/login`,
             {
                 method:"POST",
                 headers: {"Content-Type": "application/json"},
@@ -116,7 +117,6 @@ const Form = () => {
     const handleFormSubmit = async(values, onSubmitProps) => {
         if(isLogin) await login(values, onSubmitProps);
         if(isRegister) await register(values, onSubmitProps);
-        console.log("handle form submit");
     }
 
     return (

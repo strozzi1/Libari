@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { addRemoveFollowing } from "../../state";
 import EditUserForm from './EditUserForm'
-
+import { BASE_URL } from '../../env'
 //const followingSig = signal([])
 
 const UserWidget = ({username}) => {
@@ -51,7 +51,7 @@ const UserWidget = ({username}) => {
 
     const getUser = async () => {
         
-        const response = await fetch(`http://localhost:5001/user/${username}`,
+        const response = await fetch(`${BASE_URL}/user/${username}`,
         {
             method: "GET",
             //headers: { Authorization: `Bearer ${token}`}
@@ -64,7 +64,7 @@ const UserWidget = ({username}) => {
     const handleAddRemove = async () => {
         //check if is in list
         if(follows?.includes(user._id)){
-            await fetch(`http://localhost:5001/user/unfollowUser`,
+            await fetch(`${BASE_URL}/user/unfollowUser`,
             {
                 method: "PATCH",
                 headers: {
@@ -85,7 +85,7 @@ const UserWidget = ({username}) => {
             
         } else {
             
-            await fetch(`http://localhost:5001/user/followUser`,
+            await fetch(`${BASE_URL}/user/followUser`,
             {
                 method: "PATCH",
                 headers: {
