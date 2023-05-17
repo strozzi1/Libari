@@ -17,6 +17,7 @@ import { useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import AddEntryForm from "../widgets/AddEntryForm";
 import { useSelector } from "react-redux";
+import { BASE_URL } from "../../env";
 /**TODO: Handle click to close modal if in blank space part of grid */
 
 //Move to Utils?
@@ -42,7 +43,7 @@ const SearchResults = ({searchText}) => {
         setIsLoading(true);
         //TODO: Clean up fetch logic
         try {
-            const response = await fetch(`http://localhost:5001/google-relay/${query}`,
+            const response = await fetch(`${BASE_URL}/google-relay/${query}`,
             {
                 method: "GET"
             })
@@ -54,7 +55,7 @@ const SearchResults = ({searchText}) => {
         }
         //TODO more flexability...page size and query logic
         try {
-            const userQuery = await fetch(`http://localhost:5001/user?username=${query}&page=${1}&pageSize=${10}`)
+            const userQuery = await fetch(`${BASE_URL}/user?username=${query}&page=${1}&pageSize=${10}`)
             const userResponse = await userQuery.json()
             setUsersList(userQuery.ok ? userResponse.results : [])
         } catch (error) {

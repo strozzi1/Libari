@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import FlexBetween from "../../components/FlexBetween";
 import useThrottle from "../../utils/useThrottle";
 import RecentUpdate from "./RecentUpdate";
+import { BASE_URL } from "../../env";
 
 const FollowingUpdates = () => {
     const token = useSelector((state)=> state.token)
@@ -11,7 +12,7 @@ const FollowingUpdates = () => {
     const [updatesList, setUpdatesList] = useState([])
     const fetchUpdates = async() => {
         try {
-            const response = await fetch(`http://localhost:5001/entry/getUpdates`,
+            const response = await fetch(`${BASE_URL}/entry/getUpdates`,
             {
                 method: "GET",
                 headers: {

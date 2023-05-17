@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import WidgetWrapper from "../../components/WidgetWrapper";
 import EditEntryForm from "../listPage/EditEntryForm";
 import { updateEntry } from "../../state";
+import { BASE_URL } from "../../env";
 
 
 
@@ -23,7 +24,7 @@ const ListWidget = ({username}) => {
         if(authedUser && username === authedUser.username){
             setList(authedList)
         } else {
-            const response = await fetch(`http://localhost:5001/user/${username}/booklist`,
+            const response = await fetch(`${BASE_URL}/user/${username}/booklist`,
             {
                 method: "GET"
             });

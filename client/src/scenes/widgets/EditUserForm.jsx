@@ -5,6 +5,7 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DropZone from "react-dropzone";
 import FlexBetween from "../../components/FlexBetween";
 import { useSelector } from "react-redux";
+import { BASE_URL } from "../../env";
 
 
 const EditUserForm = ({user}) => {
@@ -61,7 +62,7 @@ const EditUserForm = ({user}) => {
         }
 
         const updatedUserResponse = await fetch(
-            "http://localhost:5001/user/updateProfile",
+            `${BASE_URL}/user/updateProfile`,
             {
                 method:"PATCH",
                 headers: {

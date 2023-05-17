@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "checkJs": true,
+        "noEmit": false,
+        // "baseUrl": "src", // re-add this if problems occur
+        "jsx": "react",
+        "target": "ESNext",
+        "moduleResolution": "nodenext"
+    },
+    "include": ["src/**/*", "./"]
+}

@@ -6,6 +6,7 @@ import BioWidget from "../widgets/BioWidget";
 import BookGridWidget from "../widgets/BookGridWidget";
 import UserUpdates from "../widgets/UserUpdates";
 import UserWidget from "../widgets/UserWidget";
+import { BASE_URL } from "../../env";
 
 const ProfilePage = () => {
     const params = useParams()
@@ -15,7 +16,7 @@ const ProfilePage = () => {
     const [entries, setEntries] = useState([])
 
     const getUserData = async() => {
-        const response = await fetch(`http://localhost:5001/user/${username}`,
+        const response = await fetch(`${BASE_URL}/user/${username}`,
             {
                 method: "GET"
             });
@@ -25,7 +26,7 @@ const ProfilePage = () => {
     }
 
     const getEntries = async() => {
-        const response = await fetch(`http://localhost:5001/user/${username}/booklist`,
+        const response = await fetch(`${BASE_URL}/user/${username}/booklist`,
         {
             method: "GET"
         });
