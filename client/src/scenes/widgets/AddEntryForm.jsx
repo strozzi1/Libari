@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { addNewEntry, deleteEntry, removeEntry, updateEntry } from "../../state";
 
 
+
+
 const AddEntryForm = ({googleBook}) => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const {palette} = useTheme();
@@ -171,7 +173,8 @@ const AddEntryForm = ({googleBook}) => {
                         {/* TODO: Change from text fields to DatePicker */}
                         <TextField
                             type="date"
-                            value={moment(values.startDate || '').format("YYYY-MM-DD")}
+                            InputLabelProps={{shrink: true}}
+                            value={values.startDate ? moment(values.startDate).format("YYYY-MM-DD") : ''}
                             onBlur={handleBlur}
                             onChange={handleChange}
                             name="startDate"
@@ -183,7 +186,8 @@ const AddEntryForm = ({googleBook}) => {
                         </TextField>
                         <TextField
                             type="date"
-                            value={moment(values.endDate || undefined).format("YYYY-MM-DD")}
+                            InputLabelProps={{shrink: true}}
+                            value={values.endDate ? moment(values.endDate).format("YYYY-MM-DD"): ''}
                             onBlur={handleBlur}
                             onChange={handleChange}
                             name="endDate"
