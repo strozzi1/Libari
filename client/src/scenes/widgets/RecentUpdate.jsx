@@ -33,11 +33,11 @@ const RecentUpdate = ({entry}) => {
     //const navigate = useNavigate()
     //const params = useParams()
     const {palette} = useTheme()
-    const user = useSelector((state)=>state.user)
+    //const user = useSelector((state)=>state.user)
     
     const location = useLocation();
     const isHomepage = location.pathname === '/home'
-    
+    const navigate = useNavigate();
     const dark = palette.neutral.dark
     const medium = palette.neutral.medium
     const main = palette.neutral.main
@@ -66,6 +66,7 @@ const RecentUpdate = ({entry}) => {
                 { isHomepage ?
                 <Box marginLeft="8px">
                     <Typography
+                    onClick={()=>navigate(`/user/${entry.userId.username}`)}
                     variant="h6"
                     color={dark}
                     fontWeight="500"

@@ -41,6 +41,11 @@ app.use("/booklist", listRoutes)
 app.use("/entry", entryRoutes)
 app.use("/books", bookRoutes)
 app.use("/google-relay", relayRoutes)
+app.use("/health", function(req, res, next){
+    res.status(201).send(
+        "OK"
+    )
+})
 
 /* All other routes return 404 */
 app.use('*', function (req, res, next) {
