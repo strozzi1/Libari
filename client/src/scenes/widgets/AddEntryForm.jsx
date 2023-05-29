@@ -27,9 +27,9 @@ const AddEntryForm = ({googleBook}) => {
         review: bookInList ? bookInList.review : "",
         startDate: bookInList ? bookInList.startDate : '',
         endDate: bookInList ? bookInList.endDate : '',
-        rating: bookInList ? bookInList.rating : '',
+        rating: bookInList ? bookInList.rating : 0,
         status: bookInList ? bookInList.status : 'Planning',
-        page: bookInList ? bookInList.page : ''
+        page: bookInList ? bookInList.page : 0
     }
 
     useEffect(() => {

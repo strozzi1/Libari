@@ -13,12 +13,12 @@ const EditEntryForm = ({entry, close}) => {
     const dispatch = useDispatch();
     
     const initialEntryValues = {
-        review: entry.review || '',
+        review: entry.review || "",
         startDate: entry.startDate || '',
         endDate: entry.endDate || '',
-        rating: entry.rating || '',
+        rating: entry.rating || 0,
         status: entry.status || '',
-        page: entry.page || ''
+        page: entry.page || 0
     }
 
     const editEntrySchema = yup.object().shape({
