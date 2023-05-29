@@ -4,7 +4,7 @@ import Entry from "../models/Entry.js";
 import Book from "../models/Book.js";
 import bcrypt from "bcrypt"
 
-import {uploadFile, getObjectSignedUrl, sendSQSMessage} from "../lib/aws.js"
+import {uploadFile, deleteFile, getObjectSignedUrl, sendSQSMessage} from "../lib/aws.js"
 
 const cloudFrontBaseURL = process.env.AWS_CLOUDFRONT_BASE_URL
 
@@ -284,15 +284,26 @@ export const removeFollowing = async (req, res) => {
  * @returns success message
  */
 export const deleteUserByUsername = async (req, res) => {
+    console.log("initiating delete user");
     try{
         const userFound = await User.findOne({username: req.params.username})
+        const {followers, following} = userFound;
+        //delete s3 stored image file
         
         if(!userFound) return res.status(400).json({message: "No user with provided username"});
         //console.log (req.role)
         if(req.role !== "admin" && userFound._id.valueOf() !== req.userId) return res.status(400).json({message: "Not Authorized to delete this user"});
-        //Get entries in list  and delete them
         
+        //delete aws s3 stored image
+        console.log("deleting s3 stored image");
+        if(userFound.image !== ""){
+            console.log("send delete command");
+            const deleteFileResponse = await deleteFile(req.userId)
+            console.log("Delete File response: ", deleteFileResponse)
+        }
+        //Get entries in list  and delete them
         //decrement number of readers from all books in list
+        console.log("deleting entries");
         const entriesInList = await List.findOne({userId: userFound._id})
             .populate({path: "entries", select: "book"})
             .lean()
@@ -315,24 +326,35 @@ export const deleteUserByUsername = async (req, res) => {
             //console.log("RESULTS: ", resultEntries, resultBooks);
         }
         
-        List.findOneAndDelete({userId: userFound._id}, function (error, docs) { 
-            if (error){
-                return res.status(500).json(error)
-            }
-            else{
-                console.log("Deleted List: ", docs);
-            }
-        });
-        
-        User.findByIdAndDelete(userFound._id, function (err, docs) {
-            if (err){
-                return res.status(500).json({message: err})
-            }
-            else{
-                console.log("Deleted User: ", docs);
-            }
-        });
+        console.log("delete list");
+        //delete user's list
+        const deletedList = await List.findOneAndDelete({userId: userFound._id});
+        console.log("deletedList: ", deletedList)
 
+        console.log("deleting ", userFound.username, "from follow lists");
+        
+        //remove deleted user from all following arrays
+        const removeFromFollowers = await User.updateMany(
+            {_id: {$in: followers}}, 
+            {$pull: {
+                following: userFound._id
+            }}
+        )
+        //remove user from all follower arrays
+        const removeFromFollowing = await User.updateMany(
+            {_id: {$in: following}},
+            {$pull: {
+                followers: userFound._id
+            }}
+        )
+
+        console.log("remove from following: ", removeFromFollowing, " remove from followers: ", removeFromFollowers);
+
+        //delete user
+        console.log("delete user");
+        const deletedUser = await User.findByIdAndDelete(userFound._id);
+        console.log("Deleted User: ", deletedUser);
+        
         return res.status(200).json({
             message: `User ${userFound.username} has been deleted, and list`,
         })
@@ -354,8 +376,13 @@ export const deleteUserById = async (req,res) => {
         //Find all entries belonging to user
         const entriesInList = await List.findOne({userId: req.userId})
             .populate({path: "entries", select: "book"})
-            .lean()
-            
+            .lean();
+
+        
+        //delete aws s3 stored image
+        if(foundUser.image!= ""){
+            await deleteFile(req.userId)
+        }
         //delete entries and decrement books reader counts
         if(entriesInList.entries[0]){
             const entriesToDelete = entriesInList.entries.map(entry => entry._id);

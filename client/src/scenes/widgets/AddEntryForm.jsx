@@ -28,7 +28,7 @@ const AddEntryForm = ({googleBook}) => {
         startDate: bookInList ? bookInList.startDate : '',
         endDate: bookInList ? bookInList.endDate : '',
         rating: bookInList ? bookInList.rating : '',
-        status: bookInList ? bookInList.status : '',
+        status: bookInList ? bookInList.status : 'Planning',
         page: bookInList ? bookInList.page : ''
     }
 
@@ -45,7 +45,7 @@ const AddEntryForm = ({googleBook}) => {
             "End date can't be before start date"
             ).nullable(true),
         rating: yup.number().min(0).max(10).nullable(true),
-        status: yup.string().oneOf(["Planning", "Completed", "Reading", "Dropped"]).nullable(true),
+        status: yup.string().oneOf(["Planning", "Completed", "Reading", "Dropped"]).nullable(false),
         page: yup.number().min(0).max(bookData.pages || 10000).typeError("Must be number").nullable(true)
     
     })

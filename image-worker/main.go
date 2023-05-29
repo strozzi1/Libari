@@ -111,6 +111,8 @@ func main() {
 		fmt.Println(err)
 		log.Fatal("Error loading .env file")
 	}
+
+	fmt.Println(os.Getenv("AWS_REGION"))
 	queueName := "libari-image-resize-queue"
 
 	sqsClient, err := sqsclient.New()

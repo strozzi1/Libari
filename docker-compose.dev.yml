@@ -17,6 +17,8 @@ services:
       - mongo-data:/data/db
   image-resize-service:
     build: ./image-worker
+    env_file:
+      - ./server/.env.dev
 volumes:
   mongo-data: 
     driver: local
