@@ -1,17 +1,39 @@
 import { Formik } from "formik"
 import * as yup from "yup";
-import { Box, Button, TextField, Typography, useMediaQuery, useTheme } from "@mui/material"
+import { Box, Button, Modal, TextField, Typography, useMediaQuery, useTheme } from "@mui/material"
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DropZone from "react-dropzone";
 import FlexBetween from "../../components/FlexBetween";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { BASE_URL } from "../../env";
+import { useState } from "react";
+import { setLogout } from "../../state";
 
+const modalStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    bgcolor: 'background.paper',
+    borderRadius: "9px",
+    width: '50%',
+    boxShadow: 24,
+    textAlign: 'center',
+    p: 4,
+    outline: 0,
+    border: "none",
+    "&:focus": {
+        outline: 0,
+        border: "none"
+    }
+}
 
 const EditUserForm = ({user}) => {
     const {palette} = useTheme()
     const isNonMobile = useMediaQuery("(min-width:600px)");
+    const dispatch = useDispatch();
     const token = useSelector((state) => state.token)
+    const [isDeleteModal, setIsDeleteModal] = useState(false)
 
     const initialUsernameValues = {
         username: user.username || ""
@@ -75,7 +97,22 @@ const EditUserForm = ({user}) => {
             }
         );
         const data = await updatedUserResponse.json();
-        console.log("update user res.data: ", data)
+    }
+
+
+    const handleDeleteAccount = async () => {
+        const deleteUser = await fetch(
+            `${BASE_URL}/user/${user.username}`,
+            {
+                method:"DELETE",
+                headers: {
+                    //"Content-Type": "multipart/form-data",
+                    "Access-Control-Allow-Origin": "*",
+                    Authorization: `Bearer ${token}`
+                },
+            }
+        );
+        dispatch(setLogout());
     }
 
     return (
@@ -107,9 +144,42 @@ const EditUserForm = ({user}) => {
                         fontWeight="500" 
                         variant="h5" 
                         color={palette.primary.main}
-                        sx={{mb: "1.5rem", gridColumn: "span 4"}}>
+                        sx={{mb: "1.5rem", gridColumn: "span 3"}}>
                             {user.username}
                         </Typography>
+
+                        <Button
+                            onClick={()=>setIsDeleteModal(true)}
+                            sx={{
+                                m: "0.4rem 0", 
+                                p: ".4rem", 
+                                backgroundColor: palette.neutral.medium,
+                                color: palette.background.alt,
+                                "&:hover": {backgroundColor: 'red'},
+                                gridColumn: "span 1"
+                            }}
+                        >Delete Account</Button>
+                        <Modal open={isDeleteModal} onClose={()=>setIsDeleteModal(false)}>
+                            <Box sx={modalStyle}>
+                                    <Typography
+                                        fontWeight="500" 
+                                        variant="h5" 
+                                        color={palette.primary.main}
+                                        sx={{mb: "1.5rem", gridColumn: "span 3"}}
+                                    >Are you sure?</Typography>
+                                    <Button
+                                        onClick={handleDeleteAccount}
+                                        sx={{
+                                            m: "0.4rem 0", 
+                                            p: ".4rem", 
+                                            backgroundColor: palette.neutral.medium,
+                                            color: palette.background.alt,
+                                            "&:hover": {backgroundColor: 'red'},
+                                            gridColumn: "span 1"
+                                        }}
+                                    >Delete</Button>
+                            </Box>
+                        </Modal>
                         
                         <TextField
                         value={values.username || ''}

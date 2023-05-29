@@ -4,7 +4,7 @@ import Entry from "../models/Entry.js";
 import Book from "../models/Book.js";
 import bcrypt from "bcrypt"
 
-import {uploadFile, getObjectSignedUrl, sendSQSMessage} from "../lib/aws.js"
+import {uploadFile, deleteFile, getObjectSignedUrl, sendSQSMessage} from "../lib/aws.js"
 
 const cloudFrontBaseURL = process.env.AWS_CLOUDFRONT_BASE_URL
 
@@ -286,12 +286,13 @@ export const removeFollowing = async (req, res) => {
 export const deleteUserByUsername = async (req, res) => {
     try{
         const userFound = await User.findOne({username: req.params.username})
+        //delete s3 stored image file
         
         if(!userFound) return res.status(400).json({message: "No user with provided username"});
         //console.log (req.role)
         if(req.role !== "admin" && userFound._id.valueOf() !== req.userId) return res.status(400).json({message: "Not Authorized to delete this user"});
         //Get entries in list  and delete them
-        
+        await deleteFile(req.userId)
         //decrement number of readers from all books in list
         const entriesInList = await List.findOne({userId: userFound._id})
             .populate({path: "entries", select: "book"})
@@ -333,6 +334,8 @@ export const deleteUserByUsername = async (req, res) => {
             }
         });
 
+        
+
         return res.status(200).json({
             message: `User ${userFound.username} has been deleted, and list`,
         })
@@ -355,7 +358,7 @@ export const deleteUserById = async (req,res) => {
         const entriesInList = await List.findOne({userId: req.userId})
             .populate({path: "entries", select: "book"})
             .lean()
-            
+        await deleteFile(req.userId)
         //delete entries and decrement books reader counts
         if(entriesInList.entries[0]){
             const entriesToDelete = entriesInList.entries.map(entry => entry._id);
