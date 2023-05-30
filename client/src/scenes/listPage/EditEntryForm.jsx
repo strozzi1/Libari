@@ -14,8 +14,8 @@ const EditEntryForm = ({entry, close}) => {
     
     const initialEntryValues = {
         review: entry.review || "",
-        startDate: entry.startDate || '',
-        endDate: entry.endDate || '',
+        startDate: entry.startDate || undefined,
+        endDate: entry.endDate || undefined,
         rating: entry.rating || 0,
         status: entry.status || '',
         page: entry.page || 0
@@ -144,7 +144,7 @@ const EditEntryForm = ({entry, close}) => {
                         <TextField
                             type="date"
                             InputLabelProps={{shrink: true}}
-                            value={values.startDate ? moment(values.startDate).format("YYYY-MM-DD"): ''}
+                            value={values.startDate ? moment(values.startDate).format("YYYY-MM-DD"): undefined}
                             onBlur={handleBlur}
                             onChange={handleChange}
                             name="startDate"

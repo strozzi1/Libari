@@ -27,8 +27,8 @@ const AddEntryForm = ({googleBook}) => {
     
     const initialEntryValues = {
         review: bookInList ? bookInList.review : "",
-        startDate: bookInList ? bookInList.startDate : '',
-        endDate: bookInList ? bookInList.endDate : '',
+        startDate: bookInList ? bookInList.startDate : undefined,
+        endDate: bookInList ? bookInList.endDate : undefined,
         rating: bookInList ? bookInList.rating : 0,
         status: bookInList ? bookInList.status : 'Planning',
         page: bookInList ? bookInList.page : 0
@@ -174,7 +174,7 @@ const AddEntryForm = ({googleBook}) => {
                         <TextField
                             type="date"
                             InputLabelProps={{shrink: true}}
-                            value={values.startDate ? moment(values.startDate).format("YYYY-MM-DD") : ''}
+                            value={values.startDate ? moment(values.startDate).format("YYYY-MM-DD") : undefined}
                             onBlur={handleBlur}
                             onChange={handleChange}
                             name="startDate"
@@ -187,7 +187,7 @@ const AddEntryForm = ({googleBook}) => {
                         <TextField
                             type="date"
                             InputLabelProps={{shrink: true}}
-                            value={values.endDate ? moment(values.endDate).format("YYYY-MM-DD"): ''}
+                            value={values.endDate ? moment(values.endDate).format("YYYY-MM-DD"): undefined}
                             onBlur={handleBlur}
                             onChange={handleChange}
                             name="endDate"
