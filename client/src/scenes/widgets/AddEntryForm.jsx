@@ -40,9 +40,9 @@ const AddEntryForm = ({googleBook}) => {
 
     const addEntrySchema = yup.object().shape({
         review: yup.string().max(1000).nullable(true),
-        startDate: yup.date().nullable(true).default(null).min(bookData.released || "1000-01-01", 
+        startDate: yup.date().nullable(true).default(undefined).min(bookData.released || "1000-01-01", 
             "Start data can't be before publish date"),
-        endDate: yup.date().nullable(true).default(null).min(
+        endDate: yup.date().nullable(true).default(undefined).min(
             yup.ref('startDate'),
             "End date can't be before start date"
             ),
