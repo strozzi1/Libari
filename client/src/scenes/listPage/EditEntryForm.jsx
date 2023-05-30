@@ -23,11 +23,11 @@ const EditEntryForm = ({entry, close}) => {
 
     const editEntrySchema = yup.object().shape({
         review: yup.string().max(1000),
-        startDate: yup.date().min(entry.book.released || "01-01-1900").nullable(true),
-        endDate: yup.date().min(
+        startDate: yup.date().nullable(true).default(null).min(entry.book.released || "01-01-1900"),
+        endDate: yup.date().nullable(true).default(null).min(
             yup.ref('startDate'),
             "End date can't be before start date"
-            ).nullable(true),
+            ),
         rating: yup.number().min(0).max(10).nullable(true),
         status: yup.string().oneOf(["Planning", "Completed", "Reading", "Dropped"]).nullable(true),
         page: yup.number().min(0).max(entry.book.pages || 10000).typeError("Must be number").nullable(true)
