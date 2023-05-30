@@ -13,21 +13,21 @@ const EditEntryForm = ({entry, close}) => {
     const dispatch = useDispatch();
     
     const initialEntryValues = {
-        review: entry.review || '',
-        startDate: entry.startDate || '',
-        endDate: entry.endDate || '',
-        rating: entry.rating || '',
+        review: entry.review || "",
+        startDate: entry.startDate || undefined,
+        endDate: entry.endDate || undefined,
+        rating: entry.rating || 0,
         status: entry.status || '',
-        page: entry.page || ''
+        page: entry.page || 0
     }
 
     const editEntrySchema = yup.object().shape({
         review: yup.string().max(1000),
-        startDate: yup.date().min(entry.book.released || "01-01-1900").nullable(true),
-        endDate: yup.date().min(
+        startDate: yup.date().nullable(true).default(undefined).min(entry.book.released || "01-01-1900"),
+        endDate: yup.date().nullable(true).default(undefined).min(
             yup.ref('startDate'),
             "End date can't be before start date"
-            ).nullable(true),
+            ),
         rating: yup.number().min(0).max(10).nullable(true),
         status: yup.string().oneOf(["Planning", "Completed", "Reading", "Dropped"]).nullable(true),
         page: yup.number().min(0).max(entry.book.pages || 10000).typeError("Must be number").nullable(true)
@@ -143,7 +143,8 @@ const EditEntryForm = ({entry, close}) => {
                         {/*Change from text fields to DatePicker */}
                         <TextField
                             type="date"
-                            value={moment(values.startDate || '').format("YYYY-MM-DD")}
+                            InputLabelProps={{shrink: true}}
+                            value={values.startDate ? moment(values.startDate).format("YYYY-MM-DD"): undefined}
                             onBlur={handleBlur}
                             onChange={handleChange}
                             name="startDate"
@@ -155,7 +156,8 @@ const EditEntryForm = ({entry, close}) => {
                         </TextField>
                         <TextField
                             type="date"
-                            value={moment(values.endDate || '').format("YYYY-MM-DD")}
+                            InputLabelProps={{shrink: true}}
+                            value={values.endDate ? moment(values.endDate).format("YYYY-MM-DD") : undefined}
                             onBlur={handleBlur}
                             onChange={handleChange}
                             name="endDate"

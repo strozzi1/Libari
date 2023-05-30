@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { addNewEntry, deleteEntry, removeEntry, updateEntry } from "../../state";
 
 
+
+
 const AddEntryForm = ({googleBook}) => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const {palette} = useTheme();
@@ -25,11 +27,11 @@ const AddEntryForm = ({googleBook}) => {
     
     const initialEntryValues = {
         review: bookInList ? bookInList.review : "",
-        startDate: bookInList ? bookInList.startDate : '',
-        endDate: bookInList ? bookInList.endDate : '',
-        rating: bookInList ? bookInList.rating : '',
+        startDate: bookInList ? bookInList.startDate : undefined,
+        endDate: bookInList ? bookInList.endDate : undefined,
+        rating: bookInList ? bookInList.rating : 0,
         status: bookInList ? bookInList.status : 'Planning',
-        page: bookInList ? bookInList.page : ''
+        page: bookInList ? bookInList.page : 0
     }
 
     useEffect(() => {
@@ -38,12 +40,12 @@ const AddEntryForm = ({googleBook}) => {
 
     const addEntrySchema = yup.object().shape({
         review: yup.string().max(1000).nullable(true),
-        startDate: yup.date().min(bookData.released || "1000-01-01", 
-            "Start data can't be before publish date").nullable(true),
-        endDate: yup.date().min(
+        startDate: yup.date().nullable(true).default(undefined).min(bookData.released || "1000-01-01", 
+            "Start data can't be before publish date"),
+        endDate: yup.date().nullable(true).default(undefined).min(
             yup.ref('startDate'),
             "End date can't be before start date"
-            ).nullable(true),
+            ),
         rating: yup.number().min(0).max(10).nullable(true),
         status: yup.string().oneOf(["Planning", "Completed", "Reading", "Dropped"]).nullable(false),
         page: yup.number().min(0).max(bookData.pages || 10000).typeError("Must be number").nullable(true)
@@ -171,7 +173,8 @@ const AddEntryForm = ({googleBook}) => {
                         {/* TODO: Change from text fields to DatePicker */}
                         <TextField
                             type="date"
-                            value={moment(values.startDate || '').format("YYYY-MM-DD")}
+                            InputLabelProps={{shrink: true}}
+                            value={values.startDate ? moment(values.startDate).format("YYYY-MM-DD") : undefined}
                             onBlur={handleBlur}
                             onChange={handleChange}
                             name="startDate"
@@ -183,7 +186,8 @@ const AddEntryForm = ({googleBook}) => {
                         </TextField>
                         <TextField
                             type="date"
-                            value={moment(values.endDate || undefined).format("YYYY-MM-DD")}
+                            InputLabelProps={{shrink: true}}
+                            value={values.endDate ? moment(values.endDate).format("YYYY-MM-DD"): undefined}
                             onBlur={handleBlur}
                             onChange={handleChange}
                             name="endDate"
