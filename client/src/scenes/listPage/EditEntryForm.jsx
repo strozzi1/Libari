@@ -143,6 +143,7 @@ const EditEntryForm = ({entry, close}) => {
                         {/*Change from text fields to DatePicker */}
                         <TextField
                             type="date"
+                            defaultValue={null}
                             InputLabelProps={{shrink: true}}
                             value={values.startDate ? moment(values.startDate).format("YYYY-MM-DD"): undefined}
                             onBlur={handleBlur}

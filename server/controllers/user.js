@@ -135,7 +135,7 @@ export const updateUserById = async (req, res) => {
         //const updatedUser = await User.findByIdAndUpdate(req.userId, {image, bio, location})
         res.status(200).json(updatedUser);
     } catch (error) {
-        res.status(500).json(error)
+        res.status(500).json({message: error.message})
     }
 }
 
@@ -167,7 +167,7 @@ export const updateUserPassword = async (req, res) => {
         })
 
     } catch (error) {
-        res.status(500).json(error);
+        res.status(500).json({message: error.message});
     }
 }
 
@@ -179,9 +179,10 @@ body: {
 }
 */
 export const updateUsername = async (req, res) => {
-    if (!req.body.newUsername) return res.status(404).json({message: "No new Username provided"});
+    console.log("REQ.BODY: ",req.body);
+    if (!req.body.username) return res.status(404).json({message: "No new Username provided"});
     try {
-        const { newUsername } = req.body;
+        const newUsername  = req.body.username;
         const updatedUser = await User.findByIdAndUpdate(
             req.userId, 
             {username: newUsername}, 
@@ -195,7 +196,7 @@ export const updateUsername = async (req, res) => {
 
         return res.status(200).json({updatedUser, updatedList});
     } catch(error) {
-        res.status(500).json(error)
+        res.status(500).json({message: error.message})
     }
 }
 
@@ -360,7 +361,7 @@ export const deleteUserByUsername = async (req, res) => {
         })
         
     } catch (error) {
-        res.status(500).json(error)
+        res.status(500).json({message: error.message})
     }
 }
 
@@ -387,7 +388,6 @@ export const deleteUserById = async (req,res) => {
         if(entriesInList.entries[0]){
             const entriesToDelete = entriesInList.entries.map(entry => entry._id);
             const booksToEdit = entriesInList.entries.map(entry => entry.book._id);
-            //console.log("BOOKS: ", booksToEdit, "ENTRIES: ", entriesToDelete);
             await Book.updateMany(
                 {_id:
                     { $in: booksToEdit}

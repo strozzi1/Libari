@@ -1,17 +1,19 @@
-import { Box, Typography, useMediaQuery } from "@mui/material";
+import { Box, Paper, Typography, useMediaQuery } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../navbar";
 import BioWidget from "../widgets/BioWidget";
 import BookGridWidget from "../widgets/BookGridWidget";
 import UserUpdates from "../widgets/UserUpdates";
 import UserWidget from "../widgets/UserWidget";
 import { BASE_URL } from "../../env";
+import WidgetWrapper from "../../components/WidgetWrapper";
 
 const ProfilePage = () => {
     const params = useParams()
     const username = params.username
     const isNonMobileScreens = useMediaQuery("(min-width:1000px)")
+    //const navigate = useNavigate();
     const [user, setUser] = useState({})
     const [entries, setEntries] = useState([])
 
@@ -21,7 +23,8 @@ const ProfilePage = () => {
                 method: "GET"
             });
         const data = await response.json();
-        setUser(data);
+        response.ok ? setUser(data) : setUser(null)
+        
         console.log("DATA: ",data)
     }
 
@@ -40,6 +43,17 @@ const ProfilePage = () => {
         getEntries()
     },[params])
 
+    if(!user){
+        return (
+            <Box>
+                <Navbar />
+                <WidgetWrapper>
+                    <Typography>No such user "{username}" found...</Typography>
+                </WidgetWrapper>
+            </Box>
+            
+        )
+    }
 
     return (
         <Box>

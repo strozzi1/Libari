@@ -3,11 +3,10 @@ import RecentUpdate from "./RecentUpdate"
 
 const UserUpdates = ({entries}) => {
 
-
+    console.log(entries)
     return (
-        
         <Grid spacing={1.0} container>
-        {entries.map((currEntry) =>
+        {entries.sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt)).map((currEntry) =>
         <Grid key={currEntry._id} item xs={12}>
             <RecentUpdate entry={currEntry}/>
         </Grid>
