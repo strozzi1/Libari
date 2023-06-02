@@ -3,6 +3,12 @@ import RecentUpdate from "./RecentUpdate"
 
 const UserUpdates = ({entries}) => {
 
+    if(!entries[0]){
+        return (
+            null
+        )
+    }
+
     console.log(entries)
     return (
         <Grid spacing={1.0} container>
