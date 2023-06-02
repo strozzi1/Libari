@@ -3,7 +3,7 @@ import RecentUpdate from "./RecentUpdate"
 
 const UserUpdates = ({entries}) => {
 
-    if(!entries[0]){
+    if(!entries){
         return (
             null
         )
