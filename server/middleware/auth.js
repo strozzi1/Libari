@@ -19,7 +19,7 @@ export const requireAuthentication = async (req, res, next) => {
         next();
     } catch (err) {
         console.log(err.message)
-        res.status(400).json({error: "Invalid Authorization Token"});
+        res.status(400).json({message: "Invalid Authorization Token"});
     }
 }
 
@@ -37,14 +37,14 @@ export const checkAuthentication = function (req, res, next) {
     const authHeaderParts = authHeader.split(' ');
     const token = authHeaderParts[0] === 'Bearer' ?
         authHeaderParts[1] : null;
-  
+
     try {
-      const payload = Jwt.verify(token, secretKey);
-      req.userId = payload.userId;
-      req.role = payload.role;
-      next();
+        const payload = Jwt.verify(token, secretKey);
+        req.userId = payload.userId;
+        req.role = payload.role;
+        next();
     } catch (err) {
-      console.log("not logged in");
-      next();
+        console.log("not logged in");
+        next();
     }
-  };
+};

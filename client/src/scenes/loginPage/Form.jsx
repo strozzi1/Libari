@@ -5,7 +5,9 @@ import {
     TextField,
     useMediaQuery,
     Typography,
-    useTheme
+    useTheme,
+    Snackbar,
+    Alert
 } from "@mui/material"
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import {Formik} from "formik"
@@ -45,6 +47,8 @@ const initialValuesLogin = {
 
 const Form = () => {
     const [pageType, setPageType] = useState("login");
+    const [isRegisterError, setIsRegisterError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
     const { palette } = useTheme();
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -52,6 +56,20 @@ const Form = () => {
     const isLogin = pageType === "login";
     const isRegister = pageType ==="register";
 
+    const handleRegisterError = (reason) =>{
+        setIsRegisterError(true);
+        setErrorMessage(reason);
+    }
+
+    const handleCloseRegisterError = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setIsRegisterError(false);
+        setErrorMessage("")
+    }
+    
+    //TODO: MOVE THESE TO SEPARATE API FILE
     const register = async (values, onSubmitProps) => {
         
         //this allows us to send form info with image
@@ -62,9 +80,9 @@ const Form = () => {
         if(values.picture){
             formData.append('imagePath', values.picture.name);
         }
-        for (const pair of formData.entries()) {
+        /*for (const pair of formData.entries()) {
             console.log(`${pair[0]}, ${pair[1]}`);
-        }
+        }*/
 
         const savedUserResponse = await fetch(
             `${BASE_URL}/auth/register`,
@@ -74,17 +92,31 @@ const Form = () => {
                     "Access-Control-Allow-Origin": "*",
                 },
                 body: formData
-                //body: formData
             }
         );
-        
+
+        if(!savedUserResponse.ok){
+            const message = await savedUserResponse.json()
+            console.log(message)
+            handleRegisterError(message.error)
+            return;
+        }
+
         const savedUser = await savedUserResponse.json();
         
         onSubmitProps.resetForm();
-        
-        //TODO: login user immediately upon success
+
         if (savedUser) {
-            setPageType("login");
+            setIsRegisterError(false);
+            setErrorMessage("")
+            //setPageType("login");
+            dispatch(
+                setLogin({
+                    user: savedUser.user,
+                    token: savedUser.token,
+                    list: []
+                })
+            )
         }
     };
 
@@ -98,7 +130,13 @@ const Form = () => {
             }
         );
         
-        
+        if(!loggedInUserResponse.ok){
+            const message = await loggedInUserResponse.json()
+            console.log(message)
+            handleRegisterError(message.message)
+            return;
+        }
+
         const loggedIn = await loggedInUserResponse.json();
         onSubmitProps.resetForm();
 
@@ -120,6 +158,7 @@ const Form = () => {
     }
 
     return (
+        <>
         <Formik 
             onSubmit={handleFormSubmit}
             initialValues={isLogin ? initialValuesLogin : initialValuesRegister}
@@ -146,6 +185,7 @@ const Form = () => {
                     >
                         {isRegister && (
                             <>
+                                
                                 <TextField
                                 label="username"
                                 onBlur={handleBlur}
@@ -263,6 +303,12 @@ const Form = () => {
                 </form>
             )}
         </Formik>
+        <Snackbar open={isRegisterError} autoHideDuration={6000} onClose={handleCloseRegisterError}>
+            <Alert onClose={handleCloseRegisterError} severity="error" sx={{ width: '100%' }}>
+                {errorMessage}
+            </Alert>
+        </Snackbar>
+        </>
     )
 
 }

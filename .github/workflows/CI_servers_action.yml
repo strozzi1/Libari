@@ -105,7 +105,8 @@ jobs:
           docker stop libari-image-worker
           docker rm libari-api
           docker rm libari-image-worker
-          docker pull strozzij/libari-api-server
-          docker pull strozzij/libari-image-resize-service
+          docker rmi -f $(docker image ls -a -q)
+          docker pull strozzij/libari-api-server:latest
+          docker pull strozzij/libari-image-resize-service:latest
           docker run --name libari-api --env-file .env.prod -p 5001:5001 -d strozzij/libari-api-server:latest
           docker run --name libari-image-worker --env-file .env.prod -d strozzij/libari-image-resize-service:latest

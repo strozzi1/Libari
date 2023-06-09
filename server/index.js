@@ -42,8 +42,8 @@ app.use("/entry", entryRoutes)
 app.use("/books", bookRoutes)
 app.use("/google-relay", relayRoutes)
 app.use("/health", function(req, res, next){
-    res.status(201).send(
-        "OK"
+    res.status(200).send(
+        "OK!"
     )
 })
 

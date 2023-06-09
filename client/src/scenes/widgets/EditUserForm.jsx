@@ -1,6 +1,6 @@
 import { Formik } from "formik"
 import * as yup from "yup";
-import { Box, Button, Modal, TextField, Typography, useMediaQuery, useTheme } from "@mui/material"
+import { Box, Button, Modal, TextField, Typography, Alert, Snackbar, useMediaQuery, useTheme } from "@mui/material"
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DropZone from "react-dropzone";
 import FlexBetween from "../../components/FlexBetween";
@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { BASE_URL } from "../../env";
 import { useState } from "react";
 import { setLogout } from "../../state";
+import { useNavigate } from "react-router-dom";
 
 const modalStyle = {
     position: 'absolute',
@@ -33,7 +34,10 @@ const EditUserForm = ({user}) => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const dispatch = useDispatch();
     const token = useSelector((state) => state.token)
+    const navigate = useNavigate();
     const [isDeleteModal, setIsDeleteModal] = useState(false)
+    const [isError, setIsError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const initialUsernameValues = {
         username: user.username || ""
@@ -63,8 +67,41 @@ const EditUserForm = ({user}) => {
         image: yup.string()
     })
 
-    const handleSubmitUsername = (values, onSubmitProps) => {
+    const handleCloseError = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setIsError(false);
+        setErrorMessage("")
+    }
+
+    const handleUpdateError = (message) => {
+        setIsError(true)
+        setErrorMessage(message)
+    }
+
+    const handleSubmitUsername = async (values, onSubmitProps) => {
         console.log(values)
+        const updatedUserResponse = await fetch(
+            `${BASE_URL}/user/updateUsername`,
+            {
+                method:"PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(values)
+                
+            }
+        );
+
+        if(!updatedUserResponse.ok){
+            const {message} = await updatedUserResponse.json()
+            console.log(message)
+            handleUpdateError(message)
+            return;
+        }
         //dispatch()
     }
 
@@ -96,12 +133,20 @@ const EditUserForm = ({user}) => {
                 body: formData
             }
         );
+
+        if(!updatedUserResponse.ok){
+            const message = await updatedUserResponse.json()
+            console.log(message)
+            handleUpdateError(message)
+            return;
+        }
+
         const data = await updatedUserResponse.json();
     }
 
 
     const handleDeleteAccount = async () => {
-        const deleteUser = await fetch(
+        const deleteUserResponse = await fetch(
             `${BASE_URL}/user/${user.username}`,
             {
                 method:"DELETE",
@@ -112,7 +157,16 @@ const EditUserForm = ({user}) => {
                 },
             }
         );
+
+        if(!deleteUserResponse.ok){
+            const message = await deleteUserResponse.json()
+            console.log(message)
+            handleUpdateError(message)
+            return;
+        }
         dispatch(setLogout());
+        navigate("/home");
+        
     }
 
     return (
@@ -376,6 +430,12 @@ const EditUserForm = ({user}) => {
             )}
 
         </Formik>
+
+        <Snackbar open={isError} autoHideDuration={6000} onClose={handleCloseError}>
+            <Alert onClose={handleCloseError} severity="error" sx={{ width: '100%' }}>
+                {errorMessage}
+            </Alert>
+        </Snackbar>
         </>
     )
 }
