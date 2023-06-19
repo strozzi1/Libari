@@ -4,7 +4,7 @@ import {
     PersonAddOutlined,
     PersonRemoveOutlined,
 } from '@mui/icons-material'
-import { Box, Typography, Divider, useTheme, IconButton, Modal } from '@mui/material'
+import { Box, Typography, Divider, useTheme, IconButton, Modal, useMediaQuery } from '@mui/material'
 import UserImage from '../../components/UserImage'
 import FlexBetween from '../../components/FlexBetween'
 import WidgetWrapper from '../../components/WidgetWrapper'
@@ -22,7 +22,7 @@ const UserWidget = ({username}) => {
     const [follows, setFollows] = useState([])
     const [followingBool, setFollowingBool] = useState(false)
     const [isEditModal, setIsEditModal] = useState(false)
-    
+    const isNonMobileScreens = useMediaQuery("(min-width:1000px)")
     const { palette } = useTheme();
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -34,7 +34,7 @@ const UserWidget = ({username}) => {
     //const neutralLight = palette.neutral.light;
     const modalStyle = {
         position: 'absolute',
-        top: '50%',
+        top: useMediaQuery("(min-width:600px)") ? '50%' : '60%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
         bgcolor: 'background.paper',
@@ -130,8 +130,8 @@ const UserWidget = ({username}) => {
 
     return (
         <WidgetWrapper>
-            <Modal open={isEditModal} onClose={() => setIsEditModal(false)}>
-                <Box sx={modalStyle}><EditUserForm user={user}/></Box>
+            <Modal open={isEditModal} onClose={() => setIsEditModal(false)} sx={{overflow: "scroll", bgcolor: "rgba(0, 0, 0, 0.6)"}} >
+                <Box sx={modalStyle} width={ isNonMobileScreens ? "50%" : "93%"}><EditUserForm user={user}/></Box>
             </Modal>
         <FlexBetween
             gap="0.5rem"

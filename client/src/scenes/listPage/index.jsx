@@ -9,8 +9,9 @@ import ListWidget from "../widgets/ListWidget";
 
 const ListPage = () => {
     const params = useParams()
-    
     const isNonMobileScreens = useMediaQuery("(min-width:1000px)")
+
+    
     
     return (
         <Box>
