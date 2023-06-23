@@ -7,8 +7,8 @@ import UserWidget from "../widgets/UserWidget";
 
 const HomePage = () => {
     const isNonMobileScreens = useMediaQuery("(min-width:1000px)")
-    const bookEntries = useSelector((state) => state.entries)
-    const {username} = useSelector((state) => state.user)
+    const bookEntries = useSelector((state) => state.auth.entries)
+    const {username} = useSelector((state) => state.auth.user)
 
 
     return (

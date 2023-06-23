@@ -150,8 +150,8 @@ body: {
 }
 */
 export const updateUserPassword = async (req, res) => {
-    if(!req.body.user || !req.body.user._id || !req.body.user.password) return res.status(401).json({message: "Invalid request provided, need userId and password"})
-    const { _id, password } = req.body.user;
+    //if(!req.body.user || !req.body.user._id || !req.body.user.password) return res.status(401).json({message: "Invalid request provided, need userId and password"})
+    const { _id, password } = req.body;
     if (_id != req.userId && req.role !== 'admin') return res.status(401).json({message: "Not authorized"});
     try {
         const salt = await bcrypt.genSalt();

@@ -171,7 +171,7 @@ const SearchResultBookItem = ({book}) => {
     const {palette} = useTheme()
     const neutralLight = palette.neutral.light;
     const dark = palette.neutral.dark;
-    const authedUser = useSelector((state)=> state.user)
+    const authedUser = useSelector((state)=> state.auth.user)
     const [isHovering, setIsHovering] = useState(false)
     const [isBookModal, setIsBookModal] = useState(false);
     const isNonMobileScreen = useMediaQuery("(min-width: 450px)");

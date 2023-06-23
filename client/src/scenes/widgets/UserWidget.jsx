@@ -26,8 +26,8 @@ const UserWidget = ({username}) => {
     const { palette } = useTheme();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const token = useSelector((state) => state.token);
-    const loggedInUser = useSelector((state) => state.user)
+    const token = useSelector((state) => state.auth.token);
+    const loggedInUser = useSelector((state) => state.auth.user)
     const dark = palette.neutral.dark
     const medium = palette.neutral.medium
     const main = palette.neutral.main

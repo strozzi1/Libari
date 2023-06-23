@@ -18,6 +18,7 @@ import {setLogin} from "../../state";
 import DropZone from "react-dropzone";
 import FlexBetween from "../../components/FlexBetween";
 import { BASE_URL } from "../../env";
+import { useNotification } from "../../utils/useNotification";
 
 const registerSchema = yup.object().shape({
     username: yup.string().required("required"),
@@ -47,27 +48,15 @@ const initialValuesLogin = {
 
 const Form = () => {
     const [pageType, setPageType] = useState("login");
-    const [isRegisterError, setIsRegisterError] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
     const { palette } = useTheme();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const isLogin = pageType === "login";
     const isRegister = pageType ==="register";
+    const { displayNotificationAction } = useNotification();
 
-    const handleRegisterError = (reason) =>{
-        setIsRegisterError(true);
-        setErrorMessage(reason);
-    }
-
-    const handleCloseRegisterError = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setIsRegisterError(false);
-        setErrorMessage("")
-    }
+    
     
     //TODO: MOVE THESE TO SEPARATE API FILE
     const register = async (values, onSubmitProps) => {
@@ -98,7 +87,7 @@ const Form = () => {
         if(!savedUserResponse.ok){
             const message = await savedUserResponse.json()
             console.log(message)
-            handleRegisterError(message.error)
+            displayNotificationAction({message: message.error, type: 'error'})
             return;
         }
 
@@ -107,8 +96,7 @@ const Form = () => {
         onSubmitProps.resetForm();
 
         if (savedUser) {
-            setIsRegisterError(false);
-            setErrorMessage("")
+            
             //setPageType("login");
             dispatch(
                 setLogin({
@@ -133,7 +121,7 @@ const Form = () => {
         if(!loggedInUserResponse.ok){
             const message = await loggedInUserResponse.json()
             console.log(message)
-            handleRegisterError(message.message)
+            displayNotificationAction({message: message.message, type: "error"})
             return;
         }
 
@@ -303,11 +291,11 @@ const Form = () => {
                 </form>
             )}
         </Formik>
-        <Snackbar open={isRegisterError} autoHideDuration={6000} onClose={handleCloseRegisterError}>
+        {/*<Snackbar open={isRegisterError} autoHideDuration={6000} onClose={handleCloseRegisterError}>
             <Alert onClose={handleCloseRegisterError} severity="error" sx={{ width: '100%' }}>
                 {errorMessage}
             </Alert>
-        </Snackbar>
+        </Snackbar>*/}
         </>
     )
 

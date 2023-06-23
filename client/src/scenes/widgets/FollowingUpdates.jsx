@@ -7,7 +7,7 @@ import RecentUpdate from "./RecentUpdate";
 import { BASE_URL } from "../../env";
 
 const FollowingUpdates = () => {
-    const token = useSelector((state)=> state.token)
+    const token = useSelector((state)=> state.auth.token)
     const [hasQueried, setHasQueried] = useState(false)
     const [updatesList, setUpdatesList] = useState([])
     const fetchUpdates = async() => {

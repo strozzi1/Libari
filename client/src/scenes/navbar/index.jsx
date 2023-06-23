@@ -36,8 +36,8 @@ const Navbar = () => {
     const [searchText, setSearchText] = useState('');
     const dispatch = useDispatch()
     const navigate = useNavigate();
-    const user = useSelector((state) => state.user);
-    const token = useSelector((state)=> state.token)
+    const user = useSelector((state) => state.auth.user);
+    const token = useSelector((state)=> state.auth.token)
     const location = useLocation();
     const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
 
