@@ -195,10 +195,11 @@ const EditUserForm = ({user}) => {
                         }}
                     >
                         <Typography 
+                        paddingTop="10px"
                         fontWeight="500" 
                         variant="h5" 
                         color={palette.primary.main}
-                        sx={{mb: "1.5rem", gridColumn: "span 3"}}>
+                        sx={{mb: "1.5rem", gridColumn: isNonMobile ? "span 3" : "span 2"}}>
                             {user.username}
                         </Typography>
 
@@ -210,9 +211,10 @@ const EditUserForm = ({user}) => {
                                 backgroundColor: palette.neutral.medium,
                                 color: palette.background.alt,
                                 "&:hover": {backgroundColor: 'red'},
-                                gridColumn: "span 1"
+                                gridColumn: isNonMobile ? "span 1" : "span 2"
                             }}
                         >Delete Account</Button>
+
                         <Modal open={isDeleteModal} onClose={()=>setIsDeleteModal(false)}>
                             <Box sx={modalStyle}>
                                     <Typography
@@ -256,7 +258,7 @@ const EditUserForm = ({user}) => {
                                 backgroundColor: palette.primary.main,
                                 color: palette.background.alt,
                                 "&:hover": {color: palette.primary.main},
-                                gridColumn: "span 2"
+                                gridColumn: isNonMobile ? "span 2" : "span 4"
                             }}
                         >
                             Update Username
@@ -314,7 +316,7 @@ const EditUserForm = ({user}) => {
                                 backgroundColor: palette.primary.main,
                                 color: palette.background.alt,
                                 "&:hover": {color: palette.primary.main},
-                                gridColumn: "span 2"
+                                gridColumn: isNonMobile ? "span 2" : "span 4"
                             }}
                         >
                             Update Password

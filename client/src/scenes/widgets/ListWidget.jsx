@@ -1,12 +1,13 @@
 import { LibraryBooksOutlined, MoreHoriz } from "@mui/icons-material";
-import { Grid, useTheme, Box, ListItem, List, Rating, Avatar, Tooltip, Modal, useMediaQuery } from "@mui/material";
+import { Grid, useTheme, Box, ListItem, List, Rating, Avatar, Tooltip, Modal, useMediaQuery, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import WidgetWrapper from "../../components/WidgetWrapper";
 import EditEntryForm from "../listPage/EditEntryForm";
 import { updateEntry } from "../../state";
 import { BASE_URL } from "../../env";
-
+import FlexBetween from "../../components/FlexBetween";
+import useDebounce from "../../utils/useDebounce";
 
 
 const ListWidget = ({username}) => {
@@ -14,6 +15,7 @@ const ListWidget = ({username}) => {
     const [list, setList] = useState(null);
     const authedUser = useSelector((state) => state.user)
     const authedList = useSelector((state) => state.entries)
+    const isBiggerThanTablet = useMediaQuery("(min-width:650px)")
 
     const updateEntry = (updatedEntry) => {
         const updatedList = list.map((entry) => entry._id === updatedEntry._id ? updatedEntry : entry)
@@ -36,7 +38,6 @@ const ListWidget = ({username}) => {
 
     useEffect(() => {
         getList();
-        console.log("grabbed authed list again")
     }, [authedList]); //eslint-disable-line react-hooks/exhaustive-deps
 
     //TODO: Handle loading state (MUI SKELETON)
@@ -46,7 +47,7 @@ const ListWidget = ({username}) => {
 
     return (
         <WidgetWrapper>
-            <List>
+            <List> {isBiggerThanTablet &&
                 <ListItem>
                     <Grid container spacing={1.0} fontWeight="bold">
                         <Grid item xs={1}>
@@ -65,7 +66,7 @@ const ListWidget = ({username}) => {
                             <Box>Progress</Box>
                         </Grid>
                     </Grid>
-                </ListItem>
+                </ListItem> }
                 {list.map((entry) =>
                     <ListItem 
                     key={entry._id} 
@@ -90,6 +91,8 @@ const ListItemContent = ({entry, username, update}) => {
     const [hovering, setHovering] = useState(false)
     const [isEditModal, setIsEditModal] = useState(false);
     const isNonMobileScreens = useMediaQuery("(min-width:1000px)")
+    //const isNonMobileScreens = useMediaQuery("(min-width:1000px)")
+    const isBiggerThanTablet = useMediaQuery("(min-width:650px)")
     const dispatch = useDispatch()
     const token = useSelector((state) => state.token)
     const authedUsername = useSelector((state)=>state.user?.username)
@@ -107,6 +110,16 @@ const ListItemContent = ({entry, username, update}) => {
         setRating(updatedEntry.rating)
         update(updatedEntry)
     }
+
+    /*const truncate = (text) => {
+        const roomForText = (window.innerWidth - (window.innerWidth % 10))/10 - 5;
+        if (roomForText > text.length){
+            return text
+        }
+        return text.substring(0, roomForText) + "..."
+        
+    }*/
+
     
     const modalStyle = {
         position: 'absolute',
@@ -125,7 +138,12 @@ const ListItemContent = ({entry, username, update}) => {
         }
     };
 
+
+
     return (
+        <>
+        { 
+        isBiggerThanTablet ?
         <Grid container spacing={1.0} alignItems="center" onMouseOver={()=>setHovering(true)} onMouseOut={()=>setHovering(false)}>
             <Grid item xs={1}>
                 
@@ -171,17 +189,52 @@ const ListItemContent = ({entry, username, update}) => {
             }
             </Grid>
             {/* Modal Content */}
-            <Modal 
-                open={isEditModal}
-                onClose={handleCloseEditModal}>
-                <Box sx={modalStyle} width={isNonMobileScreens ? "50%" : "93%"}>
-                <WidgetWrapper >
-                    <EditEntryForm entry={entry} close={handleEditedEntry}/>
-                </WidgetWrapper>
-                </Box>
-            </Modal>
+            
             {/* End of Modal Content */}
         </Grid>
+        :
+        <Grid container 
+            spacing={0.5} alignItems="center" 
+            onMouseOver={()=>setHovering(true)} 
+            onMouseOut={()=>setHovering(false)}
+            style={{
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+            }}
+        >
+        <FlexBetween>
+            <Avatar sx={{ bgcolor: palette.primary.main, "&:hover": {cursor: "pointer"} }} variant="rounded" src={!hovering ? entry.book?.photo : undefined}>
+                    
+                    {(hovering && username===authedUsername) ? 
+                        <Tooltip title="Edit Book Entry" placement="right">
+                            <MoreHoriz fontSize="large" onClick={()=>handleOpenEditModal()}/> 
+                        </Tooltip>
+                        : 
+                        <LibraryBooksOutlined /> 
+                    }
+                </Avatar>
+                <Box style={{
+                    paddingLeft: '7px'
+                }}>
+                <Typography noWrap>{ entry.book?.title}</Typography>
+                </Box>
+                
+        </FlexBetween>
+        <FlexBetween>
+
+        </FlexBetween>
+        </Grid>
+        }
+        <Modal 
+            open={isEditModal}
+            onClose={handleCloseEditModal}>
+            <Box sx={modalStyle} width={isNonMobileScreens ? "50%" : "93%"}>
+            <WidgetWrapper >
+                <EditEntryForm entry={entry} close={handleEditedEntry}/>
+            </WidgetWrapper>
+            </Box>
+        </Modal>
+        </>
     )
 }
 

@@ -1,5 +1,5 @@
 {
-    "compilerOptions": {
+    /*"compilerOptions": {
         "allowJs": true,
         "checkJs": true,
         "noEmit": false,
@@ -7,6 +7,6 @@
         "jsx": "react",
         "target": "ESNext",
         "moduleResolution": "nodenext"
-    },
-    "include": ["src/**/*", "./"]
+    },*/
+    //"include": ["src/**/*", "./"]
 }

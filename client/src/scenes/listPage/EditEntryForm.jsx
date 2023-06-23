@@ -74,7 +74,7 @@ const EditEntryForm = ({entry, close}) => {
                         fontWeight="500" 
                         variant="h5" 
                         color={palette.primary.main}
-                        sx={{mb: "1.5rem", gridColumn: "span 2"}}>
+                        sx={{mb: "1.5rem", gridColumn: isNonMobile ? "span 2" : "span 4"}}>
                             {entry.book.title}
                         </Typography>
                         <TextField select 
