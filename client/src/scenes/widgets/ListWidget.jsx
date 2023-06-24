@@ -46,6 +46,7 @@ const ListWidget = ({username}) => {
     }
 
     return (
+        <>
         <WidgetWrapper>
             <List> {isBiggerThanTablet &&
                 <ListItem>
@@ -80,6 +81,7 @@ const ListWidget = ({username}) => {
                 )}
             </List>
         </WidgetWrapper>
+        </>
     )
 
 } 

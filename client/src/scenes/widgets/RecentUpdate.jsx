@@ -42,7 +42,7 @@ const RecentUpdate = ({entry}) => {
     //Default
     return (
         <>
-            <Box sx={{backgroundColor: palette.background.alt, borderRadius: "3px"}} style={{position:"relative", width: "100%", height: "80px", overflow: "auto", textOverflow: "ellipsis", }}> 
+            <Box sx={{backgroundColor: palette.background.alt, borderRadius: "3px"}} style={{position:"relative", width: "100%", height: "80px", overflow: "hidden", textOverflow: "ellipsis", }}> 
             <FlexBetween
                 gap="0.5rem"
                 pb="1.1rem"
