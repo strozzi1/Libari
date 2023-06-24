@@ -13,8 +13,8 @@ import useDebounce from "../../utils/useDebounce";
 const ListWidget = ({username}) => {
     const {palette} = useTheme();
     const [list, setList] = useState(null);
-    const authedUser = useSelector((state) => state.user)
-    const authedList = useSelector((state) => state.entries)
+    const authedUser = useSelector((state) => state.auth.user)
+    const authedList = useSelector((state) => state.auth.entries)
     const isBiggerThanTablet = useMediaQuery("(min-width:650px)")
 
     const updateEntry = (updatedEntry) => {
@@ -46,6 +46,7 @@ const ListWidget = ({username}) => {
     }
 
     return (
+        <>
         <WidgetWrapper>
             <List> {isBiggerThanTablet &&
                 <ListItem>
@@ -80,6 +81,7 @@ const ListWidget = ({username}) => {
                 )}
             </List>
         </WidgetWrapper>
+        </>
     )
 
 } 
@@ -94,8 +96,8 @@ const ListItemContent = ({entry, username, update}) => {
     //const isNonMobileScreens = useMediaQuery("(min-width:1000px)")
     const isBiggerThanTablet = useMediaQuery("(min-width:650px)")
     const dispatch = useDispatch()
-    const token = useSelector((state) => state.token)
-    const authedUsername = useSelector((state)=>state.user?.username)
+    const token = useSelector((state) => state.auth.token)
+    const authedUsername = useSelector((state)=>state.auth.user?.username)
     const handleOpenEditModal = () => {
         setIsEditModal(true);
     }

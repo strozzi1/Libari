@@ -4,13 +4,15 @@ import * as yup from "yup";
 import moment from "moment"
 import {useSelector, useDispatch} from "react-redux"
 import { deleteEntry, removeEntry, updateEntry } from "../../state";
+import { useNotification } from "../../utils/useNotification";
 
 
 const EditEntryForm = ({entry, close}) => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const {palette} = useTheme();
-    const token = useSelector((state) => state.token)
+    const token = useSelector((state) => state.auth.token)
     const dispatch = useDispatch();
+    const {displayNotificationAction} = useNotification();
     
     const initialEntryValues = {
         review: entry.review || "",
@@ -36,7 +38,19 @@ const EditEntryForm = ({entry, close}) => {
 
     const handleSubmitEdits = (values, onSubmitProps) => {
         const updatedEntry = {...entry, ...values}
+            console.log(updateEntry)
             dispatch(updateEntry({entry: updatedEntry, token}))
+            .then((res)=> {
+                if(res.error){
+                    displayNotificationAction({message: `Failed to update`, type: "error"})
+                } else {
+                    displayNotificationAction({message: `Successfully updated ${entry.book?.title}`, type: "success"})
+                }
+            })
+            .catch((err)=> displayNotificationAction({message: err.message, type: 'error'}))
+            
+            
+            //callback to close modal
             close(updatedEntry)
     }
 
@@ -45,7 +59,6 @@ const EditEntryForm = ({entry, close}) => {
         dispatch(deleteEntry({entryId: entry._id, token}))
     }
 
-  
 
     return (
         <Formik

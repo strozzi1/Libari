@@ -1,17 +1,18 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { BASE_URL } from '../env';
 
+
 const initialState = {
     mode: "light",
     user: null,
     token: null,
     posts: [],
-    
     //loggedIn user's list, for quick loading of the most viewed list & comparisons 
     entries: [],
     //logged in user's books, for comparisons
     books: []
 }
+
 
 export const authSlice = createSlice({
     name: "auth",
@@ -36,6 +37,9 @@ export const authSlice = createSlice({
             state.entries = [];
             localStorage.clear()
         },
+        updateUsername: (state, action ) => {
+            state.user.username = action.payload.username
+        },
         //likely moved to it's own slice later
         setPosts: (state,action) => {
             state.posts = action.payload.posts
@@ -45,8 +49,10 @@ export const authSlice = createSlice({
             let newEntry = {...action.payload.entry, book:action.payload.book}
             state.entries.push(newEntry)
             state.books.push(action.payload.book)
+            
         },
         setEntry: (state, action) => {
+            
             state.entries = state.entries.map((entry) => {
             if (entry._id === action.payload._id) {
                 entry.review = action.payload.review;
@@ -56,6 +62,7 @@ export const authSlice = createSlice({
                 entry.endDate = action.payload.endDate;
                 entry.page = action.payload.page;
             }
+            
             return entry;
             });
         },
@@ -80,9 +87,9 @@ export const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder.addCase(updateEntry.fulfilled, (state, action) => {
-          // Update the state based on the result of the async action
-          // If the action.payload contains the updated entry, you can just call the setEntry reducer
-        authSlice.caseReducers.setEntry(state, action);
+            // Update the state based on the result of the async action
+            // If the action.payload contains the updated entry, you can just call the setEntry reducer
+            authSlice.caseReducers.setEntry(state, action);
         });
         builder.addCase(addNewEntry.fulfilled, (state,action) => {
             authSlice.caseReducers.addEntry(state,action);
@@ -170,5 +177,9 @@ export const deleteEntry = createAsyncThunk(
     }
 )
 
-export const { setMode, setList, setLogin, setLogout, setPost, setPosts, addRemoveFollowing, removeEntry, setEntry} = authSlice.actions;
+
+
+export const { setMode, setList, setLogin, setLogout, setPost, setPosts, addRemoveFollowing, removeEntry, setEntry, updateUsername} = authSlice.actions;
 export default authSlice.reducer;
+
+

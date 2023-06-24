@@ -1,21 +1,23 @@
-import { Box, Typography, MenuItem, Button, useMediaQuery, TextField, useTheme } from "@mui/material";
+import { Box, Typography, MenuItem, Button, useMediaQuery, TextField, useTheme, Snackbar, Alert } from "@mui/material";
 import {Formik} from "formik";
 import * as yup from "yup";
 import moment from "moment"
 import {useSelector, useDispatch} from "react-redux"
 import { useEffect, useState } from "react";
 import { addNewEntry, deleteEntry, removeEntry, updateEntry } from "../../state";
-
+//import { useNotification } from "../../utils/useNotification";
 
 
 
 const AddEntryForm = ({googleBook}) => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const {palette} = useTheme();
-    const token = useSelector((state) => state.token)
+    const token = useSelector((state) => state.auth.token)
     const dispatch = useDispatch();
-    const entriesInState = useSelector((state)=>state.entries)
+    const entriesInState = useSelector((state)=>state.auth.entries)
     const [bookInList,setBookInList] = useState(entriesInState.filter((entry)=> googleBook.id === entry?.book?.googleId)[0])
+    //const { displayNotificationAction } = useNotification();
+
     const bookData = {
         googleId: googleBook.id,
         title: googleBook.volumeInfo.title,
@@ -72,6 +74,7 @@ const AddEntryForm = ({googleBook}) => {
     }
 
     return (
+        <>
         <Formik
             onSubmit={handleSubmitEntry}
             initialValues={initialEntryValues}
@@ -238,6 +241,7 @@ const AddEntryForm = ({googleBook}) => {
             )}
 
         </Formik>
+        </>
     )
 }
 

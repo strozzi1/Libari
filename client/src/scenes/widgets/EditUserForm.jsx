@@ -5,10 +5,12 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DropZone from "react-dropzone";
 import FlexBetween from "../../components/FlexBetween";
 import { useDispatch, useSelector } from "react-redux";
+import { updateUsername } from "../../state";
 import { BASE_URL } from "../../env";
 import { useState } from "react";
 import { setLogout } from "../../state";
 import { useNavigate } from "react-router-dom";
+import { useNotification } from "../../utils/useNotification";
 
 const modalStyle = {
     position: 'absolute',
@@ -33,11 +35,12 @@ const EditUserForm = ({user}) => {
     const {palette} = useTheme()
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const dispatch = useDispatch();
-    const token = useSelector((state) => state.token)
+    const token = useSelector((state) => state.auth.token)
     const navigate = useNavigate();
     const [isDeleteModal, setIsDeleteModal] = useState(false)
-    const [isError, setIsError] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
+    //const [isMessage, setIsMessage] = useState(false);
+    //const [message, setMessage] = useState({message: "", severity: ""});
+    const { displayNotificationAction } = useNotification();
 
     const initialUsernameValues = {
         username: user.username || ""
@@ -66,19 +69,7 @@ const EditUserForm = ({user}) => {
         location: yup.string(),
         image: yup.string()
     })
-
-    const handleCloseError = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setIsError(false);
-        setErrorMessage("")
-    }
-
-    const handleUpdateError = (message) => {
-        setIsError(true)
-        setErrorMessage(message)
-    }
+    
 
     const handleSubmitUsername = async (values, onSubmitProps) => {
         console.log(values)
@@ -99,14 +90,43 @@ const EditUserForm = ({user}) => {
         if(!updatedUserResponse.ok){
             const {message} = await updatedUserResponse.json()
             console.log(message)
-            handleUpdateError(message)
+            //handleUpdateMessage({message: message, severity: "error"})
+            displayNotificationAction({ message: message, type: "error" })
             return;
         }
-        //dispatch()
+        //align the current state data with this new data 
+        //so that the site doesn't display stale data
+        dispatch(updateUsername({username: values.username}))
+        displayNotificationAction({message: `Successfully updated username to ${values.username}`, type: "success"})
     }
 
-    const handleSubmitPassword = (values, onSubmitProps) => {
+    //works
+    const handleSubmitPassword = async (values, onSubmitProps) => {
+        values._id = user._id
         console.log(values)
+        
+        //updatePassword
+        const updatedPasswordResponse = await fetch(
+            `${BASE_URL}/user/updatePassword`,
+            {
+                method:"PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(values)
+            }
+        );
+        
+        if(!updatedPasswordResponse.ok){
+            const {message} = await updatedPasswordResponse.json()
+            console.log(message)
+            displayNotificationAction({message: message, type: "error"})
+            return;
+        }
+        displayNotificationAction({message: `Successfully updated password`, type: "success"})
+    
     }
 
     const handleSubmitProfile = async (values, onSubmitProps) => {
@@ -137,10 +157,15 @@ const EditUserForm = ({user}) => {
         if(!updatedUserResponse.ok){
             const message = await updatedUserResponse.json()
             console.log(message)
-            handleUpdateError(message)
+            displayNotificationAction({message: message, type: "error"})
             return;
         }
 
+        
+        displayNotificationAction({message: `Successfully updated profile`, type: "success"})
+        
+        //align the current state data with this new data 
+        //so that the site doesn't display stale data
         const data = await updatedUserResponse.json();
     }
 
@@ -161,7 +186,7 @@ const EditUserForm = ({user}) => {
         if(!deleteUserResponse.ok){
             const message = await deleteUserResponse.json()
             console.log(message)
-            handleUpdateError(message)
+            displayNotificationAction({message: message, type: "error"})
             return;
         }
         dispatch(setLogout());
@@ -432,12 +457,6 @@ const EditUserForm = ({user}) => {
             )}
 
         </Formik>
-
-        <Snackbar open={isError} autoHideDuration={6000} onClose={handleCloseError}>
-            <Alert onClose={handleCloseError} severity="error" sx={{ width: '100%' }}>
-                {errorMessage}
-            </Alert>
-        </Snackbar>
         </>
     )
 }

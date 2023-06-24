@@ -11,9 +11,9 @@ import { themeSettings } from "./theme";
 import ListPage from './scenes/listPage';
 
 function App() {
-  const mode = useSelector((state) => state.mode)
+  const mode = useSelector((state) => state.auth.mode)
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
-  const isAuthed = Boolean(useSelector((state)=> state.token))
+  const isAuthed = Boolean(useSelector((state)=> state.auth.token))
   
   return (
     <div className="app">
