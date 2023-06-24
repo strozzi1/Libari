@@ -12,7 +12,6 @@ const ListPage = () => {
     const isNonMobileScreens = useMediaQuery("(min-width:1000px)")
 
     
-    
     return (
         <Box>
             <Navbar/>
