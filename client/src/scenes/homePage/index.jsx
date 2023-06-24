@@ -29,12 +29,13 @@ const HomePage = () => {
                 <Box 
                     flexBasis={isNonMobileScreens ? "42%" : undefined}
                     mt={isNonMobileScreens ? undefined : "2rem"}
+                    //sx={{overflow: "hidden", textOverflow: "ellipsis"}}
+                    maxWidth={isNonMobileScreens ? "42%" : undefined}
                 >   
                     <Typography style={{paddingBottom:"8px", fontSize:"13px", fontWeight: 500, opacity: "80%"}}>
                     Following Updates:
                     </Typography>
-                    {/* TESTING PURPOSES 
-                    <RecentUpdate entry={bookEntries[2]}/>*/}
+
                     <FollowingUpdates/>
                 </Box>
                 {/*Right column */}

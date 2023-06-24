@@ -79,6 +79,7 @@ const ProfilePage = () => {
                 <Box 
                     flexBasis={isNonMobileScreens ? "42%" : undefined}
                     mt={isNonMobileScreens ? undefined : "2rem"}
+                    maxWidth={isNonMobileScreens ? "42%" : undefined}
                 >   
                     <Typography style={{paddingBottom:"8px", fontSize:"13px", fontWeight: 500, opacity: "80%"}}>
                     Recent Updates

@@ -42,7 +42,6 @@ const EditEntryForm = ({entry, close}) => {
             dispatch(updateEntry({entry: updatedEntry, token}))
             .then((res)=> {
                 if(res.error){
-
                     displayNotificationAction({message: `Failed to update`, type: "error"})
                 } else {
                     displayNotificationAction({message: `Successfully updated ${entry.book?.title}`, type: "success"})

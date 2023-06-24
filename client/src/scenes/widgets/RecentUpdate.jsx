@@ -8,9 +8,7 @@ const UpdateText = ({entry}) => {
     if( entry.updatedAt === entry.createdAt){
         return( 
             <Typography style={{
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
+                whiteSpace: 'nowrap'
             }}>
                 Added {entry.book.title} as {entry.status} 
             </Typography>
@@ -18,9 +16,7 @@ const UpdateText = ({entry}) => {
     } else {
         return (
             <Typography style={{
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
+                whiteSpace: 'nowrap'
             }}>
                 {entry.status} {entry.book.title}
             </Typography>
@@ -46,7 +42,7 @@ const RecentUpdate = ({entry}) => {
     //Default
     return (
         <>
-            <Box sx={{backgroundColor: palette.background.alt, borderRadius: "3px"}} style={{position:"relative", width: "100%", height: "80px"}}> 
+            <Box sx={{backgroundColor: palette.background.alt, borderRadius: "3px"}} style={{position:"relative", width: "100%", height: "80px", overflow: "auto", textOverflow: "ellipsis", }}> 
             <FlexBetween
                 gap="0.5rem"
                 pb="1.1rem"
@@ -63,6 +59,7 @@ const RecentUpdate = ({entry}) => {
                 }}
                 >
                 </Paper>
+                
                 { isHomepage ?
                 <Box marginLeft="8px">
                     <Typography
@@ -84,13 +81,25 @@ const RecentUpdate = ({entry}) => {
                 </Box>
                 :
                 <Box marginLeft="8px">
-                    
                     <UpdateText entry={entry} />
                 </Box>
                 }
                 </FlexBetween>
                 <FlexBetween>
                     {/*Right text go here */}
+                    <Paper sx={{
+                    //backgroundImage: `url(${entry.book.photo})`,
+                    position: "absolute" ,
+                    background: `linear-gradient(to right, rgba(0,0,0,0), ${palette.background.alt} 100%)`,
+                    width: "120px",
+                    height: "80px",
+                    right: 0,
+                    backgroundSize:"cover",
+                    borderRadius: "3px 0px 0px 3px",
+                    boxShadow: "none"
+                }}
+                >
+                </Paper>
                 </FlexBetween>
                 </FlexBetween>
             </Box>

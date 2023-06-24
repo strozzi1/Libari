@@ -46,7 +46,10 @@ const FollowingUpdates = () => {
         
         <Grid spacing={1.0} container>
         {updatesList.map((currEntry) =>
-        <Grid key={currEntry._id} item xs={12}>
+        <Grid 
+
+        sx={{overflow: "hidden", textOverflow: "ellipsis"}}
+        key={currEntry._id} item xs={12}>
             <RecentUpdate entry={currEntry}/>
         </Grid>
         )}
