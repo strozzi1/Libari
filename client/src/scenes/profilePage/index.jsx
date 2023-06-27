@@ -1,4 +1,4 @@
-import { Box, Paper, Typography, useMediaQuery } from "@mui/material";
+import { Box, Paper, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../navbar";
@@ -13,7 +13,8 @@ const ProfilePage = () => {
     const params = useParams()
     const username = params.username
     const isNonMobileScreens = useMediaQuery("(min-width:1000px)")
-    //const navigate = useNavigate();
+    const navigate = useNavigate();
+    const {palette} = useTheme()
     const [user, setUser] = useState({})
     const [entries, setEntries] = useState([])
 
@@ -97,6 +98,20 @@ const ProfilePage = () => {
                             entries.filter((entry)=> entry.status === 'Reading').map(entry => entry.book)
                         }/>
                         }
+                        <Typography
+                        onClick={(e)=>navigate(`/user/${username}/list`)}
+                        sx={{
+                            paddingTop: "8px", 
+                            fontSize: "13px", 
+                            fontWeight: 400, 
+                            opacity: "80%",
+                            "&:hover": {
+                                color: palette.primary.light,
+                                cursor: "pointer",
+                            },
+                        }}>
+                            View Full Booklist &#8680;
+                        </Typography>
                     </Box>
                 )}
             </Box>

@@ -94,6 +94,7 @@ const Navbar = () => {
         }
     }, [location]);
 
+
     return (
         <FlexBetween padding="1rem 6%" backgroundColor={alt}>
             {/* MODAL CONTENT */}

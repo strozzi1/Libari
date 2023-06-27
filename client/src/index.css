@@ -9,3 +9,8 @@ body,
   font-family: "Rubik", sans-serif;
 
 }
+
+.sticky {
+  position: fixed;
+  top: 0;
+}
