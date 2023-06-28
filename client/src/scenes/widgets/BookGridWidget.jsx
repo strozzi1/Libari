@@ -1,14 +1,22 @@
-import { Grid, Paper, useTheme } from "@mui/material"
+import { Grid, Paper, Typography, useTheme } from "@mui/material"
 import WidgetWrapper from "../../components/WidgetWrapper"
 
 const BookGridWidget = ({books}) => {
     //const {palette} = useTheme()
+    const currentlyReading = books.filter(book => Boolean(book.photo));
     //const primaryLight = palette.primary.light;
     
 
-    if(!books[0]){
-        return null
+    if(!currentlyReading[0]){
+        return (
+            <WidgetWrapper>
+                <Typography style={{paddingBottom:"8px", fontSize:"13px", fontWeight: 500, opacity: "80%"}}>
+                    Looking pretty empty...
+                </Typography>
+            </WidgetWrapper>
+        )
     }
+
     return (
         <WidgetWrapper>
             <Grid container spacing={1.0}>

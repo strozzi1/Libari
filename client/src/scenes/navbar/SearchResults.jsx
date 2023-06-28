@@ -109,17 +109,18 @@ const SearchResults = ({searchText}) => {
             </WidgetWrapper>
             </Grid>
             <Grid item sm={8} md={5} xs={12}>
-            
-                {usersList.length > 0 && 
-                <>
-                    <Typography sx={{
+            <Typography sx={{
                         color: theme.palette.modal.text,
                         fontSize: "16px",
                         fontWeight: 500,
                         marginBottom: "3px",
                         paddingLeft:"5px"
                     }}>Users</Typography>
-                    <WidgetWrapper>
+                <WidgetWrapper>
+                { usersList.length > 0 && !isLoading ? 
+                <>
+                    
+                    
                     <List disablePadding>
                         { usersList.map((user) =>
                         <ListItem 
@@ -157,9 +158,34 @@ const SearchResults = ({searchText}) => {
                         </ListItem>
                         )}
                     </List>
-                    </WidgetWrapper>
-                </>
+                    
+                </> :
+                <Typography sx={{
+                    color: theme.palette.modal.text,
+                    fontSize: "14px",
+                    fontWeight: 400,
+                    marginBottom: "3px",
+                    paddingLeft:"5px"
+                }}>{isLoading ? "": "No users by that name"}</Typography>
+                
                 }
+
+                {isLoading &&
+                    [1,2,3,4,5].map((num) =>
+                    <List key={num} disablePadding>
+                        <ListItem disableGutters>
+                            <ListItemAvatar>
+                                <Skeleton variant="rounded"><Avatar/></Skeleton>
+                            </ListItemAvatar>
+                            <ListItemText
+                                primary={<Skeleton/>}
+                                secondary={<Skeleton width="30%"/>}
+                            ></ListItemText>
+                        </ListItem>
+                    </List>
+                    )
+                }
+                </WidgetWrapper>
             </Grid>
         </Grid>
         
