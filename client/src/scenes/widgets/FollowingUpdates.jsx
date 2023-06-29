@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import RecentUpdate from "./RecentUpdate";
 import { BASE_URL } from "../../env";
+import useThrottle from "../../utils/useThrottle";
 
 const FollowingUpdates = () => {
     const token = useSelector((state)=> state.auth.token)
@@ -58,16 +59,21 @@ const FollowingUpdates = () => {
         })
 
     }
+
+    const throttleHandleBottom = useThrottle(handlePageBottom, 500)
     
     const handleScroll = () => {
-
+        
         const bottom = Math.ceil(window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight
     
         if (bottom) {
             
-            handlePageBottom()
+            //handlePageBottom()
+            throttleHandleBottom();
+            
         }
     };
+
 
     useEffect(() => {
         if(!hasQueried){
@@ -76,7 +82,6 @@ const FollowingUpdates = () => {
                 setUpdatesList(array);
                 setIsFetching(false)
             })
-            //setUpdatesList(initialFetch)
             setHasQueried(true)
         }
 
@@ -89,7 +94,6 @@ const FollowingUpdates = () => {
         };
     }, [])
     
-
 
     //Render Logic
     if(!updatesList[0]){

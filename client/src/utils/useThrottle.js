@@ -1,24 +1,43 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useCallback } from "react";
 
-const useThrottle = (value, interval = 500) =>{
-    const [throttledValue, setThrottledValue] = useState(value)
-    const lastExecuted = useRef(Date.now())
+const useThrottle = (fn, wait, option = { leading: true, trailing: false }) => {
+    const timerId = useRef(); // track the timer
+    const lastArgs = useRef(); // track the args
 
-    useEffect(() => {
-        if (Date.now() >= lastExecuted.current + interval) {
-        lastExecuted.current = Date.now()
-        setThrottledValue(value)
+    // create a memoized debounce
+    const throttle = useCallback(
+    function (...args) {
+        const { trailing, leading } = option;
+        // function for delayed call
+        const waitFunc = () => {
+        // if trailing invoke the function and start the timer again
+        if (trailing && lastArgs.current) {
+            fn.apply(this, lastArgs.current);
+            lastArgs.current = null;
+            timerId.current = setTimeout(waitFunc, wait);
         } else {
-        const timerId = setTimeout(() => {
-            lastExecuted.current = Date.now()
-            setThrottledValue(value)
-        }, interval)
-
-        return () => clearTimeout(timerId)
+            // else reset the timer
+            timerId.current = null;
         }
-    }, [value, interval])
+        };
 
-    return throttledValue
-}
+        // if leading run it right away
+        if (!timerId.current && leading) {
+            fn.apply(this, args);
+        }
+        // else store the args
+        else {
+            lastArgs.current = args;
+        }
+
+        // run the delayed call
+        if (!timerId.current) {
+            timerId.current = setTimeout(waitFunc, wait);
+        }
+    }, [fn, wait, option]
+    );
+
+    return throttle;
+};
 
 export default useThrottle;

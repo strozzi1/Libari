@@ -12,10 +12,11 @@ import useDebounce from "../../utils/useDebounce";
 
 const ListWidget = ({username}) => {
     const {palette} = useTheme();
+    const isBiggerThanTablet = useMediaQuery("(min-width:650px)")
     const [list, setList] = useState(null);
     const authedUser = useSelector((state) => state.auth.user)
     const authedList = useSelector((state) => state.auth.entries)
-    const isBiggerThanTablet = useMediaQuery("(min-width:650px)")
+    
 
     const updateEntry = (updatedEntry) => {
         const updatedList = list.map((entry) => entry._id === updatedEntry._id ? updatedEntry : entry)
@@ -47,6 +48,35 @@ const ListWidget = ({username}) => {
 
     return (
         <>
+            <ListFragment list={list.filter((item)=> item.status === "Reading")} username={username} status="Reading"/>
+            <ListFragment list={list.filter((item)=> item.status === "Planning")} username={username} status="Planning"/>
+            <ListFragment list={list.filter((item)=> item.status === "Completed")} username={username} status="Completed"/>
+            <ListFragment list={list.filter((item)=> item.status === "Dropped")} username={username} status="Dropped"/>
+        </>
+    )
+
+} 
+
+const ListFragment = ({list, username, status}) => {
+    const {palette} = useTheme();
+    const isBiggerThanTablet = useMediaQuery("(min-width:650px)")
+
+    if(!list[0]){
+        return null;
+    }
+
+    const sortedRatingList = Array.from(list).sort((a, b)=> b.rating - a.rating)
+    
+
+    return(
+        <>
+        <Typography sx={{
+                paddingBottom: "5px",
+                paddingLeft: "20px",
+                paddingTop: status === "Reading" ? "0px" : "20px" ,
+                fontSize: "20px",
+                opacity: "80%"
+            }}>{status}</Typography>
         <WidgetWrapper>
             <List> {isBiggerThanTablet &&
                 <ListItem>
@@ -54,11 +84,11 @@ const ListWidget = ({username}) => {
                         <Grid item xs={1}>
                             <Box></Box>
                         </Grid>
-                        <Grid item xs={5}>
+                        <Grid sx={{cursor: "pointer"}} item xs={5}>
                             <Box>Title</Box>
                         </Grid>
                         <Grid item xs={2}>
-                            <Box sx={{cursor: "pointer"}} onClick={() =>console.log("TODO: Sort by Status")}>Status</Box>
+                            <Box>Status</Box>
                         </Grid>
                         <Grid item xs={2}>
                             <Box>Rating</Box>
@@ -68,7 +98,7 @@ const ListWidget = ({username}) => {
                         </Grid>
                     </Grid>
                 </ListItem> }
-                {list.map((entry) =>
+                {sortedRatingList.map((entry) =>
                     <ListItem 
                     key={entry._id} 
                     sx={{
@@ -83,8 +113,7 @@ const ListWidget = ({username}) => {
         </WidgetWrapper>
         </>
     )
-
-} 
+}
 
 
 const ListItemContent = ({entry, username, update}) => {
@@ -112,16 +141,6 @@ const ListItemContent = ({entry, username, update}) => {
         setRating(updatedEntry.rating)
         update(updatedEntry)
     }
-
-    /*const truncate = (text) => {
-        const roomForText = (window.innerWidth - (window.innerWidth % 10))/10 - 5;
-        if (roomForText > text.length){
-            return text
-        }
-        return text.substring(0, roomForText) + "..."
-        
-    }*/
-
     
     const modalStyle = {
         position: 'absolute',
