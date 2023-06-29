@@ -38,6 +38,8 @@ const RecentUpdate = ({entry}) => {
     const medium = palette.neutral.medium
     const main = palette.neutral.main
     const today = new Date()
+    
+    //console.log(moment(entry.updatedAt).fromNow())
 
     //Default
     return (
@@ -86,7 +88,7 @@ const RecentUpdate = ({entry}) => {
                 }
                 </FlexBetween>
                 <FlexBetween>
-                    {/*Right text go here */}
+                    
                     <Paper sx={{
                     //backgroundImage: `url(${entry.book.photo})`,
                     position: "absolute" ,
@@ -99,6 +101,15 @@ const RecentUpdate = ({entry}) => {
                     boxShadow: "none"
                 }}
                 >
+                    <Typography 
+                        sx={{
+                            fontSize: "10px",
+                            opacity: "70%",
+                            textAlign: "right",
+                            padding: "6px"
+                            
+                        }}
+                    >{moment(entry.updatedAt).fromNow()}</Typography>
                 </Paper>
                 </FlexBetween>
                 </FlexBetween>

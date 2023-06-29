@@ -27,7 +27,6 @@ import {useLocation, useNavigate} from "react-router-dom";
 import FlexBetween from "../../components/FlexBetween";
 import useDebounce from "../../utils/useDebounce";
 import SearchResults from "./SearchResults";
-import { width } from "@mui/system";
 import jwtDecode from "jwt-decode";
 
 const Navbar = () => {
@@ -198,6 +197,7 @@ const Navbar = () => {
                             <MenuItem value={userName} onClick={() => navigate("/home")}>
                                 <Typography>{userName}</Typography>
                             </MenuItem>
+                            <MenuItem onClick={() => navigate(`/user/${userName}`)}>Profile</MenuItem>
                             <MenuItem onClick={() => navigate(`/user/${userName}/list`)}>Booklist</MenuItem>
                             <MenuItem onClick={() => handleLogout()}>Logout</MenuItem>
                         </Select>
@@ -273,6 +273,7 @@ const Navbar = () => {
                                     <Typography>{userName}</Typography>
                                 </MenuItem>
                                 ,
+                                <MenuItem onClick={() => navigate(`/user/${userName}`)}>Profile</MenuItem>,
                                 <MenuItem onClick={() => navigate(`/user/${userName}/list`)} key="Booklist">Booklist</MenuItem>,
                                 <MenuItem onClick={() => handleLogout()} key="Logout">Logout</MenuItem>
                             ]

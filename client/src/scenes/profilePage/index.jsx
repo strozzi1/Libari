@@ -18,6 +18,7 @@ const ProfilePage = () => {
     const [user, setUser] = useState({})
     const [entries, setEntries] = useState([])
 
+    
     const getUserData = async() => {
         const response = await fetch(`${BASE_URL}/user/${username}`,
             {
@@ -39,6 +40,7 @@ const ProfilePage = () => {
         console.log("Booklist: ",data)
     }
 
+    //TODO: make conditional. If it's the currently logged in user, just load data from state.
     useEffect(() => {
         getUserData()
         getEntries()
