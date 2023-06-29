@@ -12,10 +12,11 @@ import useDebounce from "../../utils/useDebounce";
 
 const ListWidget = ({username}) => {
     const {palette} = useTheme();
+    const isBiggerThanTablet = useMediaQuery("(min-width:650px)")
     const [list, setList] = useState(null);
     const authedUser = useSelector((state) => state.auth.user)
     const authedList = useSelector((state) => state.auth.entries)
-    const isBiggerThanTablet = useMediaQuery("(min-width:650px)")
+    
 
     const updateEntry = (updatedEntry) => {
         const updatedList = list.map((entry) => entry._id === updatedEntry._id ? updatedEntry : entry)
@@ -47,6 +48,32 @@ const ListWidget = ({username}) => {
 
     return (
         <>
+            <ListFragment list={list.filter((item)=> item.status === "Reading")} username={username} status="Reading"/>
+            <ListFragment list={list.filter((item)=> item.status === "Planning")} username={username} status="Planning"/>
+            <ListFragment list={list.filter((item)=> item.status === "Completed")} username={username} status="Completed"/>
+            <ListFragment list={list.filter((item)=> item.status === "Dropped")} username={username} status="Dropped"/>
+        </>
+    )
+
+} 
+
+const ListFragment = ({list, username, status}) => {
+    const {palette} = useTheme();
+    const isBiggerThanTablet = useMediaQuery("(min-width:650px)")
+
+    if(!list[0]){
+        return null;
+    }
+
+    return(
+        <>
+        <Typography sx={{
+                paddingBottom: "5px",
+                paddingLeft: "20px",
+                paddingTop: status === "Reading" ? "0px" : "20px" ,
+                fontSize: "20px",
+                opacity: "80%"
+            }}>{status}</Typography>
         <WidgetWrapper>
             <List> {isBiggerThanTablet &&
                 <ListItem>
@@ -83,8 +110,7 @@ const ListWidget = ({username}) => {
         </WidgetWrapper>
         </>
     )
-
-} 
+}
 
 
 const ListItemContent = ({entry, username, update}) => {
@@ -112,16 +138,6 @@ const ListItemContent = ({entry, username, update}) => {
         setRating(updatedEntry.rating)
         update(updatedEntry)
     }
-
-    /*const truncate = (text) => {
-        const roomForText = (window.innerWidth - (window.innerWidth % 10))/10 - 5;
-        if (roomForText > text.length){
-            return text
-        }
-        return text.substring(0, roomForText) + "..."
-        
-    }*/
-
     
     const modalStyle = {
         position: 'absolute',
