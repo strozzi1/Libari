@@ -65,6 +65,9 @@ const ListFragment = ({list, username, status}) => {
         return null;
     }
 
+    const sortedRatingList = Array.from(list).sort((a, b)=> b.rating - a.rating)
+    
+
     return(
         <>
         <Typography sx={{
@@ -81,11 +84,11 @@ const ListFragment = ({list, username, status}) => {
                         <Grid item xs={1}>
                             <Box></Box>
                         </Grid>
-                        <Grid item xs={5}>
+                        <Grid sx={{cursor: "pointer"}} item xs={5}>
                             <Box>Title</Box>
                         </Grid>
                         <Grid item xs={2}>
-                            <Box sx={{cursor: "pointer"}} onClick={() =>console.log("TODO: Sort by Status")}>Status</Box>
+                            <Box>Status</Box>
                         </Grid>
                         <Grid item xs={2}>
                             <Box>Rating</Box>
@@ -95,7 +98,7 @@ const ListFragment = ({list, username, status}) => {
                         </Grid>
                     </Grid>
                 </ListItem> }
-                {list.map((entry) =>
+                {sortedRatingList.map((entry) =>
                     <ListItem 
                     key={entry._id} 
                     sx={{
