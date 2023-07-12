@@ -6,19 +6,19 @@ import {
     useMediaQuery,
     Typography,
     useTheme,
-    Snackbar,
-    Alert
+    Divider
 } from "@mui/material"
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import {Formik} from "formik"
 import * as yup from "yup";
 import {useNavigate} from "react-router-dom";
 import {useDispatch} from "react-redux";
-import {setLogin} from "../../state";
+import {googleLogin, googleRegister, setLogin} from "../../state";
 import DropZone from "react-dropzone";
 import FlexBetween from "../../components/FlexBetween";
 import { BASE_URL } from "../../env";
 import { useNotification } from "../../utils/useNotification";
+import { GoogleLogin } from "@react-oauth/google";
 
 const registerSchema = yup.object().shape({
     username: yup.string().required("required"),
@@ -46,6 +46,7 @@ const initialValuesLogin = {
     password: ""
 }
 
+
 const Form = () => {
     const [pageType, setPageType] = useState("login");
     const { palette } = useTheme();
@@ -56,8 +57,7 @@ const Form = () => {
     const isRegister = pageType ==="register";
     const { displayNotificationAction } = useNotification();
 
-    
-    
+    //displayNotificationAction({message: "error", type: "error"})
     //TODO: MOVE THESE TO SEPARATE API FILE
     const register = async (values, onSubmitProps) => {
         
@@ -144,6 +144,39 @@ const Form = () => {
         if(isLogin) await login(values, onSubmitProps);
         if(isRegister) await register(values, onSubmitProps);
     }
+
+    const googleSuccess = (res) => {
+        //TODO: Create redux action for both googleLogin and googleRegister
+        try {
+            //do some login in with the data I receive from google here.
+            console.log("Google Data: ", res)
+            if(isLogin){
+                dispatch(googleLogin({credential: res.credential}))
+                    .then((res)=> {
+                        if(res.error){
+                            console.log(res)
+                            displayNotificationAction({message: res.payload.message, type: "error"})
+                        }
+                    })
+                    .catch((error)=> displayNotificationAction({message: error.message, type: "error"}))
+            } else if(isRegister) {
+                dispatch(googleRegister({credential: res.credential}))
+                .then((res)=> {
+                    if(res.error){
+                        console.log(res)
+                        displayNotificationAction({message: res.payload.message, type: "error"})
+                    }
+                })
+                .catch((error)=> displayNotificationAction({message: error.message, type: "error"}))
+            }
+        
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    
+    const googleError = (error) => {console.log("Google Sign In was unsuccessful. Try again later.");}
+    
 
     return (
         <>
@@ -255,9 +288,27 @@ const Form = () => {
                             sx={{gridColumn: "span 4"}}
                         />
                     </Box>
+                    <Typography
+                            onClick={() => {
+                                setPageType(isLogin ? "register": "login");
+                                resetForm()
+                            }}
+                            sx={{
+                                
+                                textDecoration: "underline",
+                                color: palette.primary.main,
+                                "&:hover": {
+                                    cursor: "pointer",
+                                    color: palette.primary.light,
+                                }
+                            }}
+                        >
+                            {isLogin ? "Don't have an account? Sign Up Here." : "Already have an account? Login here."}
+                        </Typography>
 
                     {/* BUTTONS */}
                     <Box>
+                        
                         <Button
                             fullWidth
                             type="submit"
@@ -271,31 +322,19 @@ const Form = () => {
                         >
                             {isLogin ? "LOGIN" : "REGISTER"}
                         </Button>
-                        <Typography
-                            onClick={() => {
-                                setPageType(isLogin ? "register": "login");
-                                resetForm()
-                            }}
-                            sx={{
-                                textDecoration: "underline",
-                                color: palette.primary.main,
-                                "&:hover": {
-                                    cursor: "pointer",
-                                    color: palette.primary.light,
-                                }
-                            }}
-                        >
-                            {isLogin ? "Don't have an account? Sign Up Here." : "Already have an account? Login here."}
-                        </Typography>
+                        <Divider/>
+                        <Box marginTop="15px" style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>
+                            <Typography paddingRight="7px" sx={{opacity: "70%"}}>Or {isLogin ? "Login" : "Sign up"} with:</Typography>
+                            <GoogleLogin 
+                            onSuccess={googleSuccess}
+                            onError={googleError}
+                            cookiePolicy="single_host_origin"
+                            >Google Login</GoogleLogin>
+                        </Box>
                     </Box>
                 </form>
             )}
         </Formik>
-        {/*<Snackbar open={isRegisterError} autoHideDuration={6000} onClose={handleCloseRegisterError}>
-            <Alert onClose={handleCloseRegisterError} severity="error" sx={{ width: '100%' }}>
-                {errorMessage}
-            </Alert>
-        </Snackbar>*/}
         </>
     )
 

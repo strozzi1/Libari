@@ -186,7 +186,7 @@ const EditUserForm = ({user}) => {
         if(!deleteUserResponse.ok){
             const message = await deleteUserResponse.json()
             console.log(message)
-            displayNotificationAction({message: message, type: "error"})
+            displayNotificationAction({message: message.message, type: "error"})
             return;
         }
         dispatch(setLogout());
