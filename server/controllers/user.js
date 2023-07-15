@@ -297,9 +297,9 @@ export const deleteUserByUsername = async (req, res) => {
         
         //delete aws s3 stored image
         console.log("deleting s3 stored image");
-        if(userFound.image !== ""){
+        if(userFound.image.includes("cloudfront.net")){
             console.log("send delete command");
-            const deleteFileResponse = await deleteFile(req.userId)
+            const deleteFileResponse = await deleteFile(userFound._id)
             console.log("Delete File response: ", deleteFileResponse)
         }
         //Get entries in list  and delete them

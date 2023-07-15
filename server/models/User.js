@@ -20,6 +20,11 @@ const UserSchema = new mongoose.Schema(
             match: [/\S+@\S+\.\S+/, 'is invalid'], 
             index: true
         },
+        googleId: {
+            type: String, 
+            unique: true,
+            required: false
+        },
         password: {
             type: String,
             required: true,

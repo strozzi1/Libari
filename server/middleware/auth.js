@@ -10,12 +10,19 @@ export const requireAuthentication = async (req, res, next) => {
     const authHeaderParts = authHeader.split(' ');
     const token = authHeaderParts[0] === 'Bearer' ?
         authHeaderParts[1] : null;
+    const isCustomAuth = token.length < 500;
     
     try {
-        const payload = Jwt.verify(token, process.env.JWT_SECRET);
+        if(isCustomAuth){
+            const payload = Jwt.verify(token, process.env.JWT_SECRET);
+            req.userId = payload.id;
+            req.role = payload.role; //implement later to have admin, user, moderator
+        } else {
+            const payload = Jwt.decode(token)
+            req.googleId = payload.sub
+            
+        }
         
-        req.userId = payload.id;
-        req.role = payload.role; //implement later to have admin, user, moderator
         next();
     } catch (err) {
         console.log(err.message)

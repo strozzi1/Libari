@@ -48,8 +48,7 @@ const EditEntryForm = ({entry, close}) => {
                 }
             })
             .catch((err)=> displayNotificationAction({message: err.message, type: 'error'}))
-            
-            
+
             //callback to close modal
             close(updatedEntry)
     }

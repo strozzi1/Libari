@@ -25,6 +25,7 @@ jobs:
         echo AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }} >> ./server/.env.prod
         echo AWS_CLOUDFRONT_BASE_URL=${{ vars.AWS_CLOUDFRONT_BASE_URL }} >> ./server/.env.prod
         echo 'AWS_SQS_URL will be set at deploy stage'
+        echo 'GOOGLE_CLIENT_ID will be set at deploy stage'
         
         echo AWS_REGION=${{ vars.AWS_S3_BUCKET_REGION }} >> ./image-worker/.env
         echo AWS_S3_BUCKET=${{ vars.AWS_S3_BUCKET }} >> ./image-worker/.env
@@ -70,6 +71,7 @@ jobs:
         echo AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }} >> ./.env.prod
         echo AWS_CLOUDFRONT_BASE_URL=${{ vars.AWS_CLOUDFRONT_BASE_URL }} >> ./.env.prod
         echo AWS_SQS_URL=${{ secrets.AWS_SQS_URL }} >> ./.env.prod
+        echo GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} >> ./.env.prod
     - name: copy file to server
       uses: appleboy/scp-action@v0.1.4
       with:

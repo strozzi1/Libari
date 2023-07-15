@@ -91,38 +91,107 @@ export const authSlice = createSlice({
             // If the action.payload contains the updated entry, you can just call the setEntry reducer
             authSlice.caseReducers.setEntry(state, action);
         });
+
         builder.addCase(addNewEntry.fulfilled, (state,action) => {
-            authSlice.caseReducers.addEntry(state,action);
+            authSlice.caseReducers.addEntry(state, action);
         });
+
         builder.addCase(deleteEntry.fulfilled, (state,action) => {
-            authSlice.caseReducers.removeEntry(state,action);
+            authSlice.caseReducers.removeEntry(state, action);
+        });
+
+        builder.addCase(googleLogin.fulfilled, (state, action)=> {
+            authSlice.caseReducers.setLogin(state, action)
+        });
+
+        builder.addCase(googleRegister.fulfilled, (state, action)=> {
+            authSlice.caseReducers.setLogin(state, action)
         });
     },
 })
 
+export const googleLogin = createAsyncThunk(
+    "auth/googleLogin",
+    async ({credential}, thunkAPI) => {
+        try {
+            const response = await fetch(`${BASE_URL}/auth/googleLogin`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*",
+                },
+                body: JSON.stringify({
+                    credential
+                }),
+            });
+
+            const data = await response.json();
+
+            if(!response.ok){
+                console.log("googleLogin", data)
+                throw new Error(data.message);
+            }
+
+            return data;
+        } catch (err) {
+            return thunkAPI.rejectWithValue(err)
+        }
+    }
+);
+
+export const googleRegister = createAsyncThunk(
+    "auth/googleRegister",
+    async ({credential}, thunkAPI) => {
+        try {
+            const response = await fetch(`${BASE_URL}/auth/googleRegister`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*",
+                },
+                body: JSON.stringify({
+                    credential
+                }),
+            });
+            const data = await response.json();
+            console.log("google reg: ", data)
+
+            if(!response.ok){
+                throw new Error(data.message);
+            }
+
+            return data;
+        } catch (err) {
+            console.log("Google Register Error: ", err)
+            return thunkAPI.rejectWithValue(err)
+        }
+    }
+);
+
 export const updateEntry = createAsyncThunk(
     "auth/updateEntry",
     async ({ entry, token }, thunkAPI) => {
-    console.log("In updateEntry action: ", entry)
-    try {
-        const response = await fetch(`${BASE_URL}/entry/${entry._id}`, {
-        method: "PATCH",
-        headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-        },
-        body: JSON.stringify({
-            entry: entry,
-        }),
-        });
-        const data = await response.json();
-        return data;
-    } catch (err) {
-        console.log(err);
-        return thunkAPI.rejectWithValue(err);
+        console.log("In updateEntry action: ", entry)
+        try {
+            const response = await fetch(`${BASE_URL}/entry/${entry._id}`, {
+                method: "PATCH",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*",
+                },
+                body: JSON.stringify({
+                    entry: entry,
+                }),
+            });
+            const data = await response.json();
+            return data;
+        } catch (err) {
+            console.log(err);
+            return thunkAPI.rejectWithValue(err);
+        }
     }
-});
+);
 
 export const addNewEntry = createAsyncThunk(
     "auth/addEntry",
