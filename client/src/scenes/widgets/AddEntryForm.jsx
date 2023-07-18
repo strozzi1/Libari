@@ -5,18 +5,19 @@ import moment from "moment"
 import {useSelector, useDispatch} from "react-redux"
 import { useEffect, useState } from "react";
 import { addNewEntry, deleteEntry, removeEntry, updateEntry } from "../../state";
-//import { useNotification } from "../../utils/useNotification";
+import { useNotification } from "../../utils/useNotification";
 
 
-
-const AddEntryForm = ({googleBook}) => {
+//TODO: Rename onSubmitCallback to onCloseModalCallback
+const AddEntryForm = ({onSubmitCallback, googleBook}) => {
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const {palette} = useTheme();
     const token = useSelector((state) => state.auth.token)
     const dispatch = useDispatch();
     const entriesInState = useSelector((state)=>state.auth.entries)
     const [bookInList,setBookInList] = useState(entriesInState.filter((entry)=> googleBook.id === entry?.book?.googleId)[0])
-    //const { displayNotificationAction } = useNotification();
+    const { displayNotificationAction } = useNotification();
+
 
     const bookData = {
         googleId: googleBook.id,
@@ -36,9 +37,7 @@ const AddEntryForm = ({googleBook}) => {
         page: bookInList ? bookInList.page : 0
     }
 
-    useEffect(() => {
-        setBookInList(entriesInState.filter((entry)=> googleBook.id === entry?.book?.googleId)[0])
-    },[entriesInState])
+    
 
     const addEntrySchema = yup.object().shape({
         review: yup.string().max(1000).nullable(true),
@@ -61,17 +60,78 @@ const AddEntryForm = ({googleBook}) => {
         if (bookInList){
             console.log("book is in list already")
             dispatch(updateEntry({entry:{...values, _id: bookInList._id}, token}))
+            .then((res)=>{
+                switch(res.type){
+                    case "auth/updateEntry/fulfilled":
+                        displayNotificationAction({message: `Successfully updated ${bookData.title}`, type: "success"})
+                        onSubmitCallback()
+                        break;
+                    case "auth/updateEntry/rejected":
+                        displayNotificationAction({message: `Error occured when updating`, type: "error"})
+                        break;
+                    default:
+                        displayNotificationAction({message: "Somethings went wrong", type: "warning"})
+                }
+            })
+            .catch((err)=> displayNotificationAction({message: `${err.message}`, type: "error"}))
+                
         } else {
             dispatch(addNewEntry({entry: values, book: bookData, token}))
+            .then((res)=>{
+                switch(res.type){
+                    case "auth/addEntry/fulfilled":
+                        displayNotificationAction({message: `Successfully added ${res.payload.book.title}`, type: "success"})
+                        onSubmitCallback()
+                        break;
+                    case "auth/addEntry/rejected":
+                        displayNotificationAction({message: `Error occured`, type: "error"})
+                        break;
+                    default:
+                        displayNotificationAction({message: "Somethings went wrong", type: "warning"})
+                }
+            })
+            .catch((err)=> displayNotificationAction({message: `${err.message}`, type: "error"}))
             //use effect updates bookInList
         }
         
     }
 
     const handleDeleteEntry = (entry) => {
-        console.log("Delete entry")
+        console.log(entry)
         dispatch(deleteEntry({entryId: entry._id, token}))
+        .then((res)=>{
+            switch(res.type){
+                case "auth/deleteEntry/fulfilled":
+                    displayNotificationAction({message: `Successfully deleted ${entry.book.title}`, type: "success"})
+                    onSubmitCallback()
+                    break;
+                case "auth/deleteEntry/rejected":
+                    displayNotificationAction({message: `Error occured`, type: "error"})
+                    break;
+                default:
+                    displayNotificationAction({message: "Somethings went wrong", type: "warning"})
+            }
+        })
+        .catch((err)=> displayNotificationAction({message: `${err.message}`, type: "error"}))
     }
+
+    const handleKeydown = (e) => {
+        if(e.key === "Escape"){
+            onSubmitCallback()
+        }
+    }
+
+    useEffect(() => {
+        setBookInList(entriesInState.filter((entry)=> googleBook.id === entry?.book?.googleId)[0])
+
+        window.addEventListener('keydown', handleKeydown, {
+            passive: true
+        });
+
+        return () => {
+            window.removeEventListener('keydown', handleKeydown);
+        };
+    },[entriesInState])
 
     return (
         <>

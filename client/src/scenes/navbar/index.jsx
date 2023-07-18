@@ -83,7 +83,14 @@ const Navbar = () => {
         setSearchText(e.target.value)
     }
 
+    const handleKeydown = (e) => {
+        if(e.key === "Escape"){
+            handleCloseSearchModal()
+        }
+    }
+
     useEffect(() => {
+        
         handleCloseSearchModal()
         if(token) {
             const decoded = jwtDecode(token);
@@ -91,7 +98,16 @@ const Navbar = () => {
                 handleLogout()
             }
         }
+
+        window.addEventListener('keydown', handleKeydown, {
+            passive: true
+        });
+
+        return () => {
+            window.removeEventListener('keydown', handleKeydown);
+        };
     }, [location]);
+
 
 
     return (
@@ -119,11 +135,12 @@ const Navbar = () => {
                     }}
                     disableUnderline
                     startAdornment={<Search/>}
+                    
                     endAdornment={<Clear sx={{cursor: "pointer",}} onClick={()=> handleCloseSearchModal()}/>}
                 >
                 </Input>  
                     {debouncedSearchTerm &&
-                    <SearchResults searchText={debouncedSearchTerm}/>
+                    <SearchResults searchText={debouncedSearchTerm} />
                     }
                 </>
             </Modal>

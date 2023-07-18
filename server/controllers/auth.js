@@ -180,7 +180,7 @@ export const googleRegister = async (req, res) => {
             password: passwordHash,
             image: picture,
             location: "",
-            bio: "",
+            bio: "No Bio provided",
             role: "user"
         });
 

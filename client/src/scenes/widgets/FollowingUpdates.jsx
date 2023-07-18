@@ -29,7 +29,6 @@ const FollowingUpdates = () => {
                 },
             })
             if(response.ok){
-                console.log("response ok")
                 const searchResults = await response.json();
                 pageCount.current = searchResults.totalPages
                 //setUpdatesList(response.ok ? (prevState)=> [...prevState, ...Array.from(searchResults.entries)] :(prevState) => [...prevState])

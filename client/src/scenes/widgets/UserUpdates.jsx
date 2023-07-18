@@ -9,7 +9,6 @@ const UserUpdates = ({entries}) => {
         )
     }
 
-    console.log(entries)
     return (
         <Grid spacing={1.0} container>
         {entries.sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt)).map((currEntry) =>

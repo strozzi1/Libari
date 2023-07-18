@@ -57,8 +57,6 @@ const Form = () => {
     const isRegister = pageType ==="register";
     const { displayNotificationAction } = useNotification();
 
-    //displayNotificationAction({message: "error", type: "error"})
-    //TODO: MOVE THESE TO SEPARATE API FILE
     const register = async (values, onSubmitProps) => {
         
         //this allows us to send form info with image
@@ -146,7 +144,8 @@ const Form = () => {
     }
 
     const googleSuccess = (res) => {
-        //TODO: Create redux action for both googleLogin and googleRegister
+
+        
         try {
             //do some login in with the data I receive from google here.
             console.log("Google Data: ", res)

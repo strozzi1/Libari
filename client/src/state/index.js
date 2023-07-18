@@ -49,7 +49,9 @@ export const authSlice = createSlice({
             let newEntry = {...action.payload.entry, book:action.payload.book}
             state.entries.push(newEntry)
             state.books.push(action.payload.book)
+            //console.log("state: ", state, "action: ", action)
             
+            return action
         },
         setEntry: (state, action) => {
             
@@ -69,6 +71,7 @@ export const authSlice = createSlice({
         removeEntry: (state, action) => {
             const updatedList = state.entries.filter((entry)=> entry._id !== action.payload.deletedEntry)
             state.entries = updatedList
+            return action;
         },
         setPost: (state, action) =>{
             const updatedPosts = state.posts.map((post) => {
