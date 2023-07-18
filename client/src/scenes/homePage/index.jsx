@@ -37,7 +37,7 @@ const HomePage = () => {
                     maxWidth={isNonMobileScreens ? "42%" : undefined}
                 >   
                     <Typography style={{paddingBottom:"8px", fontSize:"13px", fontWeight: 500, opacity: "80%"}}>
-                    Following Updates:
+                    Following Updates
                     </Typography>
 
                     <FollowingUpdates/>

@@ -7,7 +7,7 @@ import EditEntryForm from "../listPage/EditEntryForm";
 import { updateEntry } from "../../state";
 import { BASE_URL } from "../../env";
 import FlexBetween from "../../components/FlexBetween";
-import useDebounce from "../../utils/useDebounce";
+import {useLocation} from 'react-router-dom';
 
 
 const ListWidget = ({username}) => {
@@ -16,7 +16,7 @@ const ListWidget = ({username}) => {
     const [list, setList] = useState(null);
     const authedUser = useSelector((state) => state.auth.user)
     const authedList = useSelector((state) => state.auth.entries)
-    
+    const location = useLocation();
 
     const updateEntry = (updatedEntry) => {
         const updatedList = list.map((entry) => entry._id === updatedEntry._id ? updatedEntry : entry)
@@ -39,7 +39,7 @@ const ListWidget = ({username}) => {
 
     useEffect(() => {
         getList();
-    }, [authedList]); //eslint-disable-line react-hooks/exhaustive-deps
+    }, [authedList, location]); //eslint-disable-line react-hooks/exhaustive-deps
 
     //TODO: Handle loading state (MUI SKELETON)
     if(!list){

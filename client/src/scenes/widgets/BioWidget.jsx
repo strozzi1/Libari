@@ -6,7 +6,6 @@ const BioWidget = ({user}) =>{
     const {palette} = useTheme()
     const dark = palette.neutral.dark
     const medium = palette.neutral.medium
-    console.log(user)
 
     if(!user){
         return null

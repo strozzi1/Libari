@@ -27,7 +27,6 @@ const ProfilePage = () => {
         const data = await response.json();
         response.ok ? setUser(data) : setUser(null)
         
-        console.log("DATA: ",data)
     }
 
     const getEntries = async() => {
@@ -37,7 +36,6 @@ const ProfilePage = () => {
         });
         const data = await response.json();
         setEntries(data.entries);
-        console.log("Booklist: ",data)
     }
 
     //TODO: make conditional. If it's the currently logged in user, just load data from state.

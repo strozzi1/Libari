@@ -70,7 +70,7 @@ const EditUserForm = ({user}) => {
         image: yup.string()
     })
     
-
+    //TODO: make this into a redux action
     const handleSubmitUsername = async (values, onSubmitProps) => {
         console.log(values)
         const updatedUserResponse = await fetch(

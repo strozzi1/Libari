@@ -5,6 +5,7 @@ import moment from "moment"
 import {useSelector, useDispatch} from "react-redux"
 import { deleteEntry, removeEntry, updateEntry } from "../../state";
 import { useNotification } from "../../utils/useNotification";
+import { useEffect } from "react";
 
 
 const EditEntryForm = ({entry, close}) => {
@@ -54,9 +55,24 @@ const EditEntryForm = ({entry, close}) => {
     }
 
     const handleDeleteEntry = (entry) => {
-        console.log("Delete entry")
         dispatch(deleteEntry({entryId: entry._id, token}))
     }
+
+    const handleKeydown = (e) => {
+        if(e.key === "Escape"){
+            close()
+        }
+    }
+
+    useEffect(()=> {
+        window.addEventListener('keydown', handleKeydown, {
+            passive: true
+        });
+
+        return () => {
+            window.removeEventListener('keydown', handleKeydown);
+        };
+    },[])
 
 
     return (

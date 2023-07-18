@@ -223,7 +223,7 @@ const SearchResultBookItem = ({book}) => {
         console.log("ADD BOOK: ", book)
     }
 
-    const handleCloseBookModal = () => {
+    const handleCloseBookModal = (e) => {
         setIsBookModal(false)
     }
 
@@ -234,7 +234,7 @@ const SearchResultBookItem = ({book}) => {
             onClose={handleCloseBookModal}>
             <Box sx={modalStyle} width={isNonMobileScreen ? "50%" : "93%"}>
             <WidgetWrapper >
-                <AddEntryForm googleBook={book}/>
+                <AddEntryForm onSubmitCallback={handleCloseBookModal} googleBook={book}/>
             </WidgetWrapper>
             </Box>
         </Modal>
