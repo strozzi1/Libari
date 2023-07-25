@@ -211,12 +211,12 @@ const Navbar = () => {
                             }}
                             input={<InputBase/>}
                         >
-                            <MenuItem value={userName} onClick={() => navigate("/home")}>
+                            <MenuItem key={"home"} value={userName} onClick={() => navigate("/home")}>
                                 <Typography>{userName}</Typography>
                             </MenuItem>
-                            <MenuItem onClick={() => navigate(`/user/${userName}`)}>Profile</MenuItem>
-                            <MenuItem onClick={() => navigate(`/user/${userName}/list`)}>Booklist</MenuItem>
-                            <MenuItem onClick={() => handleLogout()}>Logout</MenuItem>
+                            <MenuItem key={"profile"} onClick={() => navigate(`/user/${userName}`)}>Profile</MenuItem>
+                            <MenuItem key={"booklist"} onClick={() => navigate(`/user/${userName}/list`)}>Booklist</MenuItem>
+                            <MenuItem key={"logout"} onClick={() => handleLogout()}>Logout</MenuItem>
                         </Select>
                     </FormControl>
                     :
@@ -286,13 +286,13 @@ const Navbar = () => {
                             input={<InputBase/>}>
                             {user ? 
                             [
-                                <MenuItem value={userName} onClick={()=>navigate("/home")} key="userName">
+                                <MenuItem key={"home"} value={userName} onClick={()=>navigate("/home")}>
                                     <Typography>{userName}</Typography>
                                 </MenuItem>
                                 ,
-                                <MenuItem onClick={() => navigate(`/user/${userName}`)}>Profile</MenuItem>,
-                                <MenuItem onClick={() => navigate(`/user/${userName}/list`)} key="Booklist">Booklist</MenuItem>,
-                                <MenuItem onClick={() => handleLogout()} key="Logout">Logout</MenuItem>
+                                <MenuItem key={"profile"} onClick={() => navigate(`/user/${userName}`)}>Profile</MenuItem>,
+                                <MenuItem key={"booklist"} onClick={() => navigate(`/user/${userName}/list`)}>Booklist</MenuItem>,
+                                <MenuItem key={"logout"} onClick={() => handleLogout()} >Logout</MenuItem>
                             ]
                             : <MenuItem value="Log in" onClick={()=> navigate("/home")}><Typography>Log in</Typography></MenuItem>
                             }   

@@ -46,7 +46,7 @@ export const authSlice = createSlice({
         },
         addEntry: (state, action) => {
             /*TODO don't push null books to list */
-            let newEntry = {...action.payload.entry, book:action.payload.book}
+            let newEntry = {...action.payload.entry, book: action.payload.book}
             state.entries.push(newEntry)
             state.books.push(action.payload.book)
             //console.log("state: ", state, "action: ", action)
@@ -199,18 +199,19 @@ export const updateEntry = createAsyncThunk(
 export const addNewEntry = createAsyncThunk(
     "auth/addEntry",
     async ({ entry, book, token }, thunkAPI) => {
+        console.log("ENTRY BOOK SENT: ", book)
     try {
         const response = await fetch(`${BASE_URL}/entry/`, {
-        method: "POST",
-        headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-        },
-        body: JSON.stringify({
-            entry,
-            book
-        }),
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+            },
+            body: JSON.stringify({
+                entry,
+                book
+            }),
         });
         if(!response.ok){
             throw new Error('Unable to complete action at this time')

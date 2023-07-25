@@ -158,10 +158,10 @@ REQUIRE: Logged in User
 export const addNewBookEntryToList = async (req, res) => {
     //console.log(req.body)
     if(!req.body.book || !req.body.entry) return res.status(400).json({message: "Invalid book entry object"});
-    const {_id, googleId, title, author, photo, pages, readers, released} = req.body.book
+    const {_id, googleId, title, author, photo, pages, readers, released, openLibEdition, openLibKey} = req.body.book
     const {rating, status, startDate, endDate, review, page} = req.body.entry
     const newBook = new Book ({
-        _id, googleId, title, author, photo, pages, readers, released
+        _id, title, author, photo, pages, readers, released, openLibKey, openLibEdition
     })
     try {
         //Get list and check if exist
@@ -171,6 +171,8 @@ export const addNewBookEntryToList = async (req, res) => {
         let existingBook
         if(googleId)
             existingBook = await Book.findOne({googleId: googleId});
+        else if(openLibKey) 
+            existingBook = await Book.findOne({openLibKey: openLibKey})
         else if (_id){
             existingBook = await Book.findById(_id);
         }

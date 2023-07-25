@@ -7,7 +7,7 @@ import EditEntryForm from "../listPage/EditEntryForm";
 import { updateEntry } from "../../state";
 import { BASE_URL } from "../../env";
 import FlexBetween from "../../components/FlexBetween";
-import {useLocation} from 'react-router-dom';
+import {Link, useLocation, useNavigate} from 'react-router-dom';
 
 
 const ListWidget = ({username}) => {
@@ -119,6 +119,7 @@ const ListFragment = ({list, username, status}) => {
 const ListItemContent = ({entry, username, update}) => {
     const [rating, setRating] = useState(entry.rating)
     const {palette} = useTheme();
+    const navigate = useNavigate();
     const [hovering, setHovering] = useState(false)
     const [isEditModal, setIsEditModal] = useState(false);
     const isNonMobileScreens = useMediaQuery("(min-width:1000px)")
@@ -140,6 +141,14 @@ const ListItemContent = ({entry, username, update}) => {
         setHovering(false)
         setRating(updatedEntry.rating)
         update(updatedEntry)
+    }
+
+    const bookLink = (entry) => {
+        navigate(`/book/${String(entry.book.openLibKey).split('/')[2]}`, {
+            state: {
+                entryData: entry
+            }
+        })
     }
     
     const modalStyle = {
@@ -180,7 +189,7 @@ const ListItemContent = ({entry, username, update}) => {
                 </Avatar>
             </Grid>
             <Grid item xs={5}>
-                <Box style={{
+                <Box onClick={(e)=>bookLink(entry)} style={{
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis'

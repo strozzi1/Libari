@@ -20,6 +20,7 @@ import { useSelector } from "react-redux";
 import { BASE_URL } from "../../env";
 /**TODO: Handle click to close modal if in blank space part of grid */
 
+
 //Move to Utils?
 const truncate = (str, maxLength) => {
     return str.length > maxLength ? str.substring(0, maxLength) + '...' : str;
@@ -38,7 +39,7 @@ const SearchResults = ({searchText}) => {
     const background = theme.palette.background.default;
     const primaryLight = theme.palette.primary.light;
     const alt = theme.palette.background.alt;
-
+    //TODO: remove old handle search
     const handleSearch = async (query) => {
         setIsLoading(true);
         //TODO: Clean up fetch logic
@@ -49,6 +50,35 @@ const SearchResults = ({searchText}) => {
             })
             const searchResults = await response.json();
             setResultsList(response.ok ? searchResults.items : [])
+        } catch (error) {
+            setResultsList([])
+            console.log(error)
+        }
+
+        //TODO more flexability...page size and query logic
+        try {
+            const userQuery = await fetch(`${BASE_URL}/user?username=${query}&page=${1}&pageSize=${10}`)
+            const userResponse = await userQuery.json()
+            setUsersList(userQuery.ok ? userResponse.results : [])
+        } catch (error) {
+            setUsersList([])
+            console.log(error)
+        }
+        setIsLoading(false)
+    }
+
+    const handleLibrarySearch = async (query) => {
+        setIsLoading(true);
+        //TODO: Clean up fetch logic
+        try {
+            const response = await fetch(`https://openlibrary.org/search.json?q=${query}&_spellcheck_count=0&limit=10&fields=cover_edition_key,first_publish_year,number_of_pages_median,key,cover_i,title,subtitle,author_name,name&mode=everything`,
+            {
+                method: "GET"
+                
+            })
+            const searchResults = await response.json();
+            console.log("Search Res: ",searchResults)
+            setResultsList(response.ok ? searchResults.docs : [])
         } catch (error) {
             setResultsList([])
             console.log(error)
@@ -66,7 +96,7 @@ const SearchResults = ({searchText}) => {
     }
 
     useEffect(() => {
-        handleSearch(searchText);
+        handleLibrarySearch(searchText);
     },[searchText])
 
     return (
@@ -88,7 +118,7 @@ const SearchResults = ({searchText}) => {
                 { !isLoading ?
                 <List disablePadding>
                     { resultsList.map((book) =>
-                        <SearchResultBookItem key={book.id} book={book}/>
+                        <SearchResultBookItem key={book.key} book={book}/>
                     )}
                 </List>
                 :
@@ -201,6 +231,7 @@ const SearchResultBookItem = ({book}) => {
     const [isHovering, setIsHovering] = useState(false)
     const [isBookModal, setIsBookModal] = useState(false);
     const isNonMobileScreen = useMediaQuery("(min-width: 450px)");
+    const navigate = useNavigate()
     const modalStyle = {
         position: 'absolute',
         top: '50%',
@@ -227,6 +258,17 @@ const SearchResultBookItem = ({book}) => {
         setIsBookModal(false)
     }
 
+    const bookLink = (book) => {
+        //This is the google Id
+        
+        navigate(`/book/${String(book.key).split('/')[2]}`, {
+            state: {
+                bookData: book
+            }
+        })
+        console.log(book)
+    }
+
     return (
         <>
         <Modal 
@@ -234,7 +276,7 @@ const SearchResultBookItem = ({book}) => {
             onClose={handleCloseBookModal}>
             <Box sx={modalStyle} width={isNonMobileScreen ? "50%" : "93%"}>
             <WidgetWrapper >
-                <AddEntryForm onSubmitCallback={handleCloseBookModal} googleBook={book}/>
+                <AddEntryForm onSubmitCallback={handleCloseBookModal} openLibBook={book}/>
             </WidgetWrapper>
             </Box>
         </Modal>
@@ -251,11 +293,12 @@ const SearchResultBookItem = ({book}) => {
             onMouseOut = {()=> setIsHovering(false)}
             >
             <ListItemAvatar>
-                <Avatar alt={book.volumeInfo.title} src={book.volumeInfo.imageLinks?.smallThumbnail} variant="rounded"/>
+                <Avatar alt={book.title} src={`https://covers.openlibrary.org/b/id/${book.cover_i}-S.jpg?default=https://openlibrary.org/static/images/icons/avatar_book-sm.png`} variant="rounded"/>
             </ListItemAvatar>
             {isNonMobileScreen ?
             <ListItemText
-            primary={book.volumeInfo.title}
+            onClick={(e)=>bookLink(book)}
+            primary={book.title}
             primaryTypographyProps={{ 
                 style: {
                     whiteSpace: 'nowrap',
@@ -273,14 +316,14 @@ const SearchResultBookItem = ({book}) => {
                     textOverflow="ellipsis"
                 >
                     {
-                    truncate(Array(book.volumeInfo.authors).toString(), 33)
+                    truncate(Array(book.author_name ? book.author_name[0] : "").toString(), 33)
                     }
                 </Typography>
                 </>
             }
             /> 
             : 
-            <ListItemText primary={truncate(book.volumeInfo.title, 40)}/>
+            <ListItemText primary={truncate(book.title, 40)}/>
             }
             { isHovering && authedUser &&
             <AddCircle

@@ -3,6 +3,7 @@ import uniqueValidator from 'mongoose-unique-validator';
 
 const BookSchema = new mongoose.Schema(
     {
+        //TODO: remove googleId
         googleId: {
             type: String,
             require: false
@@ -36,6 +37,16 @@ const BookSchema = new mongoose.Schema(
         released: {
             type: Date,
             default: '1900-01-01'
+        },
+        // open Library Works key REQUIRED
+        openLibKey: {
+            type: String,
+            required: true
+        },
+        // open Library api books key
+        openLibEdition: {
+            type: String,
+            required: false,
         }
     },
     {timestamps: true}

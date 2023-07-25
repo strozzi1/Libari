@@ -9,23 +9,26 @@ import { useNotification } from "../../utils/useNotification";
 
 
 //TODO: Rename onSubmitCallback to onCloseModalCallback
-const AddEntryForm = ({onSubmitCallback, googleBook}) => {
+const AddEntryForm = ({onSubmitCallback, openLibBook}) => {
+    console.log("openLibBook: ", openLibBook)
     const isNonMobile = useMediaQuery("(min-width:600px)");
     const {palette} = useTheme();
     const token = useSelector((state) => state.auth.token)
     const dispatch = useDispatch();
     const entriesInState = useSelector((state)=>state.auth.entries)
-    const [bookInList,setBookInList] = useState(entriesInState.filter((entry)=> googleBook.id === entry?.book?.googleId)[0])
+    const [bookInList,setBookInList] = useState(entriesInState.filter((entry)=> entry?.book?.openLibKey === openLibBook.key)[0])
     const { displayNotificationAction } = useNotification();
 
+    
 
     const bookData = {
-        googleId: googleBook.id,
-        title: googleBook.volumeInfo.title,
-        author: googleBook.volumeInfo.authors?.toString(),
-        photo: googleBook.volumeInfo.imageLinks?.thumbnail,
-        pages: googleBook.volumeInfo.pageCount,
-        released: googleBook.volumeInfo.publishedDate
+        openLibKey: openLibBook.key,
+        openLibEdition: openLibBook.cover_edition_key,
+        title: openLibBook.title,
+        author: openLibBook.author_name[0]?.toString(),
+        photo: `https://covers.openlibrary.org/b/id/${openLibBook.cover_i ??  ""}-S.jpg?default=https://openlibrary.org/static/images/icons/avatar_book-sm.png`,
+        pages: openLibBook.number_of_pages_median,
+        released: openLibBook.first_publish_year
     }
     
     const initialEntryValues = {
@@ -36,7 +39,6 @@ const AddEntryForm = ({onSubmitCallback, googleBook}) => {
         status: bookInList ? bookInList.status : 'Planning',
         page: bookInList ? bookInList.page : 0
     }
-
     
 
     const addEntrySchema = yup.object().shape({
@@ -122,7 +124,7 @@ const AddEntryForm = ({onSubmitCallback, googleBook}) => {
     }
 
     useEffect(() => {
-        setBookInList(entriesInState.filter((entry)=> googleBook.id === entry?.book?.googleId)[0])
+        setBookInList(entriesInState.filter((entry)=> openLibBook.key === entry?.book?.openLibKey)[0])
 
         window.addEventListener('keydown', handleKeydown, {
             passive: true
@@ -167,7 +169,7 @@ const AddEntryForm = ({onSubmitCallback, googleBook}) => {
                             textOverflow: 'ellipsis'
                         }}
                         sx={{mb: "1.5rem", gridColumn: "span 4"}}>
-                            {googleBook.volumeInfo.title}
+                            {openLibBook.title}
                         </Typography>
                         <TextField select 
                         onBlur={handleBlur}
