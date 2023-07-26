@@ -1,10 +1,9 @@
-import { Box, Grid, Rating, Skeleton, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Grid, Paper, Rating, Skeleton, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Navbar from "../navbar";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useRef } from "react";
-import { useState } from "react";
-import { Height } from "@mui/icons-material";
+import { useEffect, useState, useRef } from "react";
+
 import { updateEntry } from "../../state";
 //import { useQuery } from "react-query"
 
@@ -14,23 +13,23 @@ const BookPage = ({}) => {
     const isNonMobileScreens = useMediaQuery("(min-width:1000px)")
     const entryList = useSelector((state)=> state.auth.entries)
     const token = useSelector((state)=> state.auth.token)
-    const isLoading = useRef(true);
-    const [currAuthor, setCurrAuthor] = useState({});
-    
     const dispatch = useDispatch();
-    //const navigate = useNavigate();
+    const location = useLocation()
+    const isLoading = useRef(true)
+
     const bookIdParam = params.id
-    //const location = useLocation()
     const bookEntry = Array.from(entryList).filter((entry)=> String(entry.book.openLibKey).split('/')[2] === bookIdParam)[0]
     const [rating, setRating] = useState(0)
     const [currBook, setCurrBook]= useState(bookEntry?.book);
+    const [currAuthor, setCurrAuthor] = useState({});
     //const {palette} = useTheme()
-    const isInList = bookEntry?.length > 0
+    
 
-    console.log("Is in list: ", isInList)
+    
 
     const fetchWork = async () => {
         //https://openlibrary.org/works/OL3511459W.json
+        console.log("fetch run")
         try {
             const response = await fetch(`https://openlibrary.org/works/${bookIdParam}.json`,
             {
@@ -44,10 +43,10 @@ const BookPage = ({}) => {
                 authorKey: bookData.authors[0]?.author?.key ?? "",
                 createdAd: bookData.first_publish_year,
                 title: bookData.title, 
-                description: bookData.description
+                description: bookData.description ?? "There is no description for this work"
             }
             setCurrBook(book)
-            setRating(isInList ? bookEntry?.rating : (bookData.rating ?? 0))
+            setRating(bookData ? bookEntry?.rating : (bookData.rating ?? 0))
             fetchAuthor(book.authorKey);
         } catch (error) {
             //setResultsList([])
@@ -73,10 +72,11 @@ const BookPage = ({}) => {
     }
 
     useEffect(()=> {
-        isLoading.current = true;
+        isLoading.current = true
         fetchWork();
-        isLoading.current = false;
-    },[bookIdParam]);
+        isLoading.current = false
+        console.log("Is in list: ", bookEntry)
+    },[location]);
 
     if(isLoading.current){
         return (
@@ -129,7 +129,7 @@ const BookPage = ({}) => {
                                 name="simple-controlled"
                                 sx={{marginBottom: "15px"}}
                                 title="Rating"
-                                readOnly={isInList}
+                                readOnly={bookEntry === {}}
                                 precision={0.5}
                                 value={rating/2}
                                 onChange={(event, newValue) => {
@@ -202,13 +202,24 @@ const BookPage = ({}) => {
                 justifyContent="center"
                 flexBasis={isNonMobileScreens ? "20%" : undefined}>
                     <Box display="block" alignContent="center">
-                        <Box>
+                        {/*<Box>
                             <img style={{
                                 margin: "auto",
                                 width: "200px",
-                                height: "300px"}}  
+                                height: "300px",
+                                filter: "drop-shadow(0 0.2rem 0.8rem rgba(0, 0, 0, 0.2))"
+                            }}  
                             src={currBook?.photo}/>
-                        </Box>
+                        </Box>*/}
+                        <Paper sx={{
+                                backgroundImage: `url(${currBook.photo})`,
+                                width: isNonMobileScreens ? "30vh" : "20vh",
+                                height: isNonMobileScreens ? "45vh" : "30vh",
+                                backgroundSize: "cover",
+                                filter: "drop-shadow(0 0.2rem 0.8rem rgba(0, 0, 0, 0.2))",
+                                //borderRadius: "0 6% 6% 0/4%"
+                            }}
+                        ></Paper>
                         
                         <Box display={isNonMobileScreens ? "flex" : "block"} justifyContent="center" alignContent="center">
                         { isNonMobileScreens ?
@@ -234,7 +245,7 @@ const BookPage = ({}) => {
                                 name="simple-controlled"
                                 sx={{marginBottom: "15px"}}
                                 title="Rating"
-                                readOnly={isInList}
+                                readOnly={bookEntry === {}}
                                 precision={0.5}
                                 value={rating/2}
                                 onChange={(event, newValue) => {
@@ -259,7 +270,7 @@ const BookPage = ({}) => {
                                     fontSize: "25px",
                                     fontWeight: "500"
                                 }}
-                            >{currBook.title}</Typography>
+                            >{currBook?.title}</Typography>
                             <Typography
                             sx={{
                                 fontSize: "15px",

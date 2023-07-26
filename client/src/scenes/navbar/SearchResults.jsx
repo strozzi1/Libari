@@ -293,7 +293,7 @@ const SearchResultBookItem = ({book}) => {
             onMouseOut = {()=> setIsHovering(false)}
             >
             <ListItemAvatar>
-                <Avatar alt={book.title} src={`https://covers.openlibrary.org/b/id/${book.cover_i}-S.jpg?default=https://openlibrary.org/static/images/icons/avatar_book-sm.png`} variant="rounded"/>
+                <Avatar alt={book.title} src={`https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg?default=https://openlibrary.org/static/images/icons/avatar_book-sm.png`} variant="rounded"/>
             </ListItemAvatar>
             {isNonMobileScreen ?
             <ListItemText
@@ -301,6 +301,7 @@ const SearchResultBookItem = ({book}) => {
             primary={book.title}
             primaryTypographyProps={{ 
                 style: {
+                    cursor: "pointer",
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis'

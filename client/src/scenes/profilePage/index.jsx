@@ -47,7 +47,7 @@ const ProfilePage = () => {
     if(!user){
         return (
             <Box>
-                <Navbar />
+                <Navbar page="profile"/>
                 <WidgetWrapper>
                     <Typography>No such user "{username}" found...</Typography>
                 </WidgetWrapper>
@@ -58,7 +58,7 @@ const ProfilePage = () => {
 
     return (
         <Box>
-            <Navbar/>
+            <Navbar page="profile"/>
             <Box
                 width="100%"
                 padding="2rem 6%"

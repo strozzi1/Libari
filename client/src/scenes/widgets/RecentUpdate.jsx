@@ -26,18 +26,11 @@ const UpdateText = ({entry}) => {
 
 
 const RecentUpdate = ({entry}) => { 
-    //const navigate = useNavigate()
-    //const params = useParams()
     const {palette} = useTheme()
-    //const user = useSelector((state)=>state.user)
-    
     const location = useLocation();
     const isHomepage = location.pathname === '/home'
     const navigate = useNavigate();
     const dark = palette.neutral.dark
-    const medium = palette.neutral.medium
-    const main = palette.neutral.main
-    const today = new Date()
     
     //console.log(moment(entry.updatedAt).fromNow())
 
