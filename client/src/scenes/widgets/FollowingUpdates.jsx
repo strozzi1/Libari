@@ -109,7 +109,7 @@ const FollowingUpdates = () => {
 
                 sx={{overflow: "hidden", textOverflow: "ellipsis"}}
                 key={currEntry._id} item xs={12}>
-                    <RecentUpdate entry={currEntry}/>
+                    <RecentUpdate entry={currEntry} />
                 </Grid>
             )}
         </Grid>

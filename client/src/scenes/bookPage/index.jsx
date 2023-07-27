@@ -38,7 +38,7 @@ const BookPage = ({}) => {
             const bookData = await response.json();
             //console.log("work search results: ",bookData)
             const book = {
-                photo: `https://covers.openlibrary.org/b/id/${bookData.covers ? bookData.covers[0] : ""}-M.jpg?default=https://openlibrary.org/static/images/icons/avatar_book-lg.png`,
+                photo: `https://covers.openlibrary.org/b/id/${bookData.covers ? bookData.covers[0] : ""}-L.jpg?default=https://openlibrary.org/static/images/icons/avatar_book-lg.png`,
                 workKey: bookData.key,
                 authorKey: bookData.authors[0]?.author?.key ?? "",
                 createdAd: bookData.first_publish_year,
@@ -211,16 +211,18 @@ const BookPage = ({}) => {
                             }}  
                             src={currBook?.photo}/>
                         </Box>*/}
-                        <Paper sx={{
-                                backgroundImage: `url(${currBook.photo})`,
-                                width: isNonMobileScreens ? "30vh" : "20vh",
-                                height: isNonMobileScreens ? "45vh" : "30vh",
-                                backgroundSize: "cover",
-                                filter: "drop-shadow(0 0.2rem 0.8rem rgba(0, 0, 0, 0.2))",
-                                //borderRadius: "0 6% 6% 0/4%"
-                            }}
-                        ></Paper>
-                        
+                        <Box display="flex" justifyContent="space-evenly">
+                            <Paper sx={{
+                                    backgroundImage: `url(${currBook.photo})`,
+                                    backgroundPosition: "center",
+                                    width: isNonMobileScreens ? "30vh" : "20vh",
+                                    height: isNonMobileScreens ? "45vh" : "30vh",
+                                    backgroundSize: "cover",
+                                    filter: "drop-shadow(0 0.2rem 0.8rem rgba(0, 0, 0, 0.2))",
+                                    //borderRadius: "0 6% 6% 0/4%"
+                                }}
+                            ></Paper>
+                        </Box>
                         <Box display={isNonMobileScreens ? "flex" : "block"} justifyContent="center" alignContent="center">
                         { isNonMobileScreens ?
                             <Box>

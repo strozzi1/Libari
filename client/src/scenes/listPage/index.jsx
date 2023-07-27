@@ -18,17 +18,20 @@ const ListPage = () => {
             <Box
                 width="100%"
                 padding="2rem 6%"
-                display={isNonMobileScreens ? "flex" : "block"}
+                //display={isNonMobileScreens ? "flex" : "block"}
+                display="flex"
+                flexDirection={isNonMobileScreens ? "row" : "column"}
                 gap="0.5rem"
                 justifyContent="space-between"
             >
                 {/*Left column */}
-                <Box flexBasis={isNonMobileScreens ? "70%" : undefined}>
+                <Box order={ isNonMobileScreens ?  0 : 1} flexBasis={isNonMobileScreens ? "70%" : undefined}>
                     <ListWidget username={params.username}/>
 
                 </Box>
                 {/*Right Column */}
                 <Box 
+                    order={isNonMobileScreens ?  1 : 0}
                     flexBasis={isNonMobileScreens ? "26%" : undefined}
                     mt={isNonMobileScreens ? undefined : "2rem"}
                 >

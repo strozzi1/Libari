@@ -11,17 +11,18 @@ import {Link, useLocation, useNavigate} from 'react-router-dom';
 
 
 const ListWidget = ({username}) => {
-    const {palette} = useTheme();
-    const isBiggerThanTablet = useMediaQuery("(min-width:650px)")
+    // const {palette} = useTheme();
+    // const isBiggerThanTablet = useMediaQuery("(min-width:650px)")
     const [list, setList] = useState(null);
     const authedUser = useSelector((state) => state.auth.user)
     const authedList = useSelector((state) => state.auth.entries)
     const location = useLocation();
 
-    const updateEntry = (updatedEntry) => {
+    /*const updateEntry = (updatedEntry) => {
         const updatedList = list.map((entry) => entry._id === updatedEntry._id ? updatedEntry : entry)
         setList(updatedList)
-    }
+    }*/
+
 
     const getList = async () => {
         if(authedUser && username === authedUser.username){
@@ -34,8 +35,8 @@ const ListWidget = ({username}) => {
             const data = await response.json();
             setList(data.entries);
         }
-        
     }
+
 
     useEffect(() => {
         getList();
@@ -190,6 +191,7 @@ const ListItemContent = ({entry, username, update}) => {
             </Grid>
             <Grid item xs={5}>
                 <Box onClick={(e)=>bookLink(entry)} style={{
+                    cursor: 'pointer',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis'

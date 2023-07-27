@@ -4,24 +4,38 @@ import FlexBetween from "../../components/FlexBetween";
 import {useLocation, useNavigate, useParams} from "react-router-dom";
 import { useSelector } from "react-redux";
 
+
 const UpdateText = ({entry}) => {
-    if( entry.updatedAt === entry.createdAt){
-        return( 
-            <Typography style={{
-                whiteSpace: 'nowrap'
-            }}>
-                Added {entry.book.title} as {entry.status} 
-            </Typography>
-        )
-    } else {
-        return (
-            <Typography style={{
-                whiteSpace: 'nowrap'
-            }}>
-                {entry.status} {entry.book.title}
-            </Typography>
-        )
-    }   
+    const {palette} = useTheme();
+    const navigate = useNavigate();
+
+    const bookLink = (entry) => {
+        console.log("clicked: ", entry)
+        if(!entry.book.openLibKey) return;
+
+        navigate(`/book/${String(entry.book.openLibKey).split('/')[2]}`, {
+            state: {
+                entryData: entry
+            }
+        })
+    }
+
+    
+    return( 
+        <Typography 
+        onClick={()=>bookLink(entry)}
+        sx={{
+            "&:hover": {
+                color: palette.primary.light,
+                cursor: "pointer",
+            },
+        }} style={{
+            whiteSpace: 'nowrap',
+        }}>
+            {entry.updatedAt === entry.createdAt ? `Added ${entry.book.title} as ${entry.status}` : `${entry.status} ${entry.book.title}` }
+        </Typography>
+    )
+    
 }
 
 
@@ -31,6 +45,7 @@ const RecentUpdate = ({entry}) => {
     const isHomepage = location.pathname === '/home'
     const navigate = useNavigate();
     const dark = palette.neutral.dark
+    //const openLibKey = String(entry.book.openLibKey).split('/')[2]
     
     //console.log(moment(entry.updatedAt).fromNow())
 
@@ -75,36 +90,36 @@ const RecentUpdate = ({entry}) => {
                     <Avatar variant="rounded" sx={{width: "24px", height:"24px"}} src={entry.userId.image}></Avatar>
                 </Box>
                 :
-                <Box marginLeft="8px">
-                    <UpdateText entry={entry} />
+                <Box marginLeft="8px" >
+                    <UpdateText entry={entry}/>
                 </Box>
                 }
                 </FlexBetween>
-                <FlexBetween>
-                    
-                    <Paper sx={{
-                    //backgroundImage: `url(${entry.book.photo})`,
-                    position: "absolute" ,
-                    background: `linear-gradient(to right, rgba(0,0,0,0), ${palette.background.alt} 100%)`,
-                    width: "120px",
-                    height: "80px",
-                    right: 0,
-                    backgroundSize:"cover",
-                    borderRadius: "3px 0px 0px 3px",
-                    boxShadow: "none"
-                }}
-                >
-                    <Typography 
-                        sx={{
-                            fontSize: "10px",
-                            opacity: "70%",
-                            textAlign: "right",
-                            padding: "6px"
-                            
+                    <FlexBetween>
+                        
+                        <Paper sx={{
+                        //backgroundImage: `url(${entry.book.photo})`,
+                        position: "absolute" ,
+                        background: `linear-gradient(to right, rgba(0,0,0,0), ${palette.background.alt} 100%)`,
+                        width: "120px",
+                        height: "80px",
+                        right: 0,
+                        backgroundSize:"cover",
+                        borderRadius: "3px 0px 0px 3px",
+                        boxShadow: "none"
                         }}
-                    >{moment(entry.updatedAt).fromNow()}</Typography>
-                </Paper>
-                </FlexBetween>
+                        >
+                            <Typography 
+                                sx={{
+                                    fontSize: "10px",
+                                    opacity: "70%",
+                                    textAlign: "right",
+                                    padding: "6px"
+                                    
+                                }}
+                            >{moment(entry.updatedAt).fromNow()}</Typography>
+                        </Paper>
+                    </FlexBetween>
                 </FlexBetween>
             </Box>
             
