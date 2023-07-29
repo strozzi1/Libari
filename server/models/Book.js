@@ -3,6 +3,7 @@ import uniqueValidator from 'mongoose-unique-validator';
 
 const BookSchema = new mongoose.Schema(
     {
+        
         googleId: {
             type: String,
             require: false
@@ -36,6 +37,10 @@ const BookSchema = new mongoose.Schema(
         released: {
             type: Date,
             default: '1900-01-01'
+        },
+        description: {
+            type: String,
+            default: "No description provided for this work"
         }
     },
     {timestamps: true}

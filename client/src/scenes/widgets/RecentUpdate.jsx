@@ -5,23 +5,33 @@ import {useLocation, useNavigate, useParams} from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const UpdateText = ({entry}) => {
-    if( entry.updatedAt === entry.createdAt){
-        return( 
-            <Typography style={{
-                whiteSpace: 'nowrap'
-            }}>
-                Added {entry.book.title} as {entry.status} 
-            </Typography>
-        )
-    } else {
-        return (
-            <Typography style={{
-                whiteSpace: 'nowrap'
-            }}>
-                {entry.status} {entry.book.title}
-            </Typography>
-        )
-    }   
+    const navigate = useNavigate();
+    const {palette} = useTheme()
+
+    const bookLink = (entry) => {
+        navigate(`/book/${entry.book.googleId}`, {
+            state: {
+                entryData: entry
+            }
+        })
+    }
+
+    
+    return( 
+        <Typography onClick={()=>bookLink(entry)} sx={{
+            whiteSpace: 'nowrap',
+            "&:hover": {
+                color: palette.primary.dark,
+                cursor: "pointer",
+            },
+        }}>
+            { entry.updatedAt === entry.createdAt ? 
+            `Added ${entry.book.title} as ${entry.status}` 
+            : 
+            `${entry.status} ${entry.book.title}`} 
+        </Typography>
+    )
+    
 }
 
 
@@ -71,7 +81,7 @@ const RecentUpdate = ({entry}) => {
                     fontWeight="500"
                     sx={{
                         "&:hover": {
-                            color: palette.primary.light,
+                            color: palette.primary.dark,
                             cursor: "pointer",
                         },
                     }} 

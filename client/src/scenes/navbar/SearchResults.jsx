@@ -198,6 +198,7 @@ const SearchResultBookItem = ({book}) => {
     const neutralLight = palette.neutral.light;
     const dark = palette.neutral.dark;
     const authedUser = useSelector((state)=> state.auth.user)
+    const navigate = useNavigate()
     const [isHovering, setIsHovering] = useState(false)
     const [isBookModal, setIsBookModal] = useState(false);
     const isNonMobileScreen = useMediaQuery("(min-width: 450px)");
@@ -225,6 +226,14 @@ const SearchResultBookItem = ({book}) => {
 
     const handleCloseBookModal = (e) => {
         setIsBookModal(false)
+    }
+
+    const bookLink = (book) => {
+        navigate(`/book/${book.id}`, {
+            state: {
+                bookData: book
+            }
+        })
     }
 
     return (
@@ -255,6 +264,7 @@ const SearchResultBookItem = ({book}) => {
             </ListItemAvatar>
             {isNonMobileScreen ?
             <ListItemText
+            onClick={()=> bookLink(book)}
             primary={book.volumeInfo.title}
             primaryTypographyProps={{ 
                 style: {
