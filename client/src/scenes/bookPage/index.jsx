@@ -229,7 +229,7 @@ const BookPage = ({}) => {
                                 name="simple-controlled"
                                 sx={{marginBottom: "15px"}}
                                 title="Rating"
-                                readOnly={bookEntry === {}}
+                                readOnly={bookEntry === undefined}
                                 precision={0.5}
                                 value={rating/2}
                                 onChange={(event, newValue) => {
@@ -266,7 +266,7 @@ const BookPage = ({}) => {
                                 name="simple-controlled"
                                 sx={{marginBottom: "15px"}}
                                 title="Rating"
-                                readOnly={bookEntry === {}}
+                                readOnly={bookEntry === undefined}
                                 precision={0.5}
                                 value={rating/2}
                                 onChange={(event, newValue) => {

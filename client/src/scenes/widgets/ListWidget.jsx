@@ -1,4 +1,4 @@
-import { LibraryBooksOutlined, MoreHoriz, Search } from "@mui/icons-material";
+import { Chat, ChatBubble, ChatBubbleRounded, LibraryBooksOutlined, MoreHoriz, Search } from "@mui/icons-material";
 import { Grid, useTheme, Box, ListItem, List, Rating, Avatar, Tooltip, Modal, useMediaQuery, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -98,12 +98,12 @@ const ListFragment = ({list, username, status}) => {
                         <Grid item xs={1}>
                             <Box></Box>
                         </Grid>
-                        <Grid sx={{cursor: "pointer"}} item xs={5}>
+                        <Grid sx={{cursor: "pointer"}} item xs={7}>
                             <Box>Title</Box>
                         </Grid>
-                        <Grid item xs={2}>
+                        {/*<Grid item xs={2}>
                             <Box>Status</Box>
-                        </Grid>
+                        </Grid>*/}
                         <Grid item xs={2}>
                             <Box>Rating</Box>
                         </Grid>
@@ -201,7 +201,7 @@ const ListItemContent = ({entry, username, update}) => {
                     }
                 </Avatar>
             </Grid>
-            <Grid item xs={5}>
+            <Grid item xs={6}>
                 <Box onClick={()=> bookLink(entry)} sx={{
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
@@ -213,8 +213,8 @@ const ListItemContent = ({entry, username, update}) => {
                 }}>{entry.book?.title}</Box>
             </Grid>
             
-            <Grid item xs={2}>
-                <Box>{entry.status}</Box>
+            <Grid item xs={1}>
+                <Box>{entry.review !== "" && <Tooltip placement="left" title={entry.review}><Chat opacity="80%"/></Tooltip>}</Box>
             </Grid>
             <Grid item xs={2}>
                 <Rating
