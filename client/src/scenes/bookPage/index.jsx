@@ -48,10 +48,12 @@ const BookPage = ({}) => {
                 author: bookData.volumeInfo.authors ? bookData.volumeInfo.authors[0] : "",
                 createdAd: bookData.volumeInfo.publishedAt,
                 title: bookData.volumeInfo.title, 
-                description: bookData.volumeInfo.description ?? "No description provided for this work"
+                description: bookData.volumeInfo.description ?? "No description provided for this work",
+                averageRating: bookData.volumeInfo.averageRating,
+                pageCount: bookData.volumeInfo.pageCount ?? "N/A"
             }
             setCurrBook(book)
-            setRating(bookData ? bookEntry?.rating : (bookData.rating ?? 0))
+            setRating(bookEntry ? bookEntry?.rating : (book.averageRating*2 ?? 0))
             //fetchAuthor(book.authorKey);
         } catch (error) {
             //setResultsList([])
@@ -245,7 +247,7 @@ const BookPage = ({}) => {
 
                 {/*Right column */}
                 <Box flexBasis={isNonMobileScreens ? "70%" : undefined} sx={{opacity: "85%"}}>
-                    { isNonMobileScreens ? 
+                    { isNonMobileScreens &&
                         <>
                             <Typography
                                 sx={{
@@ -260,10 +262,20 @@ const BookPage = ({}) => {
                                 marginBottom: "10px"
                             }}
                             >{currBook?.author}</Typography>
+                            <Rating size="large"
+                                name="simple-controlled"
+                                sx={{marginBottom: "15px"}}
+                                title="Rating"
+                                readOnly={bookEntry === {}}
+                                precision={0.5}
+                                value={rating/2}
+                                onChange={(event, newValue) => {
+                                    setRating(newValue*2);
+                                    dispatch(updateEntry({entry: {...bookEntry, rating: newValue*2}, token}))
+                                    
+                            }}/> {/*[NaN, null, undefined].includes(rating) ? 0.0 : rating/2.0*/}
                         </>
-                        : 
-                        <>
-                        </>
+                        
                     }
                     {/*<Typography>{currBook?.description?.value ?? currBook?.description}</Typography>*/}
                     <div dangerouslySetInnerHTML={{__html: currBook?.description?.value ?? currBook?.description}}/>
