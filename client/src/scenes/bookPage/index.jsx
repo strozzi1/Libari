@@ -12,24 +12,21 @@ import { updateEntry } from "../../state";
 
 
 const BookPage = ({}) => {
-    const params = useParams()
-    const isNonMobileScreens = useMediaQuery("(min-width:1000px)")
-    const entryList = useSelector((state)=> state.auth.entries)
-    const token = useSelector((state)=> state.auth.token)
+    const params = useParams();
+    const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
+    const entryList = useSelector((state)=> state.auth.entries);
+    const token = useSelector((state)=> state.auth.token);
     const dispatch = useDispatch();
-    const location = useLocation()
-    const isLoading = useRef(true)
+    const location = useLocation();
+    const isLoading = useRef(true);
     //const regex = /(<([^>]+)>)/gi;
     
 
-    const bookIdParam = params.id
-    const bookEntry = Array.from(entryList).filter((entry)=> entry.book.googleId === bookIdParam)[0]
-    const [rating, setRating] = useState(0)
+    const bookIdParam = params.id;
+    const bookEntry = Array.from(entryList).filter((entry)=> entry.book.googleId === bookIdParam)[0];
+    const [rating, setRating] = useState(0);
+    //TODO: Review below
     const [currBook, setCurrBook]= useState(bookEntry?.book);
-    //const [currAuthor, setCurrAuthor] = useState({});
-    //const {palette} = useTheme()
-    
-
     
 
     const fetchWork = async () => {
@@ -39,11 +36,11 @@ const BookPage = ({}) => {
             const response = await fetch(`https://www.googleapis.com/books/v1/volumes/${bookIdParam}`,
             {
                 method: "GET"
-            })
+            });
             const bookData = await response.json();
-            console.log("work search results: ",bookData)
+            console.log("work search results: ",bookData);
             const book = {
-                photo: bookData.volumeInfo.imageLinks ? (bookData.volumeInfo.imageLinks.thumbnail ?? bookData.volumeInfo.imageLinks.smallThumbnail) : "",
+                photo: bookData.volumeInfo.imageLinks ? ( bookData.volumeInfo.imageLinks.large ?? bookData.volumeInfo.imageLinks.thumbnail ?? bookData.volumeInfo.imageLinks.smallThumbnail) : "",
                 googleId: bookData.id,
                 author: bookData.volumeInfo.authors ? bookData.volumeInfo.authors[0] : "",
                 createdAd: bookData.volumeInfo.publishedAt,
@@ -51,7 +48,7 @@ const BookPage = ({}) => {
                 description: bookData.volumeInfo.description ?? "No description provided for this work",
                 averageRating: bookData.volumeInfo.averageRating,
                 pageCount: bookData.volumeInfo.pageCount ?? "N/A"
-            }
+            };
             setCurrBook(book)
             setRating(bookEntry ? bookEntry?.rating : (book.averageRating*2 ?? 0))
             //fetchAuthor(book.authorKey);

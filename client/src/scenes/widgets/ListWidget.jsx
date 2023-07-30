@@ -42,11 +42,11 @@ const ListWidget = ({username}) => {
     }, [authedList, location]); //eslint-disable-line react-hooks/exhaustive-deps
 
     //TODO: Handle loading state (MUI SKELETON)
-    if(!list && username === authedUser.username){
+    if(!list || !list[0]){
         
         return (
             <>
-            
+            { username === authedUser?.username ?
             <Typography fontSize="15px" style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -54,6 +54,13 @@ const ListWidget = ({username}) => {
                 }}>
                     Try clicking the <Search sx={{margin: "5px"}} fontWeight="bold" fontSize="medium"/> button above and adding a book!
                 </Typography>
+                : 
+                <Typography fontSize="15px" style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                }}>Looking pretty empty in here...</Typography>
+                }
             </>
             
         );
