@@ -1,14 +1,14 @@
-import { Box, Paper, Rating, Skeleton, Typography, useMediaQuery } from "@mui/material";
+import { Box, Button, ButtonGroup, Divider, FormControl, InputBase, MenuItem, Paper, Rating, Select, Skeleton, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Navbar from "../navbar";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState, useRef } from "react";
-
 import { updateEntry } from "../../state";
-
-
-//import DOMPurify from "dompurify";  //Use this to sanitize html before injecting it to my page (book description)
+import BookStatusButton from "../../components/BookStatusButton";
+//TODO: use dompurify to sanitize html from googleBooks API (Description)
+//import DOMPurify from "dompurify";  
 //import { useQuery } from "react-query"
+
 
 
 const BookPage = ({}) => {
@@ -19,6 +19,9 @@ const BookPage = ({}) => {
     const dispatch = useDispatch();
     const location = useLocation();
     const isLoading = useRef(true);
+    const navigate = useNavigate();
+    const {palette} = useTheme();
+    const neutralLight = palette.neutral.light;
     //const regex = /(<([^>]+)>)/gi;
     
 
@@ -27,6 +30,7 @@ const BookPage = ({}) => {
     const [rating, setRating] = useState(0);
     //TODO: Review below
     const [currBook, setCurrBook]= useState(bookEntry?.book);
+    const [googleResult, setGoogleResult] = useState({})
     
 
     const fetchWork = async () => {
@@ -38,12 +42,13 @@ const BookPage = ({}) => {
                 method: "GET"
             });
             const bookData = await response.json();
+            setGoogleResult(bookData);
             console.log("work search results: ",bookData);
             const book = {
                 photo: bookData.volumeInfo.imageLinks ? ( bookData.volumeInfo.imageLinks.large ?? bookData.volumeInfo.imageLinks.thumbnail ?? bookData.volumeInfo.imageLinks.smallThumbnail) : "",
                 googleId: bookData.id,
                 author: bookData.volumeInfo.authors ? bookData.volumeInfo.authors[0] : "",
-                createdAd: bookData.volumeInfo.publishedAt,
+                createdAt: bookData.volumeInfo.publishedAt,
                 title: bookData.volumeInfo.title, 
                 description: bookData.volumeInfo.description ?? "No description provided for this work",
                 averageRating: bookData.volumeInfo.averageRating,
@@ -63,9 +68,11 @@ const BookPage = ({}) => {
         isLoading.current = true
         fetchWork();
         isLoading.current = false
-        console.log("Is in list: ", bookEntry)
+        //console.log("Is in list: ", bookEntry)
     },[location]);
 
+
+    //PAGE IS LOADING CONTENT
     if(isLoading.current){
         return (
             <Box>
@@ -90,7 +97,7 @@ const BookPage = ({}) => {
                         <Box display={isNonMobileScreens ? "flex" : "block"} justifyContent="center" alignContent="center">
                         { isNonMobileScreens ?
                             <Box>
-
+                                
                             </Box>
                             : 
                             <Box display="flex" alignItems="center" flexDirection="column">
@@ -204,8 +211,12 @@ const BookPage = ({}) => {
                         </Box>
                         <Box display={isNonMobileScreens ? "flex" : "block"} justifyContent="center" alignContent="center">
                         { isNonMobileScreens ?
-                            <Box>
-
+                            <Box marginTop="10px">
+                                { token ?
+                                <BookStatusButton entry={bookEntry} googleBook={googleResult}/>
+                                :
+                                <Button onClick={()=> navigate("/home")}>Log In</Button>
+                                }
                             </Box>
                             : 
                             <Box display="flex" alignItems="center" flexDirection="column">
@@ -242,7 +253,7 @@ const BookPage = ({}) => {
                 
 
 
-                {/*Right column */}
+                {/*Right column / Bottom */}
                 <Box flexBasis={isNonMobileScreens ? "70%" : undefined} sx={{opacity: "85%"}}>
                     { isNonMobileScreens &&
                         <>
@@ -259,18 +270,27 @@ const BookPage = ({}) => {
                                 marginBottom: "10px"
                             }}
                             >{currBook?.author}</Typography>
-                            <Rating size="large"
-                                name="simple-controlled"
-                                sx={{marginBottom: "15px"}}
-                                title="Rating"
-                                readOnly={bookEntry === undefined}
-                                precision={0.5}
-                                value={rating/2}
-                                onChange={(event, newValue) => {
-                                    setRating(newValue*2);
-                                    dispatch(updateEntry({entry: {...bookEntry, rating: newValue*2}, token}))
-                                    
-                            }}/> {/*[NaN, null, undefined].includes(rating) ? 0.0 : rating/2.0*/}
+                            <Typography fontSize="15px" style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            flexWrap: 'wrap',
+                            marginBottom: '15px',
+                            fontSize: '20px',
+                            fontWeight: '500',
+                            }}>
+                                <Rating size="large"
+                                    name="simple-controlled"
+                                    title="Rating"
+                                    readOnly={bookEntry === undefined}
+                                    precision={0.5}
+                                    sx={{marginRight: "5px"}}
+                                    value={rating/2}
+                                    onChange={(event, newValue) => {
+                                        setRating(newValue*2);
+                                        dispatch(updateEntry({entry: {...bookEntry, rating: newValue*2}, token}))
+                                        
+                                }}/> <span style={{opacity: "70%"}}>{[NaN, null, undefined].includes(rating) ? 0.0 : (rating/2.0).toPrecision(2)}</span>
+                            </Typography>
                         </>
                         
                     }

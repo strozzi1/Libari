@@ -259,7 +259,10 @@ const SearchResultBookItem = ({book}) => {
             onMouseOver = {() => setIsHovering(true)}
             onMouseOut = {()=> setIsHovering(false)}
             >
-            <ListItemAvatar>
+            <ListItemAvatar onClick={()=> bookLink(book)} 
+            sx={{"&:hover": {
+                cursor: "pointer",
+            }}}>
                 <Avatar alt={book.volumeInfo.title} src={book.volumeInfo.imageLinks?.smallThumbnail} variant="rounded"/>
             </ListItemAvatar>
             {isNonMobileScreen ?
@@ -267,10 +270,14 @@ const SearchResultBookItem = ({book}) => {
             onClick={()=> bookLink(book)}
             primary={book.volumeInfo.title}
             primaryTypographyProps={{ 
-                style: {
+                sx: {
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
-                    textOverflow: 'ellipsis'
+                    textOverflow: 'ellipsis',
+                    "&:hover": {
+                        color: palette.primary.dark,
+                        cursor: "pointer",
+                    }
                 }
             }}
             secondary={
