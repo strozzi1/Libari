@@ -5,39 +5,52 @@ import {useLocation, useNavigate, useParams} from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const UpdateText = ({entry}) => {
-    if( entry.updatedAt === entry.createdAt){
-        return( 
-            <Typography style={{
-                whiteSpace: 'nowrap'
-            }}>
-                Added {entry.book.title} as {entry.status} 
-            </Typography>
-        )
-    } else {
-        return (
-            <Typography style={{
-                whiteSpace: 'nowrap'
-            }}>
-                {entry.status} {entry.book.title}
-            </Typography>
-        )
-    }   
+    const navigate = useNavigate();
+    const {palette} = useTheme()
+
+    const bookLink = (entry) => {
+        navigate(`/book/${entry.book.googleId}`, {
+            state: {
+                entryData: entry
+            }
+        })
+    }
+
+    
+    return( 
+        <Typography onClick={()=>bookLink(entry)} sx={{
+            whiteSpace: 'nowrap',
+            "&:hover": {
+                color: palette.primary.dark,
+                cursor: "pointer",
+            },
+        }}>
+            { entry.updatedAt === entry.createdAt ? 
+            `Added ${entry.book.title} as ${entry.status}` 
+            : 
+            `${entry.status} ${entry.book.title}`} 
+        </Typography>
+    )
+    
 }
 
 
 const RecentUpdate = ({entry}) => { 
-    //const navigate = useNavigate()
-    //const params = useParams()
-    const {palette} = useTheme()
-    //const user = useSelector((state)=>state.user)
     
     const location = useLocation();
     const isHomepage = location.pathname === '/home'
     const navigate = useNavigate();
+    const {palette} = useTheme()
     const dark = palette.neutral.dark
-    const medium = palette.neutral.medium
-    const main = palette.neutral.main
-    const today = new Date()
+    
+
+    const bookLink = (entry) => {
+        navigate(`/book/${entry.book.googleId}`, {
+            state: {
+                entryData: entry
+            }
+        })
+    }
     
     //console.log(moment(entry.updatedAt).fromNow())
 
@@ -50,14 +63,19 @@ const RecentUpdate = ({entry}) => {
                 pb="1.1rem"
             >
                 <FlexBetween>
-                <Paper sx={{
+                <Paper
+                onClick={()=>bookLink(entry)}
+                sx={{
                     backgroundImage: `url(${entry.book.photo})`, 
                     width: "60px",
                     height: "80px",
                     left: 0,
                     backgroundSize:"cover",
                     borderRadius: "3px 0px 0px 3px",
-                    boxShadow: "none"
+                    boxShadow: "none",
+                    "&:hover": {
+                        cursor: "pointer",
+                    },
                 }}
                 >
                 </Paper>
@@ -71,7 +89,7 @@ const RecentUpdate = ({entry}) => {
                     fontWeight="500"
                     sx={{
                         "&:hover": {
-                            color: palette.primary.light,
+                            color: palette.primary.dark,
                             cursor: "pointer",
                         },
                     }} 

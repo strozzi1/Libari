@@ -198,6 +198,7 @@ const SearchResultBookItem = ({book}) => {
     const neutralLight = palette.neutral.light;
     const dark = palette.neutral.dark;
     const authedUser = useSelector((state)=> state.auth.user)
+    const navigate = useNavigate()
     const [isHovering, setIsHovering] = useState(false)
     const [isBookModal, setIsBookModal] = useState(false);
     const isNonMobileScreen = useMediaQuery("(min-width: 450px)");
@@ -227,6 +228,14 @@ const SearchResultBookItem = ({book}) => {
         setIsBookModal(false)
     }
 
+    const bookLink = (book) => {
+        navigate(`/book/${book.id}`, {
+            state: {
+                bookData: book
+            }
+        })
+    }
+
     return (
         <>
         <Modal 
@@ -250,17 +259,25 @@ const SearchResultBookItem = ({book}) => {
             onMouseOver = {() => setIsHovering(true)}
             onMouseOut = {()=> setIsHovering(false)}
             >
-            <ListItemAvatar>
+            <ListItemAvatar onClick={()=> bookLink(book)} 
+            sx={{"&:hover": {
+                cursor: "pointer",
+            }}}>
                 <Avatar alt={book.volumeInfo.title} src={book.volumeInfo.imageLinks?.smallThumbnail} variant="rounded"/>
             </ListItemAvatar>
             {isNonMobileScreen ?
             <ListItemText
+            onClick={()=> bookLink(book)}
             primary={book.volumeInfo.title}
             primaryTypographyProps={{ 
-                style: {
+                sx: {
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
-                    textOverflow: 'ellipsis'
+                    textOverflow: 'ellipsis',
+                    "&:hover": {
+                        color: palette.primary.dark,
+                        cursor: "pointer",
+                    }
                 }
             }}
             secondary={

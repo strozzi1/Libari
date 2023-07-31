@@ -18,6 +18,10 @@ const EntrySchema = new mongoose.Schema(
             require: false,
             default: 0
         },
+        favorite: {
+            type: Boolean,
+            default: false
+        },
         page: {
             type: Number,
             min: 0,

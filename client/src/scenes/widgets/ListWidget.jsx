@@ -1,4 +1,4 @@
-import { LibraryBooksOutlined, MoreHoriz } from "@mui/icons-material";
+import { Chat, ChatBubble, ChatBubbleRounded, LibraryBooksOutlined, MoreHoriz, Search } from "@mui/icons-material";
 import { Grid, useTheme, Box, ListItem, List, Rating, Avatar, Tooltip, Modal, useMediaQuery, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -7,7 +7,7 @@ import EditEntryForm from "../listPage/EditEntryForm";
 import { updateEntry } from "../../state";
 import { BASE_URL } from "../../env";
 import FlexBetween from "../../components/FlexBetween";
-import {useLocation} from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 
 
 const ListWidget = ({username}) => {
@@ -42,8 +42,28 @@ const ListWidget = ({username}) => {
     }, [authedList, location]); //eslint-disable-line react-hooks/exhaustive-deps
 
     //TODO: Handle loading state (MUI SKELETON)
-    if(!list){
-        return null;
+    if(!list || !list[0]){
+        
+        return (
+            <>
+            { username === authedUser?.username ?
+            <Typography fontSize="15px" style={{
+                display: 'flex',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                }}>
+                    Try clicking the <Search sx={{margin: "5px"}} fontWeight="bold" fontSize="medium"/> button above and adding a book!
+                </Typography>
+                : 
+                <Typography fontSize="15px" style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                }}>Looking pretty empty in here...</Typography>
+                }
+            </>
+            
+        );
     }
 
     return (
@@ -67,6 +87,7 @@ const ListFragment = ({list, username, status}) => {
 
     const sortedRatingList = Array.from(list).sort((a, b)=> b.rating - a.rating)
     
+    
 
     return(
         <>
@@ -84,12 +105,12 @@ const ListFragment = ({list, username, status}) => {
                         <Grid item xs={1}>
                             <Box></Box>
                         </Grid>
-                        <Grid sx={{cursor: "pointer"}} item xs={5}>
+                        <Grid sx={{cursor: "pointer"}} item xs={7}>
                             <Box>Title</Box>
                         </Grid>
-                        <Grid item xs={2}>
+                        {/*<Grid item xs={2}>
                             <Box>Status</Box>
-                        </Grid>
+                        </Grid>*/}
                         <Grid item xs={2}>
                             <Box>Rating</Box>
                         </Grid>
@@ -122,7 +143,7 @@ const ListItemContent = ({entry, username, update}) => {
     const [hovering, setHovering] = useState(false)
     const [isEditModal, setIsEditModal] = useState(false);
     const isNonMobileScreens = useMediaQuery("(min-width:1000px)")
-    //const isNonMobileScreens = useMediaQuery("(min-width:1000px)")
+    const navigate = useNavigate();
     const isBiggerThanTablet = useMediaQuery("(min-width:650px)")
     const dispatch = useDispatch()
     const token = useSelector((state) => state.auth.token)
@@ -140,6 +161,14 @@ const ListItemContent = ({entry, username, update}) => {
         setHovering(false)
         setRating(updatedEntry.rating)
         update(updatedEntry)
+    }
+
+    const bookLink = (entry) => {
+        navigate(`/book/${entry.book.googleId}`, {
+            state: {
+                entryData: entry
+            }
+        })
     }
     
     const modalStyle = {
@@ -179,16 +208,20 @@ const ListItemContent = ({entry, username, update}) => {
                     }
                 </Avatar>
             </Grid>
-            <Grid item xs={5}>
-                <Box style={{
+            <Grid item xs={6}>
+                <Box onClick={()=> bookLink(entry)} sx={{
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
-                    textOverflow: 'ellipsis'
+                    textOverflow: 'ellipsis',
+                    "&:hover": {
+                        color: palette.primary.dark,
+                        cursor: "pointer",
+                    }
                 }}>{entry.book?.title}</Box>
             </Grid>
             
-            <Grid item xs={2}>
-                <Box>{entry.status}</Box>
+            <Grid item xs={1}>
+                <Box>{entry.review !== "" && <Tooltip placement="left" title={entry.review}><Chat opacity="80%"/></Tooltip>}</Box>
             </Grid>
             <Grid item xs={2}>
                 <Rating
@@ -209,9 +242,6 @@ const ListItemContent = ({entry, username, update}) => {
                 <Box>{entry.page && entry.page} / {entry.book.pages && entry.book.pages}</Box>
             }
             </Grid>
-            {/* Modal Content */}
-            
-            {/* End of Modal Content */}
         </Grid>
         :
         <Grid container 
@@ -234,8 +264,16 @@ const ListItemContent = ({entry, username, update}) => {
                         <LibraryBooksOutlined /> 
                     }
                 </Avatar>
-                <Box style={{
-                    paddingLeft: '7px'
+                <Box onClick={()=> bookLink(entry)}
+                sx={{
+                    paddingLeft: '7px',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    "&:hover": {
+                        color: palette.primary.dark,
+                        cursor: "pointer",
+                    }
                 }}>
                 <Typography noWrap>{ entry.book?.title}</Typography>
                 </Box>

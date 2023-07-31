@@ -11,6 +11,7 @@ import { themeSettings } from "./theme";
 import ListPage from './scenes/listPage';
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import { REACT_APP_GOOGLE_CLIENT_ID } from './env';
+import BookPage from './scenes/bookPage';
 
 function App() {
   const mode = useSelector((state) => state.auth.mode)
@@ -36,6 +37,10 @@ function App() {
             <Route
               path='/user/:username/list'
               element={<ListPage/>}
+              />
+            <Route 
+              path='/book/:id'
+              element={<BookPage/>}
               />
           </Routes>
         </ThemeProvider>

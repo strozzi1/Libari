@@ -14,7 +14,7 @@ const ListPage = () => {
     
     return (
         <Box>
-            <Navbar/>
+            <Navbar page="booklist"/>
             <Box
                 width="100%"
                 padding="2rem 6%"
