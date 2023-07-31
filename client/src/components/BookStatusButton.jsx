@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNotification } from '../utils/useNotification';
 import { addNewEntry, updateEntry } from '../state';
+import { Favorite } from '@mui/icons-material';
 
 
 
@@ -57,8 +58,7 @@ export default function BookStatusButton({googleBook}) {
     }
 
     //TODO: Move to external file
-    const handleSelectStatus = (status) => {
-        const update = {status: status}
+    const handleUpdate = (update) => {
         if (entry){
             console.log("book is in list already")
             dispatch(updateEntry({entry:{...update, _id: entry._id}, token}))
@@ -99,6 +99,21 @@ export default function BookStatusButton({googleBook}) {
         handleClose();
     }
 
+    const handleSelectStatus = (status) => {
+        const update = {status: status}
+        handleUpdate(update)
+    }
+
+    const handleFavorite = () => {
+        
+        if(entry){ 
+            const update = {favorite: !Boolean(entry.favorite)}
+            console.log(update)
+            handleUpdate(update);
+        }
+        return
+    }
+
 
     const modalStyle = {
         position: 'absolute',
@@ -122,7 +137,13 @@ export default function BookStatusButton({googleBook}) {
     },[])
 
     return (
-        <div>
+        <div style={{
+            width: "100%",
+            display: "flex",
+            alignContent: "center",
+            alignItems: "center",
+            justifyContent: "space-evenly"
+        }}>
             <Modal 
                 open={isBookModal}
                 onClose={handleCloseBookModal}>
@@ -150,6 +171,21 @@ export default function BookStatusButton({googleBook}) {
             }}
             >
                 {entry ? entry.status : "Add book"}
+            </Button>
+            <Button key="favoriteButton"
+            onClick={(e)=> handleFavorite()}
+            sx={{
+                minWidth: "40px", 
+                width: "40px", 
+                height: "33.8px", 
+                color: entry && entry.favorite ? "white" : "rgb(254 202 202)", 
+                backgroundColor: "rgb(239 68 68)", 
+                borderRadius: "4px",
+                "&:hover": {
+                    backgroundColor: "rgb(239 68 68)"
+                }
+            }}>
+                <Favorite/>
             </Button>
             
             <StyledMenu 

@@ -73,14 +73,14 @@ export const updateEntryById = async (req,res) => {
             review: "object"
         }
     })
-    const { rating, status, startDate, endDate, review, page } = req.body.entry
+    const { rating, status, startDate, endDate, review, page, favorite } = req.body.entry
     try {
         const existingEntry = await Entry.findById(req.params.id)
         if(!existingEntry) return res.status(404).json(
             {message: `No existing entry with ID: ${req.params.id}. Feel free to create a new book entry`}
         )
         const updates = {
-            rating, status, startDate, endDate, review, page
+            rating, status, startDate, endDate, review, page, favorite
         }
         const savedEntry = await Entry.findByIdAndUpdate(existingEntry._id, updates, { runValidators: true, new: true });
 

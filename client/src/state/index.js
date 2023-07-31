@@ -63,6 +63,7 @@ export const authSlice = createSlice({
                 entry.startDate = action.payload.startDate;
                 entry.endDate = action.payload.endDate;
                 entry.page = action.payload.page;
+                entry.favorite = action.payload.favorite;
             }
             
             return entry;

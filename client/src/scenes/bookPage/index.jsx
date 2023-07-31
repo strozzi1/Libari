@@ -223,7 +223,7 @@ const BookPage = ({}) => {
                                 { token ?
                                     [
                                     <BookStatusButton key="statusMenuButton" googleBook={googleResult}/>,
-                                    <Button key="favoriteButton"
+                                    /*<Button key="favoriteButton"
                                     sx={{
                                         minWidth: "40px", 
                                         width: "40px", 
@@ -236,7 +236,7 @@ const BookPage = ({}) => {
                                         }
                                     }}>
                                         <Favorite/>
-                                    </Button>
+                                    </Button>*/
                                     ]
                                 :
                                 <Button onClick={()=> navigate("/home")}>Log In</Button>
