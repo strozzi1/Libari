@@ -1,10 +1,11 @@
-import { Box, Button, ButtonGroup, Divider, FormControl, InputBase, MenuItem, Paper, Rating, Select, Skeleton, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Button, ButtonGroup, Divider, FormControl, IconButton, InputBase, MenuItem, Paper, Rating, Select, Skeleton, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Navbar from "../navbar";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState, useRef } from "react";
 import { updateEntry } from "../../state";
 import BookStatusButton from "../../components/BookStatusButton";
+import { Favorite, FavoriteBorder, HeartBroken } from "@mui/icons-material";
 //TODO: use dompurify to sanitize html from googleBooks API (Description)
 //import DOMPurify from "dompurify";  
 //import { useQuery } from "react-query"
@@ -211,9 +212,32 @@ const BookPage = ({}) => {
                         </Box>
                         <Box display={isNonMobileScreens ? "flex" : "block"} justifyContent="center" alignContent="center">
                         { isNonMobileScreens ?
-                            <Box marginTop="10px">
+                            <Box marginTop="10px" sx={{
+                                width: "100%",
+                                display: "flex",
+                                alignContent: "center",
+                                alignItems: "center",
+                                justifyContent: "space-evenly"
+
+                            }}>
                                 { token ?
-                                <BookStatusButton entry={bookEntry} googleBook={googleResult}/>
+                                    [
+                                    <BookStatusButton key="statusMenuButton" googleBook={googleResult}/>,
+                                    <Button key="favoriteButton"
+                                    sx={{
+                                        minWidth: "40px", 
+                                        width: "40px", 
+                                        height: "33.8px", 
+                                        color: bookEntry && bookEntry.favorite ? "white" : "rgb(254 202 202)", 
+                                        backgroundColor: "rgb(239 68 68)", 
+                                        borderRadius: "4px",
+                                        "&:hover": {
+                                            backgroundColor: "rgb(239 68 68)"
+                                        }
+                                    }}>
+                                        <Favorite/>
+                                    </Button>
+                                    ]
                                 :
                                 <Button onClick={()=> navigate("/home")}>Log In</Button>
                                 }

@@ -5,17 +5,24 @@ import StyledMenu from './StyledMenu';
 import {Box, Modal, Divider, MenuItem, Button, useTheme, useMediaQuery } from '@mui/material';
 import AddEntryForm from '../scenes/widgets/AddEntryForm';
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNotification } from '../utils/useNotification';
+import { addNewEntry, updateEntry } from '../state';
+
 
 
 export default function BookStatusButton({googleBook}) {
+    const { displayNotificationAction } = useNotification();
+    const dispatch = useDispatch();
     const {palette} = useTheme();
+    const [isBookModal, setIsBookModal] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
-    const [isBookModal, setIsBookModal] = useState(false);
+    
     const entries = useSelector((state)=> state.auth.entries)
+    const token = useSelector((state)=> state.auth.token)
     const entry = entries.filter((entry)=> entry.book.googleId === googleBook.id)[0]
-
+    
     const isNonMobileScreen = useMediaQuery("(min-width: 1000px)");
     
     const handleClick = (event) => {
@@ -39,6 +46,59 @@ export default function BookStatusButton({googleBook}) {
     const handleCloseBookModal = (e) => {
         setIsBookModal(false)
     }
+
+    const bookData = {
+        googleId: googleBook.id,
+        title: googleBook.volumeInfo.title,
+        author: googleBook.volumeInfo.authors?.toString(),
+        photo: googleBook.volumeInfo.imageLinks?.thumbnail,
+        pages: googleBook.volumeInfo.pageCount,
+        released: googleBook.volumeInfo.publishedDate
+    }
+
+    //TODO: Move to external file
+    const handleSelectStatus = (status) => {
+        const update = {status: status}
+        if (entry){
+            console.log("book is in list already")
+            dispatch(updateEntry({entry:{...update, _id: entry._id}, token}))
+            .then((res)=>{
+                switch(res.type){
+                    case "auth/updateEntry/fulfilled":
+                        displayNotificationAction({message: `Successfully updated ${bookData.title}`, type: "success"})
+                        
+                        break;
+                    case "auth/updateEntry/rejected":
+                        displayNotificationAction({message: `Error occured when updating`, type: "error"})
+                        break;
+                    default:
+                        displayNotificationAction({message: "Somethings went wrong", type: "warning"})
+                }
+            })
+            .catch((err)=> displayNotificationAction({message: `${err.message}`, type: "error"}))
+                
+        } else {
+            dispatch(addNewEntry({entry: update, book: bookData, token}))
+            .then((res)=>{
+                switch(res.type){
+                    case "auth/addEntry/fulfilled":
+                        displayNotificationAction({message: `Successfully added ${res.payload.book.title}`, type: "success"})
+                        
+                        break;
+                    case "auth/addEntry/rejected":
+                        displayNotificationAction({message: `Error occured`, type: "error"})
+                        break;
+                    default:
+                        displayNotificationAction({message: "Somethings went wrong", type: "warning"})
+                }
+            })
+            .catch((err)=> displayNotificationAction({message: `${err.message}`, type: "error"}))
+            //use effect updates bookInList
+        }
+
+        handleClose();
+    }
+
 
     const modalStyle = {
         position: 'absolute',
@@ -78,7 +138,7 @@ export default function BookStatusButton({googleBook}) {
             disableElevation
             onClick={handleClick}
             value="box"
-            endIcon={<KeyboardArrowDownIcon value="arrow"/>}
+            endIcon={isNonMobileScreen && <KeyboardArrowDownIcon value="arrow"/> }
             sx={{
                 m: "0.4rem 0", 
                 p: ".4rem", 
@@ -101,13 +161,13 @@ export default function BookStatusButton({googleBook}) {
             open={open}
             onClose={handleClose}
             >
-                <MenuItem value="Reading" onClick={handleClose} disableRipple>
+                <MenuItem onClick={()=>handleSelectStatus("Reading")} disableRipple>
                     Set as Reading
                 </MenuItem>
-                <MenuItem value="Planning" onClick={handleClose} disableRipple>
+                <MenuItem onClick={()=>handleSelectStatus("Planning")} disableRipple>
                     Set as Planning
                 </MenuItem>
-                <MenuItem value="Completed" onClick={handleClose} disableRipple>
+                <MenuItem onClick={()=>handleSelectStatus("Completed")} disableRipple>
                     Set as Completed
                 </MenuItem>
                 <Divider light/>
