@@ -221,23 +221,9 @@ const BookPage = ({}) => {
 
                             }}>
                                 { token ?
-                                    [
-                                    <BookStatusButton key="statusMenuButton" googleBook={googleResult}/>,
-                                    /*<Button key="favoriteButton"
-                                    sx={{
-                                        minWidth: "40px", 
-                                        width: "40px", 
-                                        height: "33.8px", 
-                                        color: bookEntry && bookEntry.favorite ? "white" : "rgb(254 202 202)", 
-                                        backgroundColor: "rgb(239 68 68)", 
-                                        borderRadius: "4px",
-                                        "&:hover": {
-                                            backgroundColor: "rgb(239 68 68)"
-                                        }
-                                    }}>
-                                        <Favorite/>
-                                    </Button>*/
-                                    ]
+                                    
+                                <BookStatusButton key="statusMenuButton" googleBook={googleResult}/>
+                                    
                                 :
                                 <Button onClick={()=> navigate("/home")}>Log In</Button>
                                 }
@@ -257,6 +243,12 @@ const BookPage = ({}) => {
                                     marginBottom: "10px"
                                 }}
                                 >{currBook?.author}</Typography>
+                                { token ?
+                                    
+                                <BookStatusButton key="statusMenuButton" googleBook={googleResult}/>  
+                                :
+                                <Button onClick={()=> navigate("/home")}>Log In</Button>
+                                }
                                 <Rating size="large"
                                 name="simple-controlled"
                                 sx={{marginBottom: "15px"}}
@@ -279,6 +271,7 @@ const BookPage = ({}) => {
 
                 {/*Right column / Bottom */}
                 <Box flexBasis={isNonMobileScreens ? "70%" : undefined} sx={{opacity: "85%"}}>
+
                     { isNonMobileScreens &&
                         <>
                             <Typography
