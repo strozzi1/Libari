@@ -190,7 +190,7 @@ const BookPage = ({}) => {
                 padding="2rem 6%"
                 display={isNonMobileScreens ? "flex" : "block"}
                 gap="0.5rem"
-                justifyContent="space-between">
+                justifyContent="space-evenly">
 
                 {/*Left column */}
                 <Box
@@ -202,8 +202,9 @@ const BookPage = ({}) => {
                             <Paper sx={{
                                     backgroundImage: `url(${currBook.photo})`,
                                     backgroundPosition: "center",
-                                    width: isNonMobileScreens ? "30vh" : "20vh",
-                                    height: isNonMobileScreens ? "45vh" : "30vh",
+                                    width: isNonMobileScreens ? "16rem" : "20vh",
+                                    height: isNonMobileScreens ? "24rem" : "30vh",
+                                    marginRight: "1rem",
                                     backgroundSize: "cover",
                                     filter: "drop-shadow(0 0.2rem 0.8rem rgba(0, 0, 0, 0.2))",
                                     //borderRadius: "0 6% 6% 0/4%"
@@ -212,7 +213,8 @@ const BookPage = ({}) => {
                         </Box>
                         <Box display={isNonMobileScreens ? "flex" : "block"} justifyContent="center" alignContent="center">
                         { isNonMobileScreens ?
-                            <Box marginTop="10px" sx={{
+                            <Box marginTop="1rem" 
+                            sx={{
                                 width: "100%",
                                 display: "flex",
                                 alignContent: "center",
@@ -232,26 +234,27 @@ const BookPage = ({}) => {
                             <Box display="flex" alignItems="center" flexDirection="column">
                                 <Typography
                                     sx={{
-                                        fontSize: "25px",
+                                        fontSize: "1.6rem",
                                         fontWeight: "500"
                                     }}
                                 >{currBook?.title}</Typography>
                                 <Typography
                                 sx={{
-                                    fontSize: "15px",
+                                    fontSize: "1rem",
                                     fontStyle: "italic",
-                                    marginBottom: "10px"
+                                    marginBottom: ".6rem"
                                 }}
                                 >{currBook?.author}</Typography>
                                 { token ?
                                     
-                                <BookStatusButton key="statusMenuButton" googleBook={googleResult}/>  
+                                <BookStatusButton key="statusMenuButton" googleBook={googleResult}/>
+                                    
                                 :
                                 <Button onClick={()=> navigate("/home")}>Log In</Button>
                                 }
                                 <Rating size="large"
                                 name="simple-controlled"
-                                sx={{marginBottom: "15px"}}
+                                sx={{marginBottom: "1rem"}}
                                 title="Rating"
                                 readOnly={bookEntry === undefined}
                                 precision={0.5}
@@ -276,23 +279,23 @@ const BookPage = ({}) => {
                         <>
                             <Typography
                                 sx={{
-                                    fontSize: "25px",
+                                    fontSize: "2.0rem",
                                     fontWeight: "500"
                                 }}
                             >{currBook?.title}</Typography>
                             <Typography
                             sx={{
-                                fontSize: "15px",
+                                fontSize: "1.2rem",
                                 fontStyle: "italic",
-                                marginBottom: "10px"
+                                marginBottom: "0.6rem"
                             }}
                             >{currBook?.author}</Typography>
                             <Typography fontSize="15px" style={{
                             display: 'flex',
                             alignItems: 'center',
                             flexWrap: 'wrap',
-                            marginBottom: '15px',
-                            fontSize: '20px',
+                            marginBottom: '1.0rem',
+                            fontSize: '1.5rem',
                             fontWeight: '500',
                             }}>
                                 <Rating size="large"
@@ -300,7 +303,7 @@ const BookPage = ({}) => {
                                     title="Rating"
                                     readOnly={bookEntry === undefined}
                                     precision={0.5}
-                                    sx={{marginRight: "5px"}}
+                                    sx={{marginRight: "0.5rem"}}
                                     value={rating/2}
                                     onChange={(event, newValue) => {
                                         setRating(newValue*2);
@@ -312,7 +315,9 @@ const BookPage = ({}) => {
                         
                     }
                     {/*<Typography>{currBook?.description?.value ?? currBook?.description}</Typography>*/}
-                    <div dangerouslySetInnerHTML={{__html: currBook?.description?.value ?? currBook?.description}}/>
+                    
+                    <div style={{fontSize: "1.0rem", textAlign: !isNonMobileScreens && "center"}} dangerouslySetInnerHTML={{__html: currBook?.description?.value ?? currBook?.description}}/>
+                    
                 </Box>
             </Box>
         </Box>

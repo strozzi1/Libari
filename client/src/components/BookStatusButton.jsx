@@ -159,11 +159,12 @@ export default function BookStatusButton({googleBook}) {
             disableElevation
             onClick={handleClick}
             value="box"
-            endIcon={isNonMobileScreen && <KeyboardArrowDownIcon value="arrow"/> }
+            endIcon={isNonMobileScreen && <KeyboardArrowDownIcon value="arrow" sx={{marginLeft: "1rem"}}/> }
             sx={{
                 m: "0.4rem 0", 
                 p: ".4rem", 
-                width: "110px",
+                height: "2.3rem",
+                width: isNonMobileScreen ? "10rem" : "7rem",
                 backgroundColor: palette.primary.main,
                 color: palette.background.alt,
                 "&:hover": {backgroundColor: palette.primary.dark},
@@ -175,9 +176,9 @@ export default function BookStatusButton({googleBook}) {
             <Button key="favoriteButton"
             onClick={(e)=> handleFavorite()}
             sx={{
-                minWidth: "40px", 
-                width: "40px", 
-                height: "33.8px", 
+                minWidth: "2.3rem", 
+                width: "2.3rem", 
+                height: "2.3rem", 
                 color: entry && entry.favorite ? "white" : "rgb(254 202 202)", 
                 backgroundColor: "rgb(239 68 68)", 
                 borderRadius: "4px",
