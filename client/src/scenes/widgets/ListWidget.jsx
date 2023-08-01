@@ -1,4 +1,4 @@
-import { Chat, ChatBubble, ChatBubbleRounded, LibraryBooksOutlined, MoreHoriz, Search } from "@mui/icons-material";
+import { Chat, LibraryBooksOutlined, MoreHoriz, Search } from "@mui/icons-material";
 import { Grid, useTheme, Box, ListItem, List, Rating, Avatar, Tooltip, Modal, useMediaQuery, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -11,8 +11,6 @@ import {useLocation, useNavigate} from 'react-router-dom';
 
 
 const ListWidget = ({username}) => {
-    const {palette} = useTheme();
-    const isBiggerThanTablet = useMediaQuery("(min-width:650px)")
     const [list, setList] = useState(null);
     const authedUser = useSelector((state) => state.auth.user)
     const authedList = useSelector((state) => state.auth.entries)
@@ -47,7 +45,7 @@ const ListWidget = ({username}) => {
         return (
             <>
             { username === authedUser?.username ?
-            <Typography fontSize="15px" style={{
+            <Typography fontSize="1rem" style={{
                 display: 'flex',
                 alignItems: 'center',
                 flexWrap: 'wrap',
@@ -55,7 +53,7 @@ const ListWidget = ({username}) => {
                     Try clicking the <Search sx={{margin: "5px"}} fontWeight="bold" fontSize="medium"/> button above and adding a book!
                 </Typography>
                 : 
-                <Typography fontSize="15px" style={{
+                <Typography fontSize="1rem" style={{
                     display: 'flex',
                     alignItems: 'center',
                     flexWrap: 'wrap',
@@ -79,7 +77,8 @@ const ListWidget = ({username}) => {
 
 const ListFragment = ({list, username, status}) => {
     const {palette} = useTheme();
-    const isBiggerThanTablet = useMediaQuery("(min-width:650px)")
+    const isBiggerThanTablet = useMediaQuery("(min-width:650px)");
+    const notLargeScreen = useMediaQuery("(max-width:2000px)");
 
     if(!list[0]){
         return null;
@@ -92,30 +91,30 @@ const ListFragment = ({list, username, status}) => {
     return(
         <>
         <Typography sx={{
-                paddingBottom: "5px",
-                paddingLeft: "20px",
-                paddingTop: status === "Reading" ? "0px" : "20px" ,
-                fontSize: "20px",
+                paddingBottom: ".5rem",
+                paddingLeft: "1.5rem",
+                paddingTop: status === "Reading" ? "0px" : "1.8rem" ,
+                fontSize: "1.5rem",
                 opacity: "80%"
             }}>{status}</Typography>
         <WidgetWrapper>
             <List> {isBiggerThanTablet &&
                 <ListItem>
                     <Grid container spacing={1.0} fontWeight="bold">
-                        <Grid item xs={1}>
+                        <Grid item xs={notLargeScreen ? 1 : 0.5}>
                             <Box></Box>
                         </Grid>
                         <Grid sx={{cursor: "pointer"}} item xs={7}>
-                            <Box>Title</Box>
+                            <Box fontSize="1rem">Title</Box>
                         </Grid>
                         {/*<Grid item xs={2}>
                             <Box>Status</Box>
                         </Grid>*/}
                         <Grid item xs={2}>
-                            <Box>Rating</Box>
+                            <Box fontSize="1rem">Rating</Box>
                         </Grid>
-                        <Grid item xs={2}>
-                            <Box>Progress</Box>
+                        <Grid alignContent="center" item xs={2}>
+                            <Box fontSize="1rem">Progress</Box>
                         </Grid>
                     </Grid>
                 </ListItem> }
@@ -143,6 +142,7 @@ const ListItemContent = ({entry, username, update}) => {
     const [hovering, setHovering] = useState(false)
     const [isEditModal, setIsEditModal] = useState(false);
     const isNonMobileScreens = useMediaQuery("(min-width:1000px)")
+    const notLargeScreen = useMediaQuery("(max-width:2000px)");
     const navigate = useNavigate();
     const isBiggerThanTablet = useMediaQuery("(min-width:650px)")
     const dispatch = useDispatch()
@@ -195,7 +195,7 @@ const ListItemContent = ({entry, username, update}) => {
         { 
         isBiggerThanTablet ?
         <Grid container spacing={1.0} alignItems="center" onMouseOver={()=>setHovering(true)} onMouseOut={()=>setHovering(false)}>
-            <Grid item xs={1}>
+            <Grid item xs={notLargeScreen ? 1 : 0.5}>
                 
                 <Avatar sx={{ bgcolor: palette.primary.main, "&:hover": {cursor: "pointer"} }} variant="rounded" src={!hovering ? entry.book?.photo : undefined}>
                     
@@ -213,6 +213,7 @@ const ListItemContent = ({entry, username, update}) => {
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
+                    fontSize:"1rem",
                     "&:hover": {
                         color: palette.primary.dark,
                         cursor: "pointer",
@@ -226,7 +227,7 @@ const ListItemContent = ({entry, username, update}) => {
             <Grid item xs={2}>
                 <Rating
                     readOnly={authedUsername !== username}
-                    size="small"
+                    size={notLargeScreen ? "small" : "medium"}
                     name="simple-controlled"
                     precision={0.5}
                     value={rating/2}
@@ -237,7 +238,7 @@ const ListItemContent = ({entry, username, update}) => {
                     }}
                 />
             </Grid>
-            <Grid item xs={2}> 
+            <Grid item xs={2} fontSize="1rem"> 
             {entry.page > 0 &&
                 <Box>{entry.page && entry.page} / {entry.book.pages && entry.book.pages}</Box>
             }
