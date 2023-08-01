@@ -20,6 +20,7 @@ const UpdateText = ({entry}) => {
     return( 
         <Typography onClick={()=>bookLink(entry)} sx={{
             whiteSpace: 'nowrap',
+            fontSize:"0.9rem",
             "&:hover": {
                 color: palette.primary.dark,
                 cursor: "pointer",
@@ -52,23 +53,30 @@ const RecentUpdate = ({entry}) => {
         })
     }
     
-    //console.log(moment(entry.updatedAt).fromNow())
-
+   
     //Default
     return (
         <>
-            <Box sx={{backgroundColor: palette.background.alt, borderRadius: "3px"}} style={{position:"relative", width: "100%", height: "80px", overflow: "hidden", textOverflow: "ellipsis", }}> 
+            <Box sx={{backgroundColor: palette.background.alt, borderRadius: "3px"}} 
+                style={{
+                    position:"relative", 
+                    width: "100%", 
+                    height: "5.7rem", 
+                    overflow: "hidden", 
+                    textOverflow: "ellipsis", 
+                }}> 
             <FlexBetween
                 gap="0.5rem"
                 pb="1.1rem"
             >
                 <FlexBetween>
+                {/* UPDATE BOOK THUMBNAIL */}
                 <Paper
                 onClick={()=>bookLink(entry)}
                 sx={{
                     backgroundImage: `url(${entry.book.photo})`, 
-                    width: "60px",
-                    height: "80px",
+                    width: "3.8rem",
+                    height: "5.7rem",
                     left: 0,
                     backgroundSize:"cover",
                     borderRadius: "3px 0px 0px 3px",
@@ -81,23 +89,34 @@ const RecentUpdate = ({entry}) => {
                 </Paper>
                 
                 { isHomepage ?
-                <Box marginLeft="8px">
+                <Box marginLeft="0.7rem">
                     <Typography
                     onClick={()=>navigate(`/user/${entry.userId.username}`)}
                     variant="h6"
                     color={dark}
+                    fontSize="0.9rem"
                     fontWeight="500"
                     sx={{
                         "&:hover": {
                             color: palette.primary.dark,
-                            cursor: "pointer",
+                            cursor: "pointer"
                         },
                     }} 
                     >
                         {entry.userId.username}
                     </Typography>
                     <UpdateText entry={entry} />
-                    <Avatar variant="rounded" sx={{width: "24px", height:"24px"}} src={entry.userId.image}></Avatar>
+                    <Avatar onClick={()=>navigate(`/user/${entry.userId.username}`)} 
+                    variant="rounded" 
+                    sx={{
+                        width: "1.8rem", 
+                        height:"1.8rem",
+                        "&:hover":{
+                            cursor: "pointer"
+                        }
+                    }} 
+                    src={entry.userId.image}>
+                    </Avatar>
                 </Box>
                 :
                 <Box marginLeft="8px">
@@ -105,14 +124,16 @@ const RecentUpdate = ({entry}) => {
                 </Box>
                 }
                 </FlexBetween>
+
+                {/* RIGHT SIDE */}
                 <FlexBetween>
                     
                     <Paper sx={{
                     //backgroundImage: `url(${entry.book.photo})`,
                     position: "absolute" ,
                     background: `linear-gradient(to right, rgba(0,0,0,0), ${palette.background.alt} 100%)`,
-                    width: "120px",
-                    height: "80px",
+                    width: "6rem",
+                    height: "6rem",
                     right: 0,
                     backgroundSize:"cover",
                     borderRadius: "3px 0px 0px 3px",
@@ -121,10 +142,10 @@ const RecentUpdate = ({entry}) => {
                 >
                     <Typography 
                         sx={{
-                            fontSize: "10px",
+                            fontSize: ".7rem",
                             opacity: "70%",
                             textAlign: "right",
-                            padding: "6px"
+                            padding: ".5rem"
                             
                         }}
                     >{moment(entry.updatedAt).fromNow()}</Typography>
