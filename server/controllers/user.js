@@ -133,7 +133,7 @@ export const updateUserById = async (req, res) => {
 
         const updatedUser = await User.findByIdAndUpdate(req.userId, {bio, location, image})
         //const updatedUser = await User.findByIdAndUpdate(req.userId, {image, bio, location})
-        res.status(200).json(updatedUser);
+        res.status(200).json({updatedUser, message: "Successfully Updated User"});
     } catch (error) {
         res.status(500).json({message: error.message})
     }
@@ -237,7 +237,7 @@ export const addFollowing = async (req, res) => {
         const userToFollow = await User.findById(req.body.userId)
         if(!userToFollow) return res.status(404).json({message: "No such user, cannot perform Follow operation"});
         
-        const alreadyFollowing = user.following.filter((currId) => currId.equals(userToFollow.id)).at(0);
+        const alreadyFollowing = user.following.filter((currId) => currId.equals(userToFollow._id)).at(0);
         if(alreadyFollowing) return res.status(400).json({message: "Already following provided user"});   
         
         userToFollow.followers.push(req.userId)

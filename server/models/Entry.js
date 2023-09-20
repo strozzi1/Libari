@@ -48,6 +48,10 @@ const EntrySchema = new mongoose.Schema(
             maxLength: 1000,
             required: false,
             default: ''
+        },
+        likes: {
+            type: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+            default: []
         }
     }, 
     {timestamps: true}

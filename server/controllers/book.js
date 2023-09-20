@@ -36,6 +36,14 @@ export const getBooks = async (req, res) => {
             totalCount: results.length
         });
     } catch (error) {
-        res.status(500).json(error)
+        res.status(500).json(error);
+    }
+}
+
+export const getBookByGoogleId = async (req, res) => {
+    try {
+        res.status(200).json("TODO");
+    } catch (error) {
+        res.status(500).json(error);
     }
 }
