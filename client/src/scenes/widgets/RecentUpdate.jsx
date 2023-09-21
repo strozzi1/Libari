@@ -1,12 +1,17 @@
-import { Avatar, Box, Paper, Typography, useTheme } from "@mui/material";
+import { Avatar, Box, IconButton, Paper, Typography, useTheme } from "@mui/material";
 import moment from "moment";
 import FlexBetween from "../../components/FlexBetween";
+import { useNotification } from "../../utils/useNotification";
 import {useLocation, useNavigate, useParams} from "react-router-dom";
+import { BASE_URL } from "../../env";
 import { useSelector } from "react-redux";
+import { Favorite } from "@mui/icons-material";
+import { useState } from "react";
 
 const UpdateText = ({entry}) => {
     const navigate = useNavigate();
     const {palette} = useTheme()
+    
 
     const bookLink = (entry) => {
         navigate(`/book/${entry.book.googleId}`, {
@@ -37,13 +42,14 @@ const UpdateText = ({entry}) => {
 
 
 const RecentUpdate = ({entry}) => { 
-    
+    const {user, token} = useSelector((state)=> state.auth)
     const location = useLocation();
     const isHomepage = location.pathname === '/home'
     const navigate = useNavigate();
     const {palette} = useTheme()
     const dark = palette.neutral.dark
-    
+    const [likes, setLikes] = useState(entry.likes)
+    const { displayNotificationAction } = useNotification();
 
     const bookLink = (entry) => {
         navigate(`/book/${entry.book.googleId}`, {
@@ -53,7 +59,35 @@ const RecentUpdate = ({entry}) => {
         })
     }
     
-   
+    const handleLike = async () => {
+        const response = await fetch(`${BASE_URL}/entry/${entry._id}/like`,
+        {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+                Authorization: `Bearer ${token}`
+            }
+            
+        });
+
+        if(!response.ok){
+            const {message} = await response.json()
+            console.log(message)
+            //handleUpdateMessage({message: message, severity: "error"})
+            displayNotificationAction({ message: message, type: "error" })
+            return;
+        }
+        const data = await response.json();
+        setLikes(data.result.likes)
+        console.log(data)
+    }
+
+    if(!entry){
+        return (
+            <>Loading</>
+        )
+    }
     //Default
     return (
         <>
@@ -149,6 +183,17 @@ const RecentUpdate = ({entry}) => {
                             
                         }}
                     >{moment(entry.updatedAt).fromNow()}</Typography>
+                    <Box sx={{
+                        position: "absolute",
+                        right: 5,
+                        bottom: 5,
+                        fontSize: ".8rem"
+                    }}> 
+                        {likes.length > 0 && likes.length}
+                        <IconButton size="small" onClick={()=> handleLike()}>
+                            <Favorite htmlColor={likes.includes(user._id) && "rgb(239 68 68)"}/>
+                        </IconButton>
+                    </Box>
                 </Paper>
                 </FlexBetween>
                 </FlexBetween>

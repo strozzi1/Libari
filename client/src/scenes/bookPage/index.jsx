@@ -35,8 +35,6 @@ const BookPage = ({}) => {
     
 
     const fetchWork = async () => {
-        //https://openlibrary.org/works/OL3511459W.json
-        console.log("fetch run")
         try {
             const response = await fetch(`https://www.googleapis.com/books/v1/volumes/${bookIdParam}`,
             {

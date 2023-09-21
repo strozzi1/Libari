@@ -1,5 +1,5 @@
 import express from "express";
-import { addNewBookEntryToList, getEntryById, getRecentFollowedUsersUpdates, removeBookEntry, updateEntryById, updateEntryByUserAndBook } from "../controllers/entry.js";
+import { addNewBookEntryToList, getEntryById, getRecentFollowedUsersUpdates, likeEntry, removeBookEntry, updateEntryById, updateEntryByUserAndBook } from "../controllers/entry.js";
 import { requireAuthentication } from "../middleware/auth.js";
 
 const router = express.Router()
@@ -15,6 +15,9 @@ router.post("/", requireAuthentication, addNewBookEntryToList)
 
 //@endpoint /entry/:id
 router.patch("/:id", requireAuthentication, updateEntryById)
+
+//@endpoint /entry/:id/like
+router.patch("/:id/like", requireAuthentication, likeEntry)
 
 //@endpoint /entry
 router.put("/", requireAuthentication, updateEntryByUserAndBook)

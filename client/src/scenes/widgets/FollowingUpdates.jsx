@@ -44,7 +44,8 @@ const FollowingUpdates = () => {
         };
     };
 
-    //infinite
+    
+    //TODO: Switch to LOAD MORE BUTTON
     const handlePageBottom = () => {
         if(pageCount.current === page.current){
             return;

@@ -91,6 +91,45 @@ export const updateEntryById = async (req,res) => {
     }
 }
 
+export const likeEntry = async (req, res) => {
+    try {
+        
+        const entryFound = await Entry.findById(req.params.id);
+        if(!entryFound) return res.status(401).json({message: "No entry found with that ID"})
+        let updateResult, message
+        //console.log(entryFound.likes)
+        if(!entryFound.likes){ 
+            entryFound.likes = []
+        }
+        const likedAlready = entryFound.likes.filter( (currId) => currId.equals(mongoose.Types.ObjectId(req.userId)) ).at(0)
+        
+        if( likedAlready ){
+            // Unlike Entry
+            updateResult = await Entry.findByIdAndUpdate(
+                entryFound._id, 
+                {$pull: {likes: req.userId}},
+                { returnDocument: 'after', timestamps: false }
+            )
+            message = "Successfully unliked entry"
+        } else {
+            // Like Entry
+            updateResult = await Entry.findByIdAndUpdate(
+                entryFound._id, 
+                {$push: {likes: mongoose.Types.ObjectId(req.userId)}},
+                { returnDocument: 'after', timestamps: false }
+            )
+            message = "Successfully liked entry"
+        }
+        
+
+        console.log("Like entry update result: ", updateResult)
+        return res.status(200).json({message, result: updateResult})
+
+    } catch (err) {
+        return res.status(500).json({error: err, message: "Trouble with post liking system"})
+    }
+}
+
 /* EXPECTED req.body:
 body: {
     book: {
@@ -103,6 +142,7 @@ body: {
     }
 }
 */
+
 export const updateEntryByUserAndBook = async (req, res) => {
     if(!req.body.book || (!req.body.book._id && !req.body.book.googleId) || !req.body.entry) return res.status(404).json({message: "Invalid book object"})
     try {
