@@ -105,11 +105,19 @@ export const likeEntry = async (req, res) => {
         
         if( likedAlready ){
             // Unlike Entry
-            updateResult = await Entry.findByIdAndUpdate(entryFound._id, {$pull: {likes: req.userId}})
+            updateResult = await Entry.findByIdAndUpdate(
+                entryFound._id, 
+                {$pull: {likes: req.userId}},
+                { returnDocument: 'after', timestamps: false }
+            )
             message = "Successfully unliked entry"
         } else {
             // Like Entry
-            updateResult = await Entry.findByIdAndUpdate(entryFound._id, {$push: {likes: mongoose.Types.ObjectId(req.userId)}})
+            updateResult = await Entry.findByIdAndUpdate(
+                entryFound._id, 
+                {$push: {likes: mongoose.Types.ObjectId(req.userId)}},
+                { returnDocument: 'after', timestamps: false }
+            )
             message = "Successfully liked entry"
         }
         
